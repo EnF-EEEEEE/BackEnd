@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: EnF
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "8080:8080"
+    environment:
+      ACTIVE_PROFILE: prod
+    restart: always
+    networks:
+      - EnF_network
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./data/mysql/env.mysql
+    networks:
+      - EnF_network
+    restart: on-failure
+
+networks:
+  EnF_network:
+    driver: bridge
