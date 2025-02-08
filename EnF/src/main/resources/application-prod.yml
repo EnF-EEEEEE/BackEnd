@@ -1,0 +1,22 @@
+spring:
+  config:
+    import: classpath:secret.yml
+
+  jpa:
+    hibernate:
+      # 필요에 따라서 수정 필요
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        check_nullability: true
+        format-sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 1000
+    open-in-view: false
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${PROD.DATABASE.URL}
+    username: ${PROD.DATABASE.USERNAME}
+    password: ${PROD.DATABASE.PASSWORD}
