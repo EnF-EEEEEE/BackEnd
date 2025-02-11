@@ -8,7 +8,6 @@ import com.enf.model.type.SuccessResultType;
 import com.enf.repository.UserRepository;
 import com.enf.service.AuthService;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
