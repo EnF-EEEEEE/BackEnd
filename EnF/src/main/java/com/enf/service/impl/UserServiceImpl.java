@@ -28,11 +28,11 @@ public class UserServiceImpl implements UserService {
   public ResultResponse checkNickname(String nickname) {
 
     if (userRepository.existsByNickname(nickname)) {
-      log.info("{{} : 중복된 닉네임", nickname);
+      log.info("{} : 중복된 닉네임", nickname);
       return new ResultResponse(SuccessResultType.SUCCESS_CHECK_NICKNAME, true);
     }
 
-    log.info("{{} : 사용가능한 닉네임", nickname);
+    log.info("{} : 사용가능한 닉네임", nickname);
     return new ResultResponse(SuccessResultType.SUCCESS_CHECK_NICKNAME, false);
   }
 }
