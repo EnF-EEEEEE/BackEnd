@@ -1,43 +1,40 @@
 package com.enf.component;
 
 
-
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.auth.KakaoUserDetailsDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.UrlType;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoAuthHandler {
 
-  @Value("${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.client-id}")
+  @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
   private String clientId;
 
-  @Value("${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.client-secret}")
+  @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
   private String clientSecretId;
 
-  @Value("${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.redirect-uri}")
+  @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
   private String redirectUri;
 
-  @Value("${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.admin-key}")
+  @Value("${spring.security.oauth2.kakao.admin-key}")
   private String adminKey;
 
+  //토큰 조회를 위한 메서드
   public String getAccessToken(String code) {
     log.info("KakaoAuthHandler.getAccessToken code={}", code);
     HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = getMultiValueMapHttpEntity(code);
@@ -63,6 +60,7 @@ public class KakaoAuthHandler {
     throw new GlobalException(FailedResultType.ACCESS_TOKEN_RETRIEVAL);
   }
 
+  // 조회를 위한 request url 설정
   private HttpEntity<MultiValueMap<String, String>> getMultiValueMapHttpEntity(String code) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
