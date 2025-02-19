@@ -22,22 +22,21 @@ public class AuthController {
 
   /**
    * 카카오 OAuth 회원가입 OR 로그인
-   *
    * @param code 카카오 인가 코드 DTO
    */
   @GetMapping("/kakao")
   public ResponseEntity<ResultResponse> oAuthForKakao(@RequestParam("code") String code) {
     ResultResponse resultResponse = authService.oAuthForKakao(code);
-
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 
+  /**
+   * 카카오 OAuth 회원가입 OR 로그인 redirect url
+   * @param code 카카오 인가 코드 DTO
+   */
   @GetMapping("/callback")
   public String redirectForSNSLogin(@RequestParam("code") String code) {
-
     log.info("code {} ", code);
-
     return code;
   }
-
 }
