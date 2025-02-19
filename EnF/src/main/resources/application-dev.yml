@@ -10,7 +10,8 @@ spring:
     properties:
       hibernate:
         check_nullability: true
-        format-sql: true
+#        format_sql: true
+        highlight_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
         default_batch_fetch_size: 1000
     open-in-view: false
