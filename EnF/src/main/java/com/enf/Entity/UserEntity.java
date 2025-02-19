@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity(name = "Users")
 @AllArgsConstructor
@@ -33,4 +34,9 @@ public class UserEntity {
   @NotNull
   private String providerId;
 
+  @NotNull
+  private LocalDateTime createAt;
+
+  @NotNull
+  private LocalDateTime lastLoginAt;
 }

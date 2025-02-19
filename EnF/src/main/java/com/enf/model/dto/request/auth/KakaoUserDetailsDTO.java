@@ -3,6 +3,7 @@ package com.enf.model.dto.request.auth;
 import com.enf.Entity.UserEntity;
 import lombok.AllArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -30,11 +31,14 @@ public class KakaoUserDetailsDTO {
   }
 
   public static UserEntity of(KakaoUserDetailsDTO userInfo) {
+    LocalDateTime now = LocalDateTime.now();
     return UserEntity.builder()
-        .email(userInfo.getEmail())
-        .nickname(userInfo.getNickname())
-        .providerId(userInfo.getProviderId())
-        .provider(userInfo.getProvider())
-        .build();
+            .email(userInfo.getEmail())
+            .nickname(userInfo.getNickname())
+            .providerId(userInfo.getProviderId())
+            .provider(userInfo.getProvider())
+            .createAt(now)
+            .lastLoginAt(now)
+            .build();
   }
 }
