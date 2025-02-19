@@ -1,9 +1,8 @@
 package com.enf.Entity;
 
-import com.enf.model.type.GenerateType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
 
   @NotNull
@@ -32,9 +32,5 @@ public class UserEntity {
 
   @NotNull
   private String providerId;
-
-  // 청년층과 시니어층을 구분하기 위한 Enum Type
-  @Enumerated(EnumType.STRING)
-  private GenerateType generateType;
 
 }
