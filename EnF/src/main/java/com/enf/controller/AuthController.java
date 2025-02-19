@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+//Test URL : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=962b24a09f42380d01cc640c02a3b71d&redirect_uri=http://localhost:8080/api/v1/auth/callback
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +20,6 @@ public class AuthController {
 
   public final AuthService authService;
 
-
   /**
    * 카카오 OAuth 회원가입 OR 로그인
    *
@@ -26,11 +27,17 @@ public class AuthController {
    */
   @GetMapping("/kakao")
   public ResponseEntity<ResultResponse> oAuthForKakao(@RequestParam("code") String code) {
-
     ResultResponse resultResponse = authService.oAuthForKakao(code);
 
-    log.info("code {} ", code);
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
+  }
+
+  @GetMapping("/callback")
+  public String redirectForSNSLogin(@RequestParam("code") String code) {
+
+    log.info("code {} ", code);
+
+    return code;
   }
 
 }
