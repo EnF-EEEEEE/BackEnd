@@ -1,9 +1,9 @@
 package com.enf.model.dto.request.auth;
 
 import com.enf.Entity.UserEntity;
-import com.enf.model.type.GenerateType;
-import java.util.Map;
 import lombok.AllArgsConstructor;
+
+import java.util.Map;
 
 @AllArgsConstructor
 public class KakaoUserDetailsDTO {
@@ -35,9 +35,6 @@ public class KakaoUserDetailsDTO {
         .nickname(userInfo.getNickname())
         .providerId(userInfo.getProviderId())
         .provider(userInfo.getProvider())
-        .generateType(Integer.parseInt(userInfo.getBirthyear()) >= 40
-            ? GenerateType.SENIOR
-            : GenerateType.YOUTH)
         .build();
   }
 }
