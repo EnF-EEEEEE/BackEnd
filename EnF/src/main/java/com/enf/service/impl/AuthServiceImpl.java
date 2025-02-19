@@ -21,13 +21,17 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public ResultResponse oAuthForKakao(String code) {
     String accessToken = kakaoAuthHandler.getAccessToken(code);
-    UserEntity user = KakaoUserDetailsDTO.of(kakaoAuthHandler.getUserDetails(accessToken));
+    String providerId = kakaoAuthHandler.getUserDetails(accessToken).getProviderId();
 
     // [회원가입] : 회원의 providerId가 없는경우
-    if (!userRepository.existsByProviderId(user.getProviderId())) {
+    if (!userRepository.existsByProviderId(providerId)) {
+      UserEntity user = KakaoUserDetailsDTO.of(kakaoAuthHandler.getUserDetails(accessToken));
       userRepository.save(user);
 
       return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_SIGNUP);
+    }else{
+      // [로그인] : 로그인시 마지막 접속일자 갱신
+      userRepository.updateLastLoginAtByProviderId(providerId);
     }
 
     return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_LOGIN);
