@@ -23,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     String accessToken = kakaoAuthHandler.getAccessToken(code);
     UserEntity user = KakaoUserDetailsDTO.of(kakaoAuthHandler.getUserDetails(accessToken));
 
+    // [회원가입] : 회원의 providerId가 없는경우
     if (!userRepository.existsByProviderId(user.getProviderId())) {
       userRepository.save(user);
 
