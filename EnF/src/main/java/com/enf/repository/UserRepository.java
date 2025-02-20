@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Transactional
   @Query("UPDATE Users u SET u.lastLoginAt = CURRENT_TIMESTAMP WHERE u.providerId = :providerId")
   void updateLastLoginAtByProviderId(String providerId);
+ 
+  boolean existsByNickname(String nickname);
+
 }

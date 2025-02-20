@@ -1,8 +1,8 @@
 package com.enf.model.type;
 
 public enum RoleType {
-  DEVELOPER,
-  ADMIN,
-  YOUTH,   // 청년층
-  SENIOR;  // 시니어층
+  DEVELOPER,  // 개발자
+  ADMIN,      // 관리자
+  YOUTH,      // 청년층
+  SENIOR      // 장년층
 }
