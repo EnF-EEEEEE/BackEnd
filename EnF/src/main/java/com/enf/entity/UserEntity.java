@@ -1,12 +1,16 @@
 package com.enf.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity(name = "user")
 @AllArgsConstructor
@@ -19,19 +23,27 @@ public class UserEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userSeq;
 
-  private String email;
-
-  private String nickname;
-
-  private String age;
-
-  private String provider;
-
-  private String providerId;
+  @ManyToOne
+  @JoinColumn(name = "bird_seq")
+  private BirdEntity bird;
 
   @ManyToOne
   @JoinColumn(name = "role_seq")
   private RoleEntity role;
+
+  @ManyToOne
+  @JoinColumn(name = "category_seq")
+  private CategoryEntity category;
+
+  private String email;
+
+  private String nickname;
+
+  private int birth;
+
+  private String provider;
+
+  private String providerId;
 
   private LocalDateTime createAt;
 
