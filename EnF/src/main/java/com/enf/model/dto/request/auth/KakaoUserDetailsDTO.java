@@ -22,9 +22,6 @@ public class KakaoUserDetailsDTO {
   public String getEmail() {
     return (String) ((Map<?, ?>) attributes.get("kakao_account")).get("email");
   }
-  public String getBirthyear() {
-    return (String) ((Map<?, ?>) attributes.get("kakao_account")).get("birthyear");
-  }
 
   public String getNickname() {
     return (String) ((Map<?, ?>) attributes.get("properties")).get("nickname");
