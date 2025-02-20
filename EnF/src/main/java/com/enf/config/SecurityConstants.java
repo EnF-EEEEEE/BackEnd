@@ -8,8 +8,6 @@ public class SecurityConstants {
     public static final String[] swaggerUrls = {"/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"};
     //인증 없이 허용할 경로 리스트
     public static final String[] allowUrls = {
-//            "/login",
-//            "/auth/login/kakao/**",
             "/api/v1/auth/callback",    // kakao sns login redirect url
             "/api/v1/auth/kakao"
 
