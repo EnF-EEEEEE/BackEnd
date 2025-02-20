@@ -5,6 +5,7 @@ import com.enf.model.type.SuccessResultType;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+
 @Getter
 public class ResultResponse {
 
