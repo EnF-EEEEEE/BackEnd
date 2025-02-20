@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "user")
 @AllArgsConstructor
@@ -26,13 +26,15 @@ public class UserEntity {
 
   private String age;
 
+  private String provider;
+
   private String providerId;
 
   @Enumerated(EnumType.STRING)
   private RoleType role;
 
-  private LocalDate createAt;
+  private LocalDateTime createAt;
 
-  private LocalDate lastLoginAt;
+  private LocalDateTime lastLoginAt;
 
 }

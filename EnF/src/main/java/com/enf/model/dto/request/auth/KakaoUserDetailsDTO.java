@@ -1,6 +1,6 @@
 package com.enf.model.dto.request.auth;
 
-import com.enf.Entity.UserEntity;
+import com.enf.entity.UserEntity;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
