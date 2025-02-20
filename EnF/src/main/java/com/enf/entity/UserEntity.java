@@ -1,15 +1,14 @@
 package com.enf.entity;
 
-import com.enf.model.type.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-@Entity(name = "user")
+@Entity(name = "tb_user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -26,15 +25,14 @@ public class UserEntity {
 
   private String age;
 
-  private String provider;
-
   private String providerId;
 
-  @Enumerated(EnumType.STRING)
-  private RoleType role;
+  @ManyToOne
+  @JoinColumn(name = "role_seq")
+  private RoleEntity role;
 
-  private LocalDateTime createAt;
+  private LocalDate createAt;
 
-  private LocalDateTime lastLoginAt;
+  private LocalDate lastLoginAt;
 
 }
