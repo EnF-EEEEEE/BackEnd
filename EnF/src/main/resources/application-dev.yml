@@ -5,7 +5,8 @@ spring:
   jpa:
     hibernate:
       # 필요에 따라서 수정 필요
-      ddl-auto: create
+      ddl-auto: create-drop
+#      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

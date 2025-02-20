@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "tb_role")
+@Entity(name = "role")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
