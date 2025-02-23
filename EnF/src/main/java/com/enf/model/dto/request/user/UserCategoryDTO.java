@@ -55,4 +55,16 @@ public class UserCategoryDTO {
         .build();
   }
 
+  public static UserCategoryDTO of(CategoryEntity category) {
+    return new UserCategoryDTO(
+        category.isBusiness(),
+        category.isJob(),
+        category.isDating(),
+        category.isRelationship(),
+        category.isCareer(),
+        category.isLifestyle(),
+        category.isOther()
+    );
+  }
+
 }

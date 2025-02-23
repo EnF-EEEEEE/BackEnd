@@ -9,4 +9,6 @@ public interface UserService {
   ResultResponse checkNickname(String nickname);
 
   ResultResponse additionalInfo(HttpServletRequest request, AdditionalInfoDTO additionalInfoDTO);
+
+  ResultResponse userInfo(HttpServletRequest request);
 }

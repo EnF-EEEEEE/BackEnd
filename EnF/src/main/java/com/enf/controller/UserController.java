@@ -37,4 +37,12 @@ public class UserController {
     return new ResponseEntity<>(response, response.getStatus());
   }
 
+  @GetMapping("/info")
+  public ResponseEntity<ResultResponse> userInfo(HttpServletRequest request) {
+
+    ResultResponse response = userService.userInfo(request);
+
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
 }
