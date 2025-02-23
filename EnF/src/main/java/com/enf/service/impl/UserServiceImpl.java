@@ -9,6 +9,7 @@ import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
+import com.enf.model.dto.response.user.UserInfoDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.repository.BirdRepository;
@@ -71,6 +72,16 @@ public class UserServiceImpl implements UserService {
     userRepository.save(AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO);
+  }
+
+  @Override
+  public ResultResponse userInfo(HttpServletRequest request) {
+    UserEntity user = userRepository.findById(1L)
+        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+
+    UserInfoDTO userInfo = UserInfoDTO.of(user);
+
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, userInfo);
   }
 
   @Override

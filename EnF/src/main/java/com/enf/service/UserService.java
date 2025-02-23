@@ -12,6 +12,8 @@ public interface UserService {
 
   ResultResponse additionalInfo(HttpServletRequest request, AdditionalInfoDTO additionalInfoDTO);
 
+  ResultResponse userInfo(HttpServletRequest request);
+
   ResultResponse updateNickname(HttpServletRequest request, UpdateNicknameDTO nickname);
 
   ResultResponse updateCategory(HttpServletRequest request, UserCategoryDTO userCategory);
