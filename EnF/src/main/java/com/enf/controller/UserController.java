@@ -39,6 +39,14 @@ public class UserController {
     return new ResponseEntity<>(response, response.getStatus());
   }
 
+  @GetMapping("/info")
+  public ResponseEntity<ResultResponse> userInfo(HttpServletRequest request) {
+
+    ResultResponse response = userService.userInfo(request);
+
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
   @PostMapping("/update/nickname")
   public ResponseEntity<ResultResponse> updateNickname(
       HttpServletRequest request,
@@ -55,14 +63,6 @@ public class UserController {
       @RequestBody UserCategoryDTO userCategory) {
 
     ResultResponse response = userService.updateCategory(request, userCategory);
-
-    return new ResponseEntity<>(response, response.getStatus());
-  }
-
-  @GetMapping("/info")
-  public ResponseEntity<ResultResponse> userInfo(HttpServletRequest request) {
-
-    ResultResponse response = userService.userInfo(request);
 
     return new ResponseEntity<>(response, response.getStatus());
   }
