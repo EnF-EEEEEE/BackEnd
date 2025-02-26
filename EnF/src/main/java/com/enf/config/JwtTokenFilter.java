@@ -98,5 +98,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean isExcludedPath(String requestURI) {
-        return requestURI.equals("/") || requestURI.equals("/login") || requestURI.equals("/api/v1/user/signup"); }
+        return requestURI.equals("/")
+            || requestURI.equals("/api/v1/auth/callback")
+            || requestURI.equals("/api/v1/auth/kakao")
+            || requestURI.equals("/api/v1/auth/reissue-token");
+    }
 }
