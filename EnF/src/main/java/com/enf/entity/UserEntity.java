@@ -35,8 +35,6 @@ public class UserEntity {
 
   private String nickname;
 
-  private int birth;
-
   private String provider;
 
   private String providerId;
