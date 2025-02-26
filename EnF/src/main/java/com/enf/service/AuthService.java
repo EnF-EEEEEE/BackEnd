@@ -10,7 +10,5 @@ public interface AuthService {
 
   ResultResponse oAuthForKakao(HttpServletResponse response, String code);
 
-  String loginTokenGenerator(ResultResponse resultResponse);
-
   UserDetails loadUserById(Long userSeq) throws UsernameNotFoundException;
 }
