@@ -39,7 +39,7 @@ public class SecurityConfig {
                 authorizeRequests -> authorizeRequests
                                 .requestMatchers(SecurityConstants.allowedUrls).permitAll()  // 허용 URL 설정
                                 .requestMatchers(SecurityConstants.adminUrls).hasAnyAuthority("ADMIN","DEVELOPER") // 관리자만 접근 가능
-                                .requestMatchers(SecurityConstants.userUrls).hasAnyAuthority("UNKNOWN","JUNIOR","SENIOR","ADMIN","DEVELOPER") // 주니어 사용자 접근 가능
+                                .requestMatchers(SecurityConstants.userUrls).hasAnyAuthority("UNKNOWN","MENTEE","MENTOR","ADMIN","DEVELOPER") // 주니어 사용자 접근 가능
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenFilter(tokenProvider,jwtUtil), UsernamePasswordAuthenticationFilter.class);
