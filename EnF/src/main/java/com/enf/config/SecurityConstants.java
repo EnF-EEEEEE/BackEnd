@@ -13,7 +13,17 @@ public class SecurityConstants {
 
     };
 
+    public static final String[] adminUrls = {
+
+    };
+
+    public static final String[] userUrls = {
+            "/api/v1/user/check-nickname",
+            "/api/v1/user/additional-info",
+    };
+
     // 허용 Urls
     public static String[] allowedUrls = Stream.concat(Arrays.stream(swaggerUrls), Arrays.stream(allowUrls))
             .toArray(String[]::new);
+
 }
