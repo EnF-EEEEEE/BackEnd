@@ -22,8 +22,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   // check : 아직 querydsl 설정을 넣기 전이라 일단은 jpql을 사용하였음, 추후 변경 필요
   @Modifying
   @Transactional
-  @Query("UPDATE user u SET u.lastLoginAt = CURRENT_TIMESTAMP WHERE u.providerId = :providerId")
-  void updateLastLoginAtByProviderId(String providerId);
+  @Query("UPDATE user u SET u.lastLoginAt = CURRENT_TIMESTAMP WHERE u.userSeq = :userSeq")
+  void updateLastLoginAtByUserSeq(Long userSeq);
  
   boolean existsByNickname(String nickname);
 
