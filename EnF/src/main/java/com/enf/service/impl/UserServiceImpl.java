@@ -1,23 +1,20 @@
 package com.enf.service.impl;
 
+import com.enf.component.facade.UserFacade;
 import com.enf.entity.BirdEntity;
 import com.enf.entity.CategoryEntity;
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
-import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.user.UserInfoDTO;
-import com.enf.model.type.FailedResultType;
 import com.enf.model.type.SuccessResultType;
-import com.enf.repository.BirdRepository;
-import com.enf.repository.CategoryRepository;
-import com.enf.repository.RoleRepository;
-import com.enf.repository.UserRepository;
+import com.enf.model.type.TokenType;
 import com.enf.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,82 +24,80 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-  private final UserRepository userRepository;
-  private final BirdRepository birdRepository;
-  private final RoleRepository roleRepository;
-  private final CategoryRepository categoryRepository;
+  private final UserFacade userFacade;
 
   /**
-   * 회원가입 or 회원정보 수정시 닉네임 중복 검증을 위한 메서드
+   * 닉네임 중복 확인
    *
-   * @param nickname 클라이언트 측으로 부터 전달 받은 nickname 값
-   *
-   * @return {@link ResultResponse}
-   * - 중복인 닉네임인 경우 ture
-   * - 사용가능 닉네임인 경우 false
+   * @param nickname 클라이언트가 입력한 닉네임
+   * @return 중복 여부를 포함한 응답 객체
    */
   @Override
   public ResultResponse checkNickname(String nickname) {
-
-    if (userRepository.existsByNickname(nickname)) {
-      log.info("{} : 중복된 닉네임", nickname);
-      return new ResultResponse(SuccessResultType.SUCCESS_CHECK_NICKNAME, true);
-    }
-
-    log.info("{} : 사용가능한 닉네임", nickname);
-    return new ResultResponse(SuccessResultType.SUCCESS_CHECK_NICKNAME, false);
+    boolean isDuplicate = userFacade.existsByNickname(nickname);
+    log.info("{} : {}", nickname, isDuplicate ? "중복된 닉네임" : "사용가능한 닉네임");
+    return new ResultResponse(SuccessResultType.SUCCESS_CHECK_NICKNAME, isDuplicate);
   }
 
+  /**
+   * 추가 사용자 정보 입력
+   *
+   * @param request           HTTP 요청 객체
+   * @param response          HTTP 응답 객체
+   * @param additionalInfoDTO 사용자 추가 정보 DTO
+   * @return 추가 정보 저장 결과 응답 객체
+   */
   @Override
-  public ResultResponse additionalInfo(HttpServletRequest request,
-      AdditionalInfoDTO additionalInfoDTO) {
+  public ResultResponse additionalInfo(HttpServletRequest request, HttpServletResponse response, AdditionalInfoDTO additionalInfoDTO) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    BirdEntity bird = userFacade.findBirdByBirdName(additionalInfoDTO.getBirdName());
+    RoleEntity role = userFacade.findRoleByRoleName(additionalInfoDTO.getUserRole());
+    CategoryEntity category = userFacade.saveCategory(role, additionalInfoDTO.getUserCategory());
 
-    // 사용자 정보 추출, 추후 Jwt 토큰 로직 구현 후 수정할 예정
-    UserEntity user = userRepository.findById(1L)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
-
-    BirdEntity bird = birdRepository.findByBirdName(additionalInfoDTO.getBirdName());
-
-    RoleEntity role = roleRepository.findByRoleName(additionalInfoDTO.getAgeGroup())
-            .orElseThrow(()-> new GlobalException(FailedResultType.ROLE_NOT_FOUND));
-
-    CategoryEntity category = role.getRoleName().equals("senior")
-        ? categoryRepository.save(UserCategoryDTO.of(additionalInfoDTO.getUserCategory()))
-        : null;
-
-    userRepository.save(AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO));
+    userFacade.saveUser(AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO));
+    userFacade.generateAndSetToken(user, response);
 
     return ResultResponse.of(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO);
   }
 
+  /**
+   * 사용자 정보 조회
+   *
+   * @param request HTTP 요청 객체
+   * @return 사용자 정보 DTO를 포함한 응답 객체
+   */
   @Override
   public ResultResponse userInfo(HttpServletRequest request) {
-    UserEntity user = userRepository.findById(1L)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
-
-    UserInfoDTO userInfo = UserInfoDTO.of(user);
-
-    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, userInfo);
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, UserInfoDTO.of(user));
   }
 
+  /**
+   * 닉네임 수정
+   *
+   * @param request  HTTP 요청 객체
+   * @param nickname 변경할 닉네임 DTO
+   * @return 닉네임 변경 결과 응답 객체
+   */
   @Override
   public ResultResponse updateNickname(HttpServletRequest request, UpdateNicknameDTO nickname) {
-    UserEntity user = userRepository.findById(1L)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
-
-    userRepository.updateNicknameByUserSeq(user.getUserSeq(), nickname.getNickname());
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    userFacade.updateNicknameByUserSeq(user.getUserSeq(), nickname.getNickname());
 
     return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_NICKNAME);
   }
 
+  /**
+   * 사용자 카테고리 수정
+   *
+   * @param request      HTTP 요청 객체
+   * @param userCategory 변경할 카테고리 정보 DTO
+   * @return 카테고리 변경 결과 응답 객체
+   */
   @Override
   public ResultResponse updateCategory(HttpServletRequest request, UserCategoryDTO userCategory) {
-    UserEntity user = userRepository.findById(1L)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
-
-    CategoryEntity category = UserCategoryDTO.of(userCategory);
-
-    userRepository.updateCategoryByUserSeq(user.getUserSeq(), category);
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    userFacade.updateCategory(user.getUserSeq(), UserCategoryDTO.of(userCategory));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_CATEGORY);
   }
