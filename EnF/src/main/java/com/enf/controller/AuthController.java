@@ -2,6 +2,8 @@ package com.enf.controller;
 
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,9 @@ public class AuthController {
    * @param code 카카오 인가 코드 DTO
    */
   @GetMapping("/kakao")
-  public ResponseEntity<ResultResponse> oAuthForKakao(@RequestParam("code") String code) {
-    ResultResponse resultResponse = authService.oAuthForKakao(code);
+  public ResponseEntity<ResultResponse> oAuthForKakao(HttpServletResponse response, @RequestParam("code") String code) {
+    ResultResponse resultResponse = authService.oAuthForKakao(response,code);
+
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 
@@ -38,5 +41,12 @@ public class AuthController {
   public String redirectForSNSLogin(@RequestParam("code") String code) {
     log.info("code {} ", code);
     return code;
+  }
+
+
+  @GetMapping("/reissue-token")
+  public ResponseEntity<ResultResponse> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+    ResultResponse resultResponse = authService.reissueToken(request, response);
+    return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 }

@@ -63,7 +63,8 @@ public class UserServiceImpl implements UserService {
 
     BirdEntity bird = birdRepository.findByBirdName(additionalInfoDTO.getBirdName());
 
-    RoleEntity role = roleRepository.findByRoleName(additionalInfoDTO.getAgeGroup());
+    RoleEntity role = roleRepository.findByRoleName(additionalInfoDTO.getAgeGroup())
+            .orElseThrow(()-> new GlobalException(FailedResultType.ROLE_NOT_FOUND));
 
     CategoryEntity category = role.getRoleName().equals("senior")
         ? categoryRepository.save(UserCategoryDTO.of(additionalInfoDTO.getUserCategory()))

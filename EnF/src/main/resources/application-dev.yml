@@ -5,7 +5,7 @@ spring:
   jpa:
     hibernate:
       # 필요에 따라서 수정 필요
-      ddl-auto: create-drop
+      ddl-auto: update
 #      ddl-auto: update
     show-sql: true
     properties:
@@ -46,3 +46,8 @@ spring:
               - ${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.scope[1]}
       kakao:
         admin-key: ${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.admin-key}
+
+jwt:
+  secret: ${DEV.jwt.secret}
+  access-token-validity: ${DEV.jwt.access-token-validity}
+  refresh-token-validity: ${DEV.jwt.refresh-token-validity}
