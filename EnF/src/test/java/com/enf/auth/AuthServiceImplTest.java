@@ -1,7 +1,6 @@
 package com.enf.auth;
 
 import com.enf.component.KakaoAuthHandler;
-import com.enf.component.UserAccessHandler;
 import com.enf.component.token.TokenProvider;
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
@@ -45,9 +44,6 @@ public class AuthServiceImplTest {
     private RoleRepository roleRepository;
 
     @Mock
-    private UserAccessHandler userAccessHandler;
-
-    @Mock
     private HttpServletResponse response;
 
 
@@ -67,7 +63,6 @@ public class AuthServiceImplTest {
     private static final String KAKAO_PROVIDER_ID = "kakao_provider_id";
     private static final String ACCESS_TOKEN = "access_token";
     private static final String REFRESH_TOKEN = "refresh_token";
-    private static final String NEW_ACCESS_TOKEN = "new_access_token";
     private static final String USER_ROLE = "USER";
     private RoleEntity roleEntity;
 

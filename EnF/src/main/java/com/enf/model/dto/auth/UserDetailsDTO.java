@@ -17,12 +17,7 @@ public class UserDetailsDTO implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return userEntity.getRole().getRoleName();
-            }
-        });
+        collection.add((GrantedAuthority) () -> userEntity.getRole().getRoleName());
 
         return collection;
     }
