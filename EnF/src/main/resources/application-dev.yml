@@ -52,3 +52,8 @@ spring:
               - ${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.scope[1]}
       kakao:
         admin-key: ${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.admin-key}
+
+jwt:
+  secret: ${DEV.jwt.secret}
+  access-token-validity: ${DEV.jwt.access-token-validity}
+  refresh-token-validity: ${DEV.jwt.refresh-token-validity}
