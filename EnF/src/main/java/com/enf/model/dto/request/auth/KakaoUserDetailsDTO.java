@@ -1,5 +1,6 @@
 package com.enf.model.dto.request.auth;
 
+import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import lombok.AllArgsConstructor;
 
@@ -27,7 +28,7 @@ public class KakaoUserDetailsDTO {
     return (String) ((Map<?, ?>) attributes.get("properties")).get("nickname");
   }
 
-  public static UserEntity of(KakaoUserDetailsDTO userInfo) {
+  public static UserEntity of(KakaoUserDetailsDTO userInfo, RoleEntity role) {
     LocalDateTime now = LocalDateTime.now();
     return UserEntity.builder()
             .email(userInfo.getEmail())
@@ -36,6 +37,7 @@ public class KakaoUserDetailsDTO {
             .provider(userInfo.getProvider())
             .createAt(now)
             .lastLoginAt(now)
+            .role(role)
             .build();
   }
 }
