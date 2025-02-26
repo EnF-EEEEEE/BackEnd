@@ -21,9 +21,9 @@ public class TokenProvider {
     private final long refreshTokenValidity;
 
     public TokenProvider(
-            @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.access-token-validity}") long accessTokenValidity,
-            @Value("${jwt.refresh-token-validity}") long refreshTokenValidity) {
+            @Value("${spring.jwt.secret}") String secretKey,
+            @Value("${spring.jwt.access-token-validity}") long accessTokenValidity,
+            @Value("${spring.jwt.refresh-token-validity}") long refreshTokenValidity) {
 
         // Base64 디코딩 후 Key 생성
         this.key = createKeyFromSecret(secretKey);
@@ -67,6 +67,9 @@ public class TokenProvider {
 
     // JWT 검증 및 파싱
     public Long getUserSeqFromToken(String token) {
+        if(token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -76,6 +79,9 @@ public class TokenProvider {
     }
 
     public String getUserRoleFromToken(String token) {
+        if(token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
