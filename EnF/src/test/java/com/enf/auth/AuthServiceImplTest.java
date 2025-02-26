@@ -52,7 +52,6 @@ public class AuthServiceImplTest {
 
     private KakaoUserDetailsDTO kakaoUserDetails;
     private UserEntity saveUser;
-    private UserEntity user;
 
     private static final Long USERSEQ = 1L;
     private static final String EMAIL = "test@email.com";

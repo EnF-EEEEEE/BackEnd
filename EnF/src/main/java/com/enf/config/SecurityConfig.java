@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final TokenProvider tokenProvider;
     private final JwtUtil jwtUtil;
 
     @Bean
