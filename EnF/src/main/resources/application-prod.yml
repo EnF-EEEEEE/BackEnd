@@ -2,6 +2,12 @@ spring:
   config:
     import: classpath:secret.yml
 
+  data:
+    redis:
+      port: ${PROD.REDIS.PORT}
+      host: ${PROD.REDIS.HOST}
+      timeout: ${PROD.REDIS.TIMEOUT}
+
   jpa:
     hibernate:
       # 필요에 따라서 수정 필요
