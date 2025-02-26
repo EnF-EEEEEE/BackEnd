@@ -6,8 +6,10 @@ import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
+import com.enf.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
+import com.enf.model.dto.response.user.UserInfoDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.repository.BirdRepository;
@@ -71,5 +73,37 @@ public class UserServiceImpl implements UserService {
     userRepository.save(AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO);
+  }
+
+  @Override
+  public ResultResponse userInfo(HttpServletRequest request) {
+    UserEntity user = userRepository.findById(1L)
+        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+
+    UserInfoDTO userInfo = UserInfoDTO.of(user);
+
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, userInfo);
+  }
+
+  @Override
+  public ResultResponse updateNickname(HttpServletRequest request, UpdateNicknameDTO nickname) {
+    UserEntity user = userRepository.findById(1L)
+        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+
+    userRepository.updateNicknameByUserSeq(user.getUserSeq(), nickname.getNickname());
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_NICKNAME);
+  }
+
+  @Override
+  public ResultResponse updateCategory(HttpServletRequest request, UserCategoryDTO userCategory) {
+    UserEntity user = userRepository.findById(1L)
+        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+
+    CategoryEntity category = UserCategoryDTO.of(userCategory);
+
+    userRepository.updateCategoryByUserSeq(user.getUserSeq(), category);
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_CATEGORY);
   }
 }

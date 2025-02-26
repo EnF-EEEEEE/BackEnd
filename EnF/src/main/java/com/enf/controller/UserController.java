@@ -1,6 +1,8 @@
 package com.enf.controller;
 
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
+import com.enf.model.dto.request.user.UpdateNicknameDTO;
+import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +35,34 @@ public class UserController {
       HttpServletRequest request, @RequestBody AdditionalInfoDTO additionalInfoDTO) {
 
     ResultResponse response = userService.additionalInfo(request, additionalInfoDTO);
+
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  @GetMapping("/info")
+  public ResponseEntity<ResultResponse> userInfo(HttpServletRequest request) {
+
+    ResultResponse response = userService.userInfo(request);
+
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  @PostMapping("/update/nickname")
+  public ResponseEntity<ResultResponse> updateNickname(
+      HttpServletRequest request,
+      @RequestBody UpdateNicknameDTO nickname) {
+
+    ResultResponse response = userService.updateNickname(request, nickname);
+
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  @PostMapping("/update/category")
+  public ResponseEntity<ResultResponse> updateCategory(
+      HttpServletRequest request,
+      @RequestBody UserCategoryDTO userCategory) {
+
+    ResultResponse response = userService.updateCategory(request, userCategory);
 
     return new ResponseEntity<>(response, response.getStatus());
   }

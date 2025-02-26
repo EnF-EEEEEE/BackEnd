@@ -1,5 +1,6 @@
 package com.enf.repository;
 
+import com.enf.entity.CategoryEntity;
 import com.enf.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,16 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Transactional
   @Query("UPDATE user u SET u.refreshToken = :refreshToken WHERE u.userSeq = :userSeq")
   void updateRefreshToken(@Param("userSeq") Long userSeq, @Param("refreshToken") String refreshToken);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE user u set u.nickname = :nickname WHERE u.userSeq = :userSeq")
+  void updateNicknameByUserSeq(Long userSeq, String nickname);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE user u set u.category = :category WHERE u.userSeq = :userSeq")
+  void updateCategoryByUserSeq(Long userSeq, CategoryEntity category);
+
+
 }
