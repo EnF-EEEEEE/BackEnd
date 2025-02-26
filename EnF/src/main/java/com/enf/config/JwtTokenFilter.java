@@ -3,6 +3,7 @@ package com.enf.config;
 import com.enf.component.token.JwtUtil;
 import com.enf.component.token.TokenProvider;
 import com.enf.model.type.ConstantsType;
+import com.enf.model.type.TokenType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -87,7 +88,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("access");
+        String bearerToken = request.getHeader(TokenType.ACCESS.getValue());
         log.info("bearerToken: {}", bearerToken);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
