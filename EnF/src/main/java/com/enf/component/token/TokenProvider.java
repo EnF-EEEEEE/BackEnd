@@ -1,5 +1,6 @@
 package com.enf.component.token;
 
+import com.enf.model.dto.auth.AuthTokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,15 @@ public class TokenProvider {
     private Key createKeyFromSecret(String secretKey) {
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);  // Base64 디코딩
         return Keys.hmacShaKeyFor(decodedKey);  // Secret Key 생성
+    }
+
+    public AuthTokenDTO generateAuthToken(Long userSeq, String role) {
+        String accessToken = generateAccessToken(userSeq,role);
+        String refreshToken = generateRefreshToken(userSeq,role);
+        return AuthTokenDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     // Access Token 생성

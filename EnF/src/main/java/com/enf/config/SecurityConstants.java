@@ -9,7 +9,8 @@ public class SecurityConstants {
     //인증 없이 허용할 경로 리스트
     public static final String[] allowUrls = {
             "/api/v1/auth/callback",    // kakao sns login redirect url
-            "/api/v1/auth/kakao"
+            "/api/v1/auth/kakao",
+            "/api/v1/auth/reissue-token",
 
     };
 
