@@ -50,7 +50,7 @@ spring:
       kakao:
         admin-key: ${PROD.AUTH.OAUTH.REGISTRATION.KAKAO.admin-key}
 
-jwt:
-  secret: ${PROD.jwt.secret}
-  access-token-validity: ${PROD.jwt.access-token-validity}
-  refresh-token-validity: ${PROD.jwt.refresh-token-validity}
+  jwt:
+    secret: ${PROD.jwt.secret}
+    access-token-validity: ${PROD.jwt.access-token-validity}
+    refresh-token-validity: ${PROD.jwt.refresh-token-validity}
