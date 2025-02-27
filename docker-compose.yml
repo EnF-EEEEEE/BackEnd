@@ -53,6 +53,15 @@ services:
     networks:
       - enf-network
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - enf-network
+    restart: on-failure
+
 volumes:
   enf_data:
 
