@@ -7,7 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
 //Test URL : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=962b24a09f42380d01cc640c02a3b71d&redirect_uri=http://localhost:8080/api/v1/auth/callback

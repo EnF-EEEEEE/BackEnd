@@ -2,10 +2,9 @@ package com.enf.model.dto.request.auth;
 
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
-import lombok.AllArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class KakaoUserDetailsDTO {

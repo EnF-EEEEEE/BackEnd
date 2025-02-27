@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -21,12 +20,11 @@ public class NotificationController {
    * 실시간 알림을 위한 SSE 구독 API
    *
    * @param request HTTP 요청 객체
-   * @param userId  구독할 사용자 ID
    * @return SseEmitter 객체 반환
    */
   @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter subscribe(HttpServletRequest request, @RequestParam Long userId) {
-    return notificationService.createEmitter(request, userId);
+  public SseEmitter subscribe(HttpServletRequest request) {
+    return notificationService.createEmitter(request);
   }
 
 }

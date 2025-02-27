@@ -6,5 +6,5 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 public interface NotificationService extends MessageListener {
 
-  SseEmitter createEmitter(HttpServletRequest request, Long userId);
+  SseEmitter createEmitter(HttpServletRequest request);
 }

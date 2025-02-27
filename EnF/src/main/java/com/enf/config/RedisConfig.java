@@ -2,7 +2,6 @@ package com.enf.config;
 
 import static java.time.Duration.ofMillis;
 
-import com.enf.service.impl.NotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +13,6 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -25,7 +21,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-  private final NotificationServiceImpl notificationService;
 
   @Value("${spring.data.redis.host}")
   private String host;
@@ -81,22 +76,5 @@ public class RedisConfig {
     return RedisCacheManager.builder(redisConnectionFactory)
         .cacheDefaults(redisCacheConfiguration)
         .build();
-  }
-
-
-
-  @Bean
-  public MessageListenerAdapter messageListener() {
-    return new MessageListenerAdapter(notificationService);
-  }
-
-
-  //컨테이너 설정
-  @Bean
-  RedisMessageListenerContainer redisContainer() {
-    RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-    container.setConnectionFactory(redisConnectionFactory());
-    container.addMessageListener(messageListener(), new ChannelTopic("notifications"));
-    return container;
   }
 }

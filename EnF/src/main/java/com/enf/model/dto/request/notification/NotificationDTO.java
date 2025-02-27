@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NotificationDTO {
 
-  private Long userId;
+  private Long userSeq;
   private String message;
 
 }

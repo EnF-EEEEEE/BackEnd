@@ -1,16 +1,14 @@
 package com.enf.service.impl;
 
-import com.enf.entity.BirdEntity;
+import com.enf.component.facade.UserFacade;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.UserEntity;
-import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.notification.NotificationDTO;
 import com.enf.model.dto.response.ResultResponse;
-import com.enf.model.type.FailedResultType;
 import com.enf.model.type.SuccessResultType;
+import com.enf.model.type.TokenType;
 import com.enf.repository.LetterRepository;
-import com.enf.repository.UserRepository;
 import com.enf.repository.querydsl.UserQueryRepository;
 import com.enf.service.LetterService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,15 +21,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LetterServiceImpl implements LetterService {
 
-  private final UserRepository userRepository;
+  private final UserFacade userFacade;
   private final UserQueryRepository userQueryRepository;
   private final LetterRepository letterRepository;
   private final RedisTemplate<String, Object> redisTemplate;
 
   @Override
   public ResultResponse sendLetter(HttpServletRequest request, SendLetterDTO sendLetter) {
-    UserEntity sendUser = userRepository.findById(1L)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+    UserEntity sendUser = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
 
     UserEntity receiveUser = userQueryRepository
         .getSendUser(sendLetter.getBirdName(), sendLetter.getCategoryName());
