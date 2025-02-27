@@ -8,63 +8,67 @@ import lombok.Getter;
 @Getter
 public class UserCategoryDTO {
 
-  @JsonProperty("business")
-  private boolean business;      // 금전/사업
+  @JsonProperty("career")
+  private boolean career;            // 커리어
 
-  @JsonProperty("job")
-  private boolean job;           // 직장/이직
-
-  @JsonProperty("dating")
-  private boolean dating;        // 연애상담
+  @JsonProperty("mental")
+  private boolean mental;            // 마음건강
 
   @JsonProperty("relationship")
-  private boolean relationship;  // 대인관계
+  private boolean relationship;      // 대인관계
 
-  @JsonProperty("career")
-  private boolean career;        // 취업/진로
+  @JsonProperty("love")
+  private boolean love;              // 사랑
 
-  @JsonProperty("lifestyle")
-  private boolean lifestyle;     // 일상생활
+  @JsonProperty("life")
+  private boolean life;              // 삶의 방향/가치관
+
+  @JsonProperty("finance")
+  private boolean finance;           // 자산관리
+
+  @JsonProperty("housing")
+  private boolean housing;           // 주거/독립
 
   @JsonProperty("other")
-  private boolean other;          // 기타
+  private boolean other;              // 기타
 
   @JsonCreator
-  public UserCategoryDTO(boolean business, boolean job, boolean dating,
-      boolean relationship, boolean career, boolean lifestyle, boolean other) {
-
-    this.business = business;
-    this.job = job;
-    this.dating = dating;
-    this.relationship = relationship;
+  public UserCategoryDTO(boolean career, boolean mental, boolean relationship,
+      boolean love, boolean life, boolean finance, boolean housing, boolean other) {
     this.career = career;
-    this.lifestyle = lifestyle;
+    this.mental = mental;
+    this.relationship = relationship;
+    this.love = love;
+    this.life = life;
+    this.finance = finance;
+    this.housing = housing;
     this.other = other;
   }
 
 
   public static CategoryEntity of(UserCategoryDTO userCategoryDTO) {
     return CategoryEntity.builder()
-        .business(userCategoryDTO.isBusiness())
-        .job(userCategoryDTO.isJob())
-        .dating(userCategoryDTO.isDating())
-        .relationship(userCategoryDTO.isRelationship())
         .career(userCategoryDTO.isCareer())
-        .lifestyle(userCategoryDTO.isLifestyle())
+        .mental(userCategoryDTO.isMental())
+        .relationship(userCategoryDTO.isRelationship())
+        .love(userCategoryDTO.isLove())
+        .life(userCategoryDTO.isLife())
+        .finance(userCategoryDTO.isFinance())
+        .housing(userCategoryDTO.isHousing())
         .other(userCategoryDTO.isOther())
         .build();
   }
 
   public static UserCategoryDTO of(CategoryEntity category) {
     return new UserCategoryDTO(
-        category.isBusiness(),
-        category.isJob(),
-        category.isDating(),
-        category.isRelationship(),
         category.isCareer(),
-        category.isLifestyle(),
+        category.isMental(),
+        category.isRelationship(),
+        category.isLove(),
+        category.isLife(),
+        category.isFinance(),
+        category.isHousing(),
         category.isOther()
     );
   }
-
 }

@@ -17,23 +17,19 @@ public class AdditionalInfoDTO {
   @JsonProperty("nickname")
   private String nickname;
 
-  @JsonProperty("birth")
-  private int birth;
-
-  @JsonProperty("ageGroup")
-  private String ageGroup;
+  @JsonProperty("userRole")
+  private String userRole;
 
   @JsonProperty("userCategory")
   private UserCategoryDTO userCategory;
 
   @JsonCreator
   public AdditionalInfoDTO(String birdName, String nickname,
-      int birth, String ageGroup, UserCategoryDTO userCategory) {
+      String userRole,  UserCategoryDTO userCategory) {
 
     this.birdName = birdName;
     this.nickname = nickname;
-    this.birth = birth;
-    this.ageGroup = ageGroup;
+    this.userRole = userRole;
     this.userCategory = userCategory;
   }
 
@@ -48,7 +44,6 @@ public class AdditionalInfoDTO {
         .category(category)
         .email(user.getEmail())
         .nickname(additionalInfoDTO.getNickname())
-        .birth(additionalInfoDTO.getBirth())
         .provider(user.getProvider())
         .providerId(user.getProviderId())
         .createAt(user.getCreateAt())

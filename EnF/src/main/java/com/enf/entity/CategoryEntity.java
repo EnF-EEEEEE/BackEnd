@@ -20,17 +20,19 @@ public class CategoryEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long categorySeq;
 
-  private boolean business;      // 금전/사업
+  private boolean career;           // 커리어
 
-  private boolean job;           // 직장/이직
+  private boolean mental;           // 마음건강
 
-  private boolean dating;        // 연애상담
+  private boolean relationship;     // 대인관계
 
-  private boolean relationship;  // 대인관계
+  private boolean love;             // 사랑
 
-  private boolean career;        // 취업/진로
+  private boolean life;             // 삶의 방향/가치관
 
-  private boolean lifestyle;     // 일상생활
+  private boolean finance;          // 자산관리
 
-  private boolean other;          // 기타
+  private boolean housing;          // 주거/독립
+
+  private boolean other;            // 기타
 }

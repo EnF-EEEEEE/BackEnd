@@ -12,41 +12,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "user")
+@Entity(name = "letter")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
-public class UserEntity {
+public class LetterEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userSeq;
+  private Long letterSeq;
 
   @ManyToOne
-  @JoinColumn(name = "bird_seq")
-  private BirdEntity bird;
+  @JoinColumn(name = "send_user_seq")
+  private UserEntity sendUser;
 
   @ManyToOne
-  @JoinColumn(name = "role_seq")
-  private RoleEntity role;
+  @JoinColumn(name = "receive_user_seq")
+  private UserEntity receiveUser;
 
-  @ManyToOne
-  @JoinColumn(name = "category_seq")
-  private CategoryEntity category;
+  private String categoryName;
 
-  private String email;
+  private String letterTitle;
 
-  private String nickname;
-
-  private String provider;
-
-  private String providerId;
+  private String letter;
 
   private LocalDateTime createAt;
-
-  private LocalDateTime lastLoginAt;
-
-  private String refreshToken;
-
 }

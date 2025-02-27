@@ -1,12 +1,11 @@
 package com.enf.model.dto.auth;
 
 import com.enf.entity.UserEntity;
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 @RequiredArgsConstructor
 public class UserDetailsDTO implements UserDetails {

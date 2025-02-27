@@ -21,6 +21,7 @@ public class SecurityConstants {
     public static final String[] userUrls = {
             "/api/v1/user/check-nickname",
             "/api/v1/user/additional-info",
+            "/api/v1/letter/send",
     };
 
     // 허용 Urls

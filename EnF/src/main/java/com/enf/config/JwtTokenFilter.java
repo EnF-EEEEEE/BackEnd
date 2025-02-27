@@ -3,11 +3,14 @@ package com.enf.config;
 import com.enf.component.token.JwtUtil;
 import com.enf.component.token.TokenProvider;
 import com.enf.model.type.ConstantsType;
+import com.enf.model.type.TokenType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -15,9 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -87,7 +87,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("access");
+        String bearerToken = request.getHeader(TokenType.ACCESS.getValue());
         log.info("bearerToken: {}", bearerToken);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
@@ -98,5 +98,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean isExcludedPath(String requestURI) {
-        return requestURI.equals("/") || requestURI.equals("/login") || requestURI.equals("/api/v1/user/signup"); }
+        return requestURI.equals("/")
+            || requestURI.equals("/api/v1/auth/callback")
+            || requestURI.equals("/api/v1/auth/kakao")
+            || requestURI.equals("/api/v1/auth/reissue-token");
+    }
 }
