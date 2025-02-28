@@ -1,9 +1,11 @@
 package com.enf.repository.querydsl;
 
+import com.enf.entity.QQuotaEntity;
 import com.enf.entity.QUserEntity;
 import com.enf.entity.UserEntity;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +17,8 @@ import org.springframework.stereotype.Repository;
 public class UserQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-  private final QUserEntity user = QUserEntity.userEntity;
+  QUserEntity user = QUserEntity.userEntity;
+  QQuotaEntity quota = QQuotaEntity.quotaEntity;
 
   /**
    * 특정 조건에 맞는 사용자 조회
@@ -25,16 +28,18 @@ public class UserQueryRepository {
    * @return 조건에 맞는 사용자 엔티티
    */
   public UserEntity getSendUser(String birdName, String categoryName) {
+
     // 1순위: 새 유형과 카테고리가 모두 일치하는 사용자
-    UserEntity result = fetchUser(user.bird.birdName.eq(birdName), getCategoryPredicate(user, categoryName));
-    if (result != null) return result;
-
     // 2순위: 카테고리만 일치하는 사용자
-    result = fetchUser(getCategoryPredicate(user, categoryName));
-    if (result != null) return result;
-
     // 3순위: 새 유형만 일치하는 사용자
-    return fetchUser(user.bird.birdName.eq(birdName));
+    // 4순위: 추가 예정
+    // 5순위: 랜덤
+    // 6순위: 관리자
+
+    return fetchUser(user.bird.birdName.eq(birdName), getCategoryPredicate(user, categoryName), getQuotaPredicate(quota))
+        .or(() -> fetchUser(getCategoryPredicate(user, categoryName), getQuotaPredicate(quota)))
+        .or(() -> fetchUser(user.bird.birdName.eq(birdName), getQuotaPredicate(quota)))
+        .orElse(randomUser(getQuotaPredicate(quota)));
   }
 
   /**
@@ -43,11 +48,29 @@ public class UserQueryRepository {
    * @param conditions BooleanExpression (검색 조건)
    * @return 조건에 맞는 첫 번째 사용자 엔티티 또는 null
    */
-  private UserEntity fetchUser(BooleanExpression... conditions) {
+  private Optional<UserEntity> fetchUser(BooleanExpression... conditions) {
+
+    return Optional.ofNullable(
+        jpaQueryFactory
+            .selectFrom(user)
+            .join(quota).on(user.userSeq.eq(quota.user.userSeq))
+            .where(user.role.roleName.eq("MENTOR"))
+            .where(conditions)
+            .orderBy(quota.quota.desc())
+            .fetchFirst()
+    );
+  }
+
+  private UserEntity randomUser(BooleanExpression... conditions) {
+
     return jpaQueryFactory
-        .selectFrom(user)
-        .where(conditions)
-        .fetchFirst();
+            .selectFrom(user)
+            .join(quota).on(user.userSeq.eq(quota.user.userSeq))
+            .where(user.role.roleName.eq("MENTOR"))
+            .where(conditions)
+            .orderBy(quota.quota.desc())
+            .fetchFirst();
+
   }
 
   /**
@@ -71,5 +94,12 @@ public class UserQueryRepository {
       case "other" -> user.category.other.isTrue();
       default -> null;
     };
+  }
+
+  /**
+   * Quota 조건 반환
+   */
+  private BooleanExpression getQuotaPredicate(QQuotaEntity quota) {
+    return quota.quota.goe(1); // quota >= 1 조건 추가
   }
 }

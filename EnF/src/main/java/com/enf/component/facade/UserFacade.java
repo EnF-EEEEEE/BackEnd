@@ -4,17 +4,21 @@ import com.enf.component.token.HttpCookieUtil;
 import com.enf.component.token.TokenProvider;
 import com.enf.entity.BirdEntity;
 import com.enf.entity.CategoryEntity;
+import com.enf.entity.QuotaEntity;
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
+import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
 import com.enf.repository.BirdRepository;
 import com.enf.repository.CategoryRepository;
+import com.enf.repository.QuotaRepository;
 import com.enf.repository.RoleRepository;
 import com.enf.repository.UserRepository;
+import com.enf.repository.querydsl.UserQueryRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,8 @@ public class UserFacade {
   private final BirdRepository birdRepository;
   private final CategoryRepository categoryRepository;
   private final TokenProvider tokenProvider;
+  private final QuotaRepository quotaRepository;
+  private final UserQueryRepository userQueryRepository;
 
   // ============================= User 관련 메서드 =============================
 
@@ -106,6 +112,15 @@ public class UserFacade {
    */
   public void updateCategory(Long userSeq, CategoryEntity category) {
     userRepository.updateCategoryByUserSeq(userSeq, category);
+  }
+
+  /**
+   * 새 이름, 카테고리 정보와 일치하는 UserEntity 조회
+   *
+   * @param sendLetter 작성한 편지 정보
+   */
+  public UserEntity getSendUser(SendLetterDTO sendLetter) {
+    return userQueryRepository.getSendUser(sendLetter.getBirdName(), sendLetter.getCategoryName());
   }
 
   // ============================= Role 관련 메서드 =============================
@@ -189,4 +204,22 @@ public class UserFacade {
     Long userSeq = tokenProvider.getUserSeqFromToken(token);
     return findByUserSeq(userSeq);
   }
+
+
+  // ============================= Quota 관련 메서드 =============================
+
+  /**
+   * 사용자 역할별 편지 개수 할당
+   *
+   * @param user UserEntity
+   */
+  public void saveQuota(UserEntity user) {
+    quotaRepository.save(
+        QuotaEntity.builder()
+            .user(user)
+            .quota(user.getRole().getRoleName().equals("MENTEE") ? 4 : 7)
+            .build()
+    );
+  }
+
 }

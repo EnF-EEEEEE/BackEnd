@@ -53,8 +53,10 @@ public class UserServiceImpl implements UserService {
     BirdEntity bird = userFacade.findBirdByBirdName(additionalInfoDTO.getBirdName());
     RoleEntity role = userFacade.findRoleByRoleName(additionalInfoDTO.getUserRole());
     CategoryEntity category = userFacade.saveCategory(role, additionalInfoDTO.getUserCategory());
+    UserEntity saveUser = AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO);
 
-    userFacade.saveUser(AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO));
+    userFacade.saveUser(saveUser);
+    userFacade.saveQuota(saveUser);
     userFacade.generateAndSetToken(user, response);
 
     return ResultResponse.of(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO);
