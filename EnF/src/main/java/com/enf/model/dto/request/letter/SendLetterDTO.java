@@ -1,7 +1,10 @@
 package com.enf.model.dto.request.letter;
 
+import com.enf.entity.LetterEntity;
+import com.enf.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
@@ -25,5 +28,17 @@ public class SendLetterDTO {
     this.categoryName = categoryName;
     this.title = title;
     this.letter = letter;
+  }
+
+
+  public static LetterEntity of(UserEntity sendUser, UserEntity receiveUser, SendLetterDTO sendLetter) {
+    return LetterEntity.builder()
+        .sendUser(sendUser)
+        .receiveUser(receiveUser)
+        .categoryName(sendLetter.getCategoryName())
+        .letterTitle(sendLetter.getTitle())
+        .letter(sendLetter.getLetter())
+        .createAt(LocalDateTime.now())
+        .build();
   }
 }
