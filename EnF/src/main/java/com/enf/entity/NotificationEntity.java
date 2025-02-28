@@ -21,11 +21,11 @@ public class NotificationEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long notificationSeq;
 
-  private Long userId;
+  private Long userSeq;
+
+  private String sendUser;
 
   private String message;
-
-  private boolean isSent;
 
   private LocalDateTime createdAt;
 
