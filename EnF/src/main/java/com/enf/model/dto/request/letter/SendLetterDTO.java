@@ -31,10 +31,10 @@ public class SendLetterDTO {
   }
 
 
-  public static LetterEntity of(UserEntity sendUser, UserEntity receiveUser, SendLetterDTO sendLetter) {
+  public static LetterEntity of(UserEntity mentee, UserEntity mentor, SendLetterDTO sendLetter) {
     return LetterEntity.builder()
-        .sendUser(sendUser)
-        .receiveUser(receiveUser)
+        .mentee(mentee)
+        .mentor(mentor)
         .categoryName(sendLetter.getCategoryName())
         .letterTitle(sendLetter.getTitle())
         .letter(sendLetter.getLetter())

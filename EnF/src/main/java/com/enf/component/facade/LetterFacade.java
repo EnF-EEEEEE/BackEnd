@@ -2,6 +2,8 @@ package com.enf.component.facade;
 
 import com.enf.entity.LetterEntity;
 import com.enf.entity.NotificationEntity;
+import com.enf.exception.GlobalException;
+import com.enf.model.type.FailedResultType;
 import com.enf.repository.LetterRepository;
 import com.enf.repository.NotificationRepository;
 import java.util.List;
@@ -52,5 +54,10 @@ public class LetterFacade {
    */
   public void saveLetter(LetterEntity letter) {
     letterRepository.save(letter);
+  }
+
+  public LetterEntity findLetterByLetterSeq(Long letterSeq) {
+    return letterRepository.findByLetterSeq(letterSeq)
+        .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
   }
 }

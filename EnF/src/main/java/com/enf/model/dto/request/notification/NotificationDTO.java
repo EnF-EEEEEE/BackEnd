@@ -34,13 +34,24 @@ public class NotificationDTO {
   }
 
   /**
-   * 편지를 보냈을 때 생성되는 알림
+   * 멘티가 편지를 보냈을 때 생성되는 알림
    */
-  public static NotificationDTO sendLetter(UserEntity sendUser, UserEntity receiveUser) {
+  public static NotificationDTO sendLetter(UserEntity mentee, UserEntity mentor) {
     return new NotificationDTO(
-        receiveUser.getUserSeq(),
-        sendUser.getNickname(),
-        sendUser.getNickname() + " 버디가 편지를 보냈어요~"
+        mentor.getUserSeq(),
+        mentee.getNickname(),
+        mentee.getNickname() + " 버디가 편지를 보냈어요~"
+    );
+  }
+
+  /**
+   * 멘토가 편지를 보냈을 때 생성되는 알림
+   */
+  public static NotificationDTO replyLetter(UserEntity mentor, UserEntity mentee) {
+    return new NotificationDTO(
+        mentee.getUserSeq(),
+        mentor.getNickname(),
+        mentor.getNickname() + " 버디가 편지를 보냈어요~"
     );
   }
 
@@ -62,7 +73,7 @@ public class NotificationDTO {
     return new NotificationDTO(
         userSeq,
         notification.getSendUser(),
-        notification.getSendUser() + " 외 " + size + "명의 버디가 편지를 보냈어요~"
+        notification.getSendUser() + "외 " + size + "명의 버디가 편지를 보냈어요~"
     );
   }
 

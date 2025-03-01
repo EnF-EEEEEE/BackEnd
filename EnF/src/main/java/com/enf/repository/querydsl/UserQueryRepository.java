@@ -27,7 +27,7 @@ public class UserQueryRepository {
    * @param categoryName 카테고리명
    * @return 조건에 맞는 사용자 엔티티
    */
-  public UserEntity getSendUser(String birdName, String categoryName) {
+  public UserEntity getMentor(String birdName, String categoryName) {
 
     // 1순위: 새 유형과 카테고리가 모두 일치하는 사용자
     // 2순위: 카테고리만 일치하는 사용자

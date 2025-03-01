@@ -1,6 +1,5 @@
 package com.enf.controller;
 
-import com.enf.model.dto.request.letter.ReceiveLetterDTO;
 import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.response.ResultResponse;
