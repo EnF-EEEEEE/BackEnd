@@ -119,8 +119,13 @@ public class UserFacade {
    *
    * @param sendLetter 작성한 편지 정보
    */
-  public UserEntity getSendUser(SendLetterDTO sendLetter) {
+  public UserEntity getReceiveUserByBirdAndCategory(SendLetterDTO sendLetter) {
     return userQueryRepository.getSendUser(sendLetter.getBirdName(), sendLetter.getCategoryName());
+  }
+
+  public UserEntity findByNickname(String receiveUser) {
+    return userRepository.findByNickname(receiveUser)
+        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
   }
 
   // ============================= Role 관련 메서드 =============================

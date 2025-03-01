@@ -16,6 +16,7 @@ public enum SuccessResultType {
   SUCCESS_UPDATE_NICKNAME(HttpStatus.OK, "닉네임 수정 성공"),
   SUCCESS_UPDATE_CATEGORY(HttpStatus.OK, "카테고리 수정 성공"),
   SUCCESS_SEND_LETTER(HttpStatus.OK, "편지 전송 성공"),
+  SUCCESS_RECEIVE_LETTER(HttpStatus.OK, "편지 답장 성공")
   ;
 
   private final HttpStatus status;
