@@ -43,5 +43,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u set u.category = :category WHERE u.userSeq = :userSeq")
   void updateCategoryByUserSeq(Long userSeq, CategoryEntity category);
 
+  Optional<UserEntity> findByNickname(String nickname);
+
 
 }
