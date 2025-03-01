@@ -10,4 +10,8 @@ public interface LetterService {
   ResultResponse sendLetter(HttpServletRequest request, SendLetterDTO sendLetter);
 
   ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter);
+
+  ResultResponse getAllLetterList(HttpServletRequest request, int pageNumber);
+
+  ResultResponse getPendingLetterList(HttpServletRequest request, int pageNumber);
 }
