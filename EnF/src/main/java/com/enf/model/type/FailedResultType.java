@@ -15,6 +15,7 @@ public enum FailedResultType {
   COOKIE_IS_NULL(HttpStatus.FORBIDDEN,"쿠키값이 존재하지 않습니다."),
   REFRESH_TOKEN_IS_EXPIRED(HttpStatus.UNAUTHORIZED, "Refresh 토큰이 만료되었습니다!"),
   BAD_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "발급된 Refresh 토큰이 아닙니다."),
+  LETTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않은 편지 일련번호 입니다."),
   ;
 
   private final HttpStatus status;

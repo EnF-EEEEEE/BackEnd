@@ -2,8 +2,9 @@ package com.enf.service.impl;
 
 import com.enf.component.facade.LetterFacade;
 import com.enf.component.facade.UserFacade;
+import com.enf.entity.LetterEntity;
 import com.enf.entity.UserEntity;
-import com.enf.model.dto.request.letter.ReceiveLetterDTO;
+import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.notification.NotificationDTO;
 import com.enf.model.dto.response.ResultResponse;
@@ -42,11 +43,11 @@ public class LetterServiceImpl implements LetterService {
    */
   @Override
   public ResultResponse sendLetter(HttpServletRequest request, SendLetterDTO sendLetter) {
-    UserEntity sendUser = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserEntity receiveUser = userFacade.getReceiveUserByBirdAndCategory(sendLetter);
+    UserEntity mentee = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    UserEntity mentor = userFacade.getMentorByBirdAndCategory(sendLetter);
 
-    letterFacade.saveLetter(SendLetterDTO.of(sendUser, receiveUser, sendLetter));
-    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(sendUser, receiveUser));
+    letterFacade.saveLetter(SendLetterDTO.of(mentee, mentor, sendLetter));
+    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(mentee, mentor));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
@@ -60,16 +61,18 @@ public class LetterServiceImpl implements LetterService {
    * 4. Redis Pub/Sub을 이용해 알림 전송
    *
    * @param request    HTTP 요청 객체 (토큰 확인)
-   * @param receiveLetter 답장을 위해 사용자가 작성한 편지 정보
+   * @param replyLetter 답장을 위해 사용자가 작성한 편지 정보
    * @return 편지 전송 결과 응답 객체
    */
   @Override
-  public ResultResponse receiveLetter(HttpServletRequest request, ReceiveLetterDTO receiveLetter) {
-    UserEntity sendUser = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserEntity receiveUser = userFacade.findByNickname(receiveLetter.getReceiveUser());
+  public ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter) {
+    UserEntity mentor = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    UserEntity mentee = userFacade.findByNickname(replyLetter.getReceiveUser());
 
-    letterFacade.saveLetter(ReceiveLetterDTO.of(receiveUser, sendUser, receiveLetter));
-    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(sendUser, receiveUser));
+    LetterEntity menteeLetter = letterFacade.findLetterByLetterSeq(replyLetter.getLetterSeq());
+
+    letterFacade.saveLetter(ReplyLetterDTO.of(mentor, mentee, replyLetter, menteeLetter));
+    redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(mentor, mentee));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_RECEIVE_LETTER);
   }

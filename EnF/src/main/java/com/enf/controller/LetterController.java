@@ -1,6 +1,6 @@
 package com.enf.controller;
 
-import com.enf.model.dto.request.letter.ReceiveLetterDTO;
+import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.LetterService;
@@ -36,12 +36,12 @@ public class LetterController {
     return new ResponseEntity<>(response, response.getStatus());
   }
 
-  @PostMapping("/receive")
-  public ResponseEntity<ResultResponse> receiveLetter(
+  @PostMapping("/reply")
+  public ResponseEntity<ResultResponse> replyLetter(
       HttpServletRequest request,
-      @RequestBody ReceiveLetterDTO receiveLetter) {
+      @RequestBody ReplyLetterDTO reply) {
 
-    ResultResponse response = letterService.receiveLetter(request, receiveLetter);
+    ResultResponse response = letterService.replyLetter(request, reply);
     return new ResponseEntity<>(response, response.getStatus());
   }
 }

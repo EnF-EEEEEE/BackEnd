@@ -119,8 +119,8 @@ public class UserFacade {
    *
    * @param sendLetter 작성한 편지 정보
    */
-  public UserEntity getReceiveUserByBirdAndCategory(SendLetterDTO sendLetter) {
-    return userQueryRepository.getSendUser(sendLetter.getBirdName(), sendLetter.getCategoryName());
+  public UserEntity getMentorByBirdAndCategory(SendLetterDTO sendLetter) {
+    return userQueryRepository.getMentor(sendLetter.getBirdName(), sendLetter.getCategoryName());
   }
 
   public UserEntity findByNickname(String receiveUser) {
