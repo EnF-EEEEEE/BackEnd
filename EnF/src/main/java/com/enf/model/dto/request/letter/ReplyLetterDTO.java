@@ -34,17 +34,13 @@ public class ReplyLetterDTO {
     this.letter = letter;
   }
 
-  public static LetterEntity of(UserEntity mentor, UserEntity mentee, ReplyLetterDTO replyLetter,
-      LetterEntity menteeLetter) {
+  public static LetterEntity of(ReplyLetterDTO replyLetter) {
 
     return LetterEntity.builder()
-        .mentor(mentor)
-        .mentee(mentee)
         .categoryName(replyLetter.getCategoryName())
         .letterTitle(replyLetter.getTitle())
         .letter(replyLetter.getLetter())
         .createAt(LocalDateTime.now())
-        .replyTo(menteeLetter)
         .build();
   }
 }
