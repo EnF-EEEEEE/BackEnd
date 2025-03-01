@@ -23,14 +23,6 @@ public class LetterEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long letterSeq;
 
-  @ManyToOne
-  @JoinColumn(name = "mentee_seq")
-  private UserEntity mentee;
-
-  @ManyToOne
-  @JoinColumn(name = "mentor_seq")
-  private UserEntity mentor;
-
   private String categoryName;
 
   private String letterTitle;
@@ -38,8 +30,4 @@ public class LetterEntity {
   private String letter;
 
   private LocalDateTime createAt;
-
-  @ManyToOne
-  @JoinColumn(name = "reply_to")
-  private LetterEntity replyTo;
 }
