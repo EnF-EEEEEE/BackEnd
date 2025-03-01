@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class ReceiveLetterDTO {
+public class ReplyLetterDTO {
+
+  @JsonProperty("menteeLetterSeq")
+  private Long menteeLetterSeq;
 
   @JsonProperty("categoryName")
   private String categoryName;
@@ -23,7 +26,8 @@ public class ReceiveLetterDTO {
   private String letter;
 
   @JsonCreator
-  public ReceiveLetterDTO(String categoryName, String receiveUser, String title, String letter) {
+  public ReplyLetterDTO(Long menteeLetterSeq, String categoryName, String receiveUser, String title, String letter) {
+    this.menteeLetterSeq = menteeLetterSeq;
     this.categoryName = categoryName;
     this.receiveUser = receiveUser;
     this.title = title;
@@ -31,14 +35,14 @@ public class ReceiveLetterDTO {
   }
 
   public static LetterEntity of(UserEntity sendUser,
-      UserEntity receiveUser, ReceiveLetterDTO receiveLetterDTO) {
+      UserEntity receiveUser, ReplyLetterDTO replyLetter) {
 
     return LetterEntity.builder()
         .sendUser(sendUser)
         .receiveUser(receiveUser)
-        .categoryName(receiveLetterDTO.getCategoryName())
-        .letterTitle(receiveLetterDTO.getTitle())
-        .letter(receiveLetterDTO.getLetter())
+        .categoryName(replyLetter.getCategoryName())
+        .letterTitle(replyLetter.getTitle())
+        .letter(replyLetter.getLetter())
         .createAt(LocalDateTime.now())
         .build();
   }
