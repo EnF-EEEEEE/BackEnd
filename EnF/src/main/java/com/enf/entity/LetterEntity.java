@@ -24,12 +24,12 @@ public class LetterEntity {
   private Long letterSeq;
 
   @ManyToOne
-  @JoinColumn(name = "send_user_seq")
-  private UserEntity sendUser;
+  @JoinColumn(name = "mentee_seq")
+  private UserEntity mentee;
 
   @ManyToOne
-  @JoinColumn(name = "receive_user_seq")
-  private UserEntity receiveUser;
+  @JoinColumn(name = "mentor_seq")
+  private UserEntity mentor;
 
   private String categoryName;
 
@@ -38,4 +38,8 @@ public class LetterEntity {
   private String letter;
 
   private LocalDateTime createAt;
+
+  @ManyToOne
+  @JoinColumn(name = "reply_to")
+  private LetterEntity replyTo;
 }
