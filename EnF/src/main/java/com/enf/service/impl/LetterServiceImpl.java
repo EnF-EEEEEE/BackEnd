@@ -66,7 +66,7 @@ public class LetterServiceImpl implements LetterService {
   @Override
   public ResultResponse receiveLetter(HttpServletRequest request, ReceiveLetterDTO receiveLetter) {
     UserEntity sendUser = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserEntity receiveUser = userFacade.getReceiveUserByNickname(receiveLetter.getReceiveUser());
+    UserEntity receiveUser = userFacade.findByNickname(receiveLetter.getReceiveUser());
 
     letterFacade.saveLetter(ReceiveLetterDTO.of(receiveUser, sendUser, receiveLetter));
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(sendUser, receiveUser));
