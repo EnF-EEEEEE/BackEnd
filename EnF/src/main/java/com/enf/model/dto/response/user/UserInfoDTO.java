@@ -25,7 +25,7 @@ public class UserInfoDTO {
         user.getBird().getBirdName(),
         user.getNickname(),
         user.getRole().getRoleName(),
-        user.getRole().getRoleName().equals("senior")
+        user.getRole().getRoleName().equals("MENTOR")
             ? UserCategoryDTO.of(user.getCategory())
             : null);
 
