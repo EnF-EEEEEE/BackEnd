@@ -12,22 +12,32 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "letter")
+@Entity(name = "letter_status")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
-public class LetterEntity {
+public class LetterStatusEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long letterSeq;
+  private Long letterStatusSeq;
 
-  private String categoryName;
+  @ManyToOne
+  @JoinColumn(name = "mentee_seq")
+  private UserEntity mentee;
 
-  private String letterTitle;
+  @ManyToOne
+  @JoinColumn(name = "mentor_seq")
+  private UserEntity mentor;
 
-  private String letter;
+  @ManyToOne
+  @JoinColumn(name = "mentee_letter_seq")
+  private LetterEntity menteeLetter;
+
+  @ManyToOne
+  @JoinColumn(name = "mentor_letter_seq")
+  private LetterEntity mentorLetter;
 
   private LocalDateTime createAt;
 }
