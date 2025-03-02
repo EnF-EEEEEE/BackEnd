@@ -36,4 +36,16 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   void saveLetterForMentor(@Param("letterSeq") Long letterSeq);
 
   Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterSeq);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE letter_status ls "
+      + "SET ls.isMenteeRead = true WHERE ls.letterStatusSeq = :letterSeq")
+  void updateIsMenteeRead(@Param("letterSeq") Long letterSeq);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE letter_status ls "
+      + "SET ls.isMentorRead = true WHERE ls.letterStatusSeq = :letterSeq")
+  void updateIsMentorRead(@Param("letterSeq") Long letterSeq);
 }

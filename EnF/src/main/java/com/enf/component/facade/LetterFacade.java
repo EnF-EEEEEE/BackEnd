@@ -166,6 +166,18 @@ public class LetterFacade {
         .findLetterStatusByLetterStatusSeq(letterSeq)
         .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
 
+    boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
+
+    if (isMentee) {
+      if (!letterStatus.isMenteeRead()) {
+        letterStatusRepository.updateIsMenteeRead(letterSeq);
+      }
+    } else {
+      if (!letterStatus.isMentorRead()) {
+        letterStatusRepository.updateIsMentorRead(letterSeq);
+      }
+    }
+
     return user.getRole().getRoleName().equals("MENTEE")
         ? LetterDetailsDTO.ofMentee(letterStatus)
         : LetterDetailsDTO.ofMentor(letterStatus);
