@@ -5,7 +5,6 @@ import com.enf.entity.QLetterStatusEntity;
 import com.enf.entity.UserEntity;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
-import com.enf.model.type.LetterListType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
