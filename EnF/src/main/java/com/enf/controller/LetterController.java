@@ -6,6 +6,7 @@ import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.LetterService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,6 +82,22 @@ public class LetterController {
       @RequestParam(name = "pageNumber") int pageNumber) {
 
     ResultResponse response = letterService.getPendingLetterList(request, pageNumber);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  @GetMapping("/list/save")
+  public ResponseEntity<ResultResponse> getSaveLetterList(HttpServletRequest request,
+      @RequestParam(name = "pageNumber") int pageNumber) {
+
+    ResultResponse response = letterService.getSaveLetterList(request, pageNumber);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  @GetMapping("save")
+  public ResponseEntity<ResultResponse> saveLetter(HttpServletRequest request,
+      @RequestParam(name = "letterSeq") Long letterSeq) {
+
+    ResultResponse response = letterService.saveLetter(request, letterSeq);
     return new ResponseEntity<>(response, response.getStatus());
   }
 }

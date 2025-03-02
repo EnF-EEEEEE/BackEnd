@@ -10,6 +10,7 @@ import com.enf.model.dto.request.notification.NotificationDTO;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
+import com.enf.model.type.LetterListType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
 import com.enf.service.LetterService;
@@ -87,7 +88,8 @@ public class LetterServiceImpl implements LetterService {
   public ResultResponse getAllLetterList(HttpServletRequest request, int pageNumber) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
 
-    PageResponse<ReceiveLetterDTO> letters = letterFacade.getAllLetterList(user, pageNumber);
+    PageResponse<ReceiveLetterDTO> letters = letterFacade
+        .getLetterList(user, pageNumber, LetterListType.ALL);
 
     return new ResultResponse(SuccessResultType.SUCCESS_GET_ALL_LETTER, letters);
   }
@@ -108,8 +110,47 @@ public class LetterServiceImpl implements LetterService {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
 
     // 미응답 편지 리스트 조회 및 페이징 처리
-    PageResponse<ReceiveLetterDTO> letters = letterFacade.getPendingLetterList(user, pageNumber);
+    PageResponse<ReceiveLetterDTO> letters = letterFacade
+        .getLetterList(user, pageNumber, LetterListType.PENDING);
 
     return new ResultResponse(SuccessResultType.SUCCESS_GET_PENDING_LETTER, letters);
+  }
+
+  /**
+   * 사용자가 저장한 편지 목록을 조회하는 기능 (페이징 지원)
+   * 1. 사용자 정보를 조회하여 본인의 저장된 편지 리스트를 가져온다.
+   * 2. 저장한 편지 리스트 조회.
+   * 3. 페이징 처리 후 결과 반환.
+   *
+   * @param request    HTTP 요청 객체 (토큰 확인)
+   * @param pageNumber 요청한 페이지 번호
+   * @return 저장된 편지 리스트 (페이지네이션 적용)
+   */
+  @Override
+  public ResultResponse getSaveLetterList(HttpServletRequest request, int pageNumber) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    PageResponse<ReceiveLetterDTO> letters = letterFacade.getLetterList(user, pageNumber, LetterListType.SAVE);
+
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_SAVE_LETTER, letters);
+  }
+
+  /**
+   * 사용자가 특정 편지를 저장하는 기능
+   * 1. 사용자 정보를 조회하여 본인을 식별
+   * 2. 특정 편지를 저장 처리
+   * 3. 저장 완료 후 성공 응답 반환
+   *
+   * @param request   HTTP 요청 객체 (토큰 확인)
+   * @param letterSeq 저장할 편지의 식별자
+   * @return 편지 저장 결과 응답 객체
+   */
+  @Override
+  public ResultResponse saveLetter(HttpServletRequest request, Long letterSeq) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    letterFacade.saveLetter(user, letterSeq);
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_SAVE_LETTER);
   }
 }

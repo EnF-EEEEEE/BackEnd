@@ -14,4 +14,8 @@ public interface LetterService {
   ResultResponse getAllLetterList(HttpServletRequest request, int pageNumber);
 
   ResultResponse getPendingLetterList(HttpServletRequest request, int pageNumber);
+
+  ResultResponse getSaveLetterList(HttpServletRequest request, int pageNumber);
+
+  ResultResponse saveLetter(HttpServletRequest request, Long letterSeq);
 }
