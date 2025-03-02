@@ -8,6 +8,7 @@ import com.enf.exception.GlobalException;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.type.FailedResultType;
+import com.enf.model.type.LetterListType;
 import com.enf.repository.LetterRepository;
 import com.enf.repository.LetterStatusRepository;
 import com.enf.repository.NotificationRepository;
@@ -73,6 +74,10 @@ public class LetterFacade {
             .mentee(mentee)
             .mentor(mentor)
             .menteeLetter(menteeLetter)
+            .isMenteeRead(false)
+            .isMentorRead(false)
+            .isMenteeSaved(false)
+            .isMentorSaved(false)
             .createAt(LocalDateTime.now())
             .build()
     );
@@ -105,32 +110,41 @@ public class LetterFacade {
   }
 
   /**
-   * 특정 사용자의 모든 편지 조회 (멘티와 멘토 구분하여 처리)
+   * 특정 사용자의 모든 편지를 조회하는 기능 (멘티와 멘토 구분하여 처리)
    *
-   * @param user 사용자 엔티티 (멘티 또는 멘토)
-   * @param pageNumber 요청한 페이지 번호
-   * @return 페이지네이션된 편지 목록
+   * 1. 사용자 정보를 기반으로 해당 사용자가 보낸 또는 받은 편지를 조회한다.
+   * 2. LetterListType을 활용하여 전체, 미응답, 저장된 편지 유형을 필터링할 수 있다.
+   * 3. QueryDSL 기반의 `letterQueryRepository`를 통해 데이터 조회 후 페이징 처리한다.
+   *
+   * @param user        현재 로그인한 사용자 (멘티 또는 멘토)
+   * @param pageNumber  요청한 페이지 번호
+   * @param letterListType 조회할 편지 유형 (ALL, PENDING, SAVE)
+   * @return 페이지네이션이 적용된 편지 목록
    */
-  public PageResponse<ReceiveLetterDTO> getAllLetterList(UserEntity user, int pageNumber) {
-    // 사용자가 멘티인 경우 멘티의 편지 리스트 반환
-    if (user.getRole().getRoleName().equals("MENTEE")) {
-      return letterQueryRepository.getAllLetterListForMenTee(user, pageNumber);
-    }
+  public PageResponse<ReceiveLetterDTO> getLetterList(UserEntity user,
+      int pageNumber, LetterListType letterListType) {
 
-    // 사용자가 멘토인 경우 멘토의 편지 리스트 반환
-    return letterQueryRepository.getAllLetterListForMentor(user, pageNumber);
+    return letterQueryRepository.getLetterList(user, pageNumber, letterListType.getValue());
   }
 
   /**
-   * 미응답(답장이 없는) 편지 목록을 조회하는 기능 (페이징 지원)
-   * 1. 사용자의 정보를 받아서 해당 사용자가 보낸 미응답 편지 목록을 조회
-   * 2. 페이징 처리 후 결과 반환
+   * 특정 사용자가 편지를 저장하는 기능
    *
-   * @param user       조회할 사용자 (멘토 또는 멘티)
-   * @param pageNumber 요청한 페이지 번호
-   * @return 미응답 편지 리스트 (페이지네이션 적용)
+   * 1. 사용자의 역할(멘티 또는 멘토)을 확인하여 적절한 저장 로직을 실행한다.
+   * 2. 멘티라면 `saveLetterForMentee()` 메서드를 호출하여 저장 처리한다.
+   * 3. 멘토라면 `saveLetterForMentor()` 메서드를 호출하여 저장 처리한다.
+   * 4. 해당 편지가 성공적으로 저장되었음을 나타내는 응답을 반환한다.
+   *
+   * @param user      현재 로그인한 사용자 (멘티 또는 멘토)
+   * @param letterSeq 저장할 편지의 고유 식별자 (ID)
    */
-  public PageResponse<ReceiveLetterDTO> getPendingLetterList(UserEntity user, int pageNumber) {
-    return letterQueryRepository.getPendingLetterList(user, pageNumber);
+  public void saveLetter(UserEntity user, Long letterSeq) {
+    boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
+
+    if (isMentee) {
+      letterStatusRepository.saveLetterForMentee(letterSeq);
+    } else {
+      letterStatusRepository.saveLetterForMentor(letterSeq);
+    }
   }
 }
