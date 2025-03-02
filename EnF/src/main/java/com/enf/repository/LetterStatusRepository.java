@@ -3,6 +3,7 @@ package com.enf.repository;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +34,6 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Query("UPDATE letter_status ls "
       + "SET ls.isMentorSaved = true WHERE ls.letterStatusSeq = :letterSeq")
   void saveLetterForMentor(@Param("letterSeq") Long letterSeq);
+
+  Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterSeq);
 }

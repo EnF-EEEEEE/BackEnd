@@ -6,6 +6,7 @@ import com.enf.entity.NotificationEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.response.PageResponse;
+import com.enf.model.dto.response.letter.LetterDetailsDTO;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
@@ -146,5 +147,27 @@ public class LetterFacade {
     } else {
       letterStatusRepository.saveLetterForMentor(letterSeq);
     }
+  }
+
+  /**
+   * 편지 상세 정보 조회 메서드
+   *
+   * 1. 요청한 편지 ID(letterSeq)에 해당하는 편지 상태 정보를 조회
+   * 2. 해당 편지가 존재하지 않으면 예외 발생 (LETTER_NOT_FOUND)
+   * 3. 사용자의 역할(멘티/멘토)에 따라 다른 DTO 변환 로직 수행
+   *
+   * @param user      요청한 사용자 (멘티 또는 멘토)
+   * @param letterSeq 조회할 편지의 고유 식별자 (ID)
+   * @return 편지 상세 정보를 포함하는 LetterDetailsDTO
+   * @throws GlobalException 편지를 찾을 수 없는 경우 LETTER_NOT_FOUND 예외 발생
+   */
+  public LetterDetailsDTO getLetterDetails(UserEntity user, Long letterSeq) {
+    LetterStatusEntity letterStatus = letterStatusRepository
+        .findLetterStatusByLetterStatusSeq(letterSeq)
+        .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
+
+    return user.getRole().getRoleName().equals("MENTEE")
+        ? LetterDetailsDTO.ofMentee(letterStatus)
+        : LetterDetailsDTO.ofMentor(letterStatus);
   }
 }
