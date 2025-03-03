@@ -1,6 +1,7 @@
 package com.enf.repository.querydsl;
 
 import com.enf.entity.QQuotaEntity;
+import com.enf.entity.QThrowLetterEntity;
 import com.enf.entity.QUserEntity;
 import com.enf.entity.UserEntity;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -19,6 +20,7 @@ public class UserQueryRepository {
   private final JPAQueryFactory jpaQueryFactory;
   QUserEntity user = QUserEntity.userEntity;
   QQuotaEntity quota = QQuotaEntity.quotaEntity;
+  QThrowLetterEntity throwLetter = QThrowLetterEntity.throwLetterEntity;
 
   /**
    * 특정 조건에 맞는 사용자 조회
@@ -54,7 +56,8 @@ public class UserQueryRepository {
         jpaQueryFactory
             .selectFrom(user)
             .join(quota).on(user.userSeq.eq(quota.user.userSeq))
-            .where(user.role.roleName.eq("MENTOR"))
+            .where(user.role.roleName.eq("MENTOR"),
+                user.ne(throwLetter.throwUser))
             .where(conditions)
             .orderBy(quota.quota.desc())
             .fetchFirst()
@@ -66,7 +69,8 @@ public class UserQueryRepository {
     return jpaQueryFactory
             .selectFrom(user)
             .join(quota).on(user.userSeq.eq(quota.user.userSeq))
-            .where(user.role.roleName.eq("MENTOR"))
+            .where(user.role.roleName.eq("MENTOR"),
+                user.ne(throwLetter.throwUser))
             .where(conditions)
             .orderBy(quota.quota.desc())
             .fetchFirst();
