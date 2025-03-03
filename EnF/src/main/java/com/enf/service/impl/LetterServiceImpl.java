@@ -200,11 +200,11 @@ public class LetterServiceImpl implements LetterService {
       throw new GlobalException(FailedResultType.ALREADY_REPLIED);
     }
 
-    String birdName = letterStatus.getMentee().getBird().getBirdName();
-    String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+    letterFacade.throwLetter(letterStatus);
+    UserEntity newMentor = userFacade.getNewMentor(letterStatus);
 
-    UserEntity newMentor = userFacade.getMentorByBirdAndCategory(birdName, categoryName);
-    letterFacade.throwLetter(letterStatus, newMentor);
+    letterFacade.updateMentor(letterStatus, newMentor);
+    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus.getMentee(), newMentor));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_THROW_LETTER);
   }

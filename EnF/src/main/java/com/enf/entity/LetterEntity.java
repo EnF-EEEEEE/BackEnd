@@ -21,6 +21,8 @@ public class LetterEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long letterSeq;
 
+  private String birdName;
+
   private String categoryName;
 
   private String letterTitle;

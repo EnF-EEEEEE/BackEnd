@@ -105,18 +105,6 @@ public class LetterFacade {
   }
 
   /**
-   * 특정 편지 ID로 편지 조회
-   *
-   * @param letterSeq 조회할 편지의 ID
-   * @return 조회된 LetterEntity 객체
-   * @throws GlobalException 편지가 존재하지 않을 경우 예외 발생
-   */
-  public LetterEntity findLetterByLetterSeq(Long letterSeq) {
-    return letterRepository.findByLetterSeq(letterSeq)
-        .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
-  }
-
-  /**
    * 특정 사용자의 모든 편지를 조회하는 기능 (멘티와 멘토 구분하여 처리)
    *
    * 1. 사용자 정보를 기반으로 해당 사용자가 보낸 또는 받은 편지를 조회한다.
@@ -155,6 +143,13 @@ public class LetterFacade {
     }
   }
 
+  /**
+   * 특정 편지 상태 정보를 조회
+   *
+   * @param letterStatusSeq 편지 상태 ID
+   * @return 조회된 LetterStatusEntity 객체
+   * @throws GlobalException 편지가 존재하지 않을 경우 예외 발생
+   */
   public LetterStatusEntity getLetterStatus(Long letterStatusSeq) {
     return letterStatusRepository
         .findLetterStatusByLetterStatusSeq(letterStatusSeq)
@@ -194,16 +189,22 @@ public class LetterFacade {
    * 편지를 새로운 멘토에게 전달하는 메서드
    *
    * @param letterStatus  현재 편지의 상태 정보
-   * @param newMentor     새롭게 지정될 멘토 정보
    */
-  public void throwLetter(LetterStatusEntity letterStatus, UserEntity newMentor) {
-    letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
-
+  public void throwLetter(LetterStatusEntity letterStatus) {
     ThrowLetterEntity throwLetterEntity = ThrowLetterEntity.builder()
         .letterStatus(letterStatus)
         .throwUser(letterStatus.getMentor())
         .build();
-
     throwLetterRepository.save(throwLetterEntity);
+  }
+
+  /**
+   * 편지의 멘토를 새로운 멘토로 변경
+   *
+   * @param letterStatus 현재 편지의 상태 정보
+   * @param newMentor 새로운 멘토 정보
+   */
+  public void updateMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
+    letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
   }
 }

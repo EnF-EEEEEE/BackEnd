@@ -4,6 +4,7 @@ import com.enf.component.token.HttpCookieUtil;
 import com.enf.component.token.TokenProvider;
 import com.enf.entity.BirdEntity;
 import com.enf.entity.CategoryEntity;
+import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.QuotaEntity;
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
@@ -120,13 +121,26 @@ public class UserFacade {
    * @param categoryName 작성한 편지의 카테고리
    */
   public UserEntity getMentorByBirdAndCategory(String birdName, String categoryName) {
-    return userQueryRepository.getMentor(birdName, categoryName);
+
+    return userQueryRepository.getMentor(birdName, categoryName, null);
   }
 
-  public UserEntity findByNickname(String receiveUser) {
-    return userRepository.findByNickname(receiveUser)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+  /**
+   * 새로운 멘토 조회 (편지를 넘긴 사용자 제외)
+   *
+   * @param letterStatus 현재 편지의 상태 정보
+   * @return 새로운 멘토 사용자 엔티티
+   */
+  public UserEntity getNewMentor(LetterStatusEntity letterStatus) {
+    String birdName = letterStatus.getMenteeLetter().getBirdName();
+    String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+
+    log.info("birdName : {}", birdName);
+    log.info("categoryName : {}", categoryName);
+
+    return userQueryRepository.getMentor(birdName, categoryName, letterStatus.getLetterStatusSeq());
   }
+
 
   // ============================= Role 관련 메서드 =============================
 
@@ -226,5 +240,4 @@ public class UserFacade {
             .build()
     );
   }
-
 }
