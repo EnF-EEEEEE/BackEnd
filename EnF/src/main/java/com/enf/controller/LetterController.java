@@ -83,4 +83,49 @@ public class LetterController {
     ResultResponse response = letterService.getPendingLetterList(request, pageNumber);
     return new ResponseEntity<>(response, response.getStatus());
   }
+
+  /**
+   * 저장된 편지 목록 조회 API
+   *
+   * @param request    HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param pageNumber 조회할 페이지 번호
+   * @return 저장된 편지 목록 응답 (페이징된 데이터 포함)
+   */
+  @GetMapping("/list/save")
+  public ResponseEntity<ResultResponse> getSaveLetterList(HttpServletRequest request,
+      @RequestParam(name = "pageNumber") int pageNumber) {
+
+    ResultResponse response = letterService.getSaveLetterList(request, pageNumber);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  /**
+   * 특정 편지를 저장하는 API (멘티, 멘토 공통)
+   *
+   * @param request   HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param letterSeq 저장할 편지의 고유 식별자 (ID)
+   * @return 저장 결과 응답 (성공/실패 여부 포함)
+   */
+  @GetMapping("/save")
+  public ResponseEntity<ResultResponse> saveLetter(HttpServletRequest request,
+      @RequestParam(name = "letterSeq") Long letterSeq) {
+
+    ResultResponse response = letterService.saveLetter(request, letterSeq);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  /**
+   * 편지 상세 조회 API
+   *
+   * @param request   HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param letterSeq 조회할 편지의 고유 식별자 (ID)
+   * @return 편지 상세 정보 응답 (성공/실패 여부 포함)
+   */
+  @GetMapping("/details")
+  public ResponseEntity<ResultResponse> getLetterDetails(HttpServletRequest request,
+      @RequestParam(name = "letterSeq") Long letterSeq) {
+
+    ResultResponse response = letterService.getLetterDetails(request, letterSeq);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
 }

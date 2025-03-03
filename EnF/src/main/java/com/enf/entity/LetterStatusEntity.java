@@ -1,5 +1,6 @@
 package com.enf.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,6 +39,18 @@ public class LetterStatusEntity {
   @ManyToOne
   @JoinColumn(name = "mentor_letter_seq")
   private LetterEntity mentorLetter;
+
+  @Column(name = "is_mentee_read")
+  private boolean isMenteeRead;
+
+  @Column(name = "is_mentor_read")
+  private boolean isMentorRead;
+
+  @Column(name = "is_mentee_saved")
+  private boolean isMenteeSaved;
+
+  @Column(name = "is_mentor_saved")
+  private boolean isMentorSaved;
 
   private LocalDateTime createAt;
 }
