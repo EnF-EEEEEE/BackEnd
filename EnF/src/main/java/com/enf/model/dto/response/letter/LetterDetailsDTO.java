@@ -15,20 +15,23 @@ public class LetterDetailsDTO {
   private LetterDTO sendLetter;
 
   public static LetterDetailsDTO ofMentee(LetterStatusEntity letterStatus) {
+    LetterDTO replyLetter;
+    LetterDTO sendLetter;
 
-    LetterDTO replyLetter = letterStatus.getMentorLetter() == null
-        ? null
-        : LetterDTO.of(
-        letterStatus.getMentor(),
-        letterStatus.getMentor(),
-        letterStatus.getMentorLetter()
-    );
+    if (letterStatus.getMentorLetter() == null) {
+      sendLetter = LetterDTO.of(null, letterStatus.getMentee(), letterStatus.getMenteeLetter());
+      return new LetterDetailsDTO(null, sendLetter);
+    }
 
-        LetterDTO sendLetter = LetterDTO.of(
-        null,
+    replyLetter = LetterDTO.of(
         letterStatus.getMentee(),
-        letterStatus.getMenteeLetter()
-    );
+        letterStatus.getMentor(),
+        letterStatus.getMentorLetter());
+
+    sendLetter = LetterDTO.of(
+        letterStatus.getMentor(),
+        letterStatus.getMentee(),
+        letterStatus.getMenteeLetter());
 
     return new LetterDetailsDTO(replyLetter, sendLetter);
   }
@@ -36,14 +39,18 @@ public class LetterDetailsDTO {
   public static LetterDetailsDTO ofMentor(LetterStatusEntity letterStatus) {
 
     LetterDTO replyLetter = LetterDTO.of(
-        letterStatus.getMentee(),
         letterStatus.getMentor(),
+        letterStatus.getMentee(),
         letterStatus.getMenteeLetter()
     );
 
+    if (letterStatus.getMentorLetter() == null) {
+      return new LetterDetailsDTO(replyLetter, null);
+    }
+
     LetterDTO sendLetter = LetterDTO.of(
-        letterStatus.getMentor(),
         letterStatus.getMentee(),
+        letterStatus.getMentor(),
         letterStatus.getMentorLetter()
     );
 

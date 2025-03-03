@@ -9,14 +9,8 @@ import lombok.Getter;
 @Getter
 public class ReplyLetterDTO {
 
-  @JsonProperty("letterSeq")
-  private Long letterSeq;
-
-  @JsonProperty("categoryName")
-  private String categoryName;
-
-  @JsonProperty("receiveUser")
-  private String receiveUser;
+  @JsonProperty("letterStatusSeq")
+  private Long letterStatusSeq;
 
   @JsonProperty("title")
   private String title;
@@ -25,18 +19,16 @@ public class ReplyLetterDTO {
   private String letter;
 
   @JsonCreator
-  public ReplyLetterDTO(Long letterSeq, String categoryName, String receiveUser, String title, String letter) {
-    this.letterSeq = letterSeq;
-    this.categoryName = categoryName;
-    this.receiveUser = receiveUser;
+  public ReplyLetterDTO(Long letterStatusSeq, String title, String letter) {
+    this.letterStatusSeq = letterStatusSeq;
     this.title = title;
     this.letter = letter;
   }
 
-  public static LetterEntity of(ReplyLetterDTO replyLetter) {
+  public static LetterEntity of(ReplyLetterDTO replyLetter, String categoryName) {
 
     return LetterEntity.builder()
-        .categoryName(replyLetter.getCategoryName())
+        .categoryName(categoryName)
         .letterTitle(replyLetter.getTitle())
         .letter(replyLetter.getLetter())
         .createAt(LocalDateTime.now())
