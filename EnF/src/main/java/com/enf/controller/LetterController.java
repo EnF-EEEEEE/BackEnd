@@ -103,14 +103,14 @@ public class LetterController {
    * 특정 편지를 저장하는 API (멘티, 멘토 공통)
    *
    * @param request   HTTP 요청 객체 (사용자 인증 정보 포함)
-   * @param letterSeq 저장할 편지의 고유 식별자 (ID)
+   * @param letterStatusSeq 저장할 편지의 고유 식별자 (ID)
    * @return 저장 결과 응답 (성공/실패 여부 포함)
    */
   @GetMapping("/save")
   public ResponseEntity<ResultResponse> saveLetter(HttpServletRequest request,
-      @RequestParam(name = "letterSeq") Long letterSeq) {
+      @RequestParam(name = "letterStatusSeq") Long letterStatusSeq) {
 
-    ResultResponse response = letterService.saveLetter(request, letterSeq);
+    ResultResponse response = letterService.saveLetter(request, letterStatusSeq);
     return new ResponseEntity<>(response, response.getStatus());
   }
 
@@ -118,14 +118,29 @@ public class LetterController {
    * 편지 상세 조회 API
    *
    * @param request   HTTP 요청 객체 (사용자 인증 정보 포함)
-   * @param letterSeq 조회할 편지의 고유 식별자 (ID)
+   * @param letterStatusSeq 조회할 편지의 고유 식별자 (ID)
    * @return 편지 상세 정보 응답 (성공/실패 여부 포함)
    */
   @GetMapping("/details")
   public ResponseEntity<ResultResponse> getLetterDetails(HttpServletRequest request,
-      @RequestParam(name = "letterSeq") Long letterSeq) {
+      @RequestParam(name = "letterStatusSeq") Long letterStatusSeq) {
 
-    ResultResponse response = letterService.getLetterDetails(request, letterSeq);
+    ResultResponse response = letterService.getLetterDetails(request, letterStatusSeq);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  /**
+   * 편지 전달(Throw) API
+   *
+   * @param request           HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param letterStatusSeq   전달할 편지의 고유 식별자 (ID)
+   * @return                  결과 응답 객체 (성공/실패 여부 포함)
+   */
+  @GetMapping("/throw")
+  public ResponseEntity<ResultResponse> throwLetter(HttpServletRequest request,
+      @RequestParam(name = "letterStatusSeq") Long letterStatusSeq) {
+
+    ResultResponse response = letterService.throwLetter(request, letterStatusSeq);
     return new ResponseEntity<>(response, response.getStatus());
   }
 }

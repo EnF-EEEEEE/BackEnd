@@ -2,8 +2,9 @@ package com.enf.service.impl;
 
 import com.enf.component.facade.LetterFacade;
 import com.enf.component.facade.UserFacade;
-import com.enf.entity.LetterEntity;
+import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.UserEntity;
+import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.notification.NotificationDTO;
@@ -11,6 +12,7 @@ import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
+import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
@@ -45,7 +47,8 @@ public class LetterServiceImpl implements LetterService {
   @Override
   public ResultResponse sendLetter(HttpServletRequest request, SendLetterDTO sendLetter) {
     UserEntity mentee = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserEntity mentor = userFacade.getMentorByBirdAndCategory(sendLetter);
+    UserEntity mentor = userFacade
+        .getMentorByBirdAndCategory(sendLetter.getBirdName(), sendLetter.getCategoryName());
 
     letterFacade.saveMenteeLetter(SendLetterDTO.of(sendLetter), mentee, mentor);
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(mentee, mentor));
@@ -68,12 +71,11 @@ public class LetterServiceImpl implements LetterService {
   @Override
   public ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter) {
     UserEntity mentor = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserEntity mentee = userFacade.findByNickname(replyLetter.getReceiveUser());
 
-    LetterEntity menteeLetter = letterFacade.findLetterByLetterSeq(replyLetter.getLetterSeq());
+    LetterStatusEntity letterStatus = letterFacade.getLetterStatus(replyLetter.getLetterStatusSeq());
 
-    letterFacade.saveMentorLetter(ReplyLetterDTO.of(replyLetter), menteeLetter);
-    redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(mentor, mentee));
+    letterFacade.saveMentorLetter(letterStatus, replyLetter);
+    redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(mentor, letterStatus.getMentee()));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_RECEIVE_LETTER);
   }
@@ -143,14 +145,14 @@ public class LetterServiceImpl implements LetterService {
    * 3. 저장 완료 후 성공 응답 반환
    *
    * @param request   HTTP 요청 객체 (토큰 확인)
-   * @param letterSeq 저장할 편지의 식별자
+   * @param letterStatusSeq 저장할 편지의 식별자
    * @return 편지 저장 결과 응답 객체
    */
   @Override
-  public ResultResponse saveLetter(HttpServletRequest request, Long letterSeq) {
+  public ResultResponse saveLetter(HttpServletRequest request, Long letterStatusSeq) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
 
-    letterFacade.saveLetter(user, letterSeq);
+    letterFacade.saveLetter(user, letterStatusSeq);
 
     return ResultResponse.of(SuccessResultType.SUCCESS_SAVE_LETTER);
   }
@@ -164,14 +166,46 @@ public class LetterServiceImpl implements LetterService {
    * 4. 조회된 편지 상세 정보를 `ResultResponse` 객체로 감싸서 반환한다.
    *
    * @param request   HTTP 요청 객체 (토큰을 이용하여 사용자 인증)
-   * @param letterSeq 조회할 편지의 고유 식별자 (ID)
+   * @param letterStatusSeq 조회할 편지의 고유 식별자 (ID)
    * @return 편지 상세 정보를 포함한 응답 객체
    */
   @Override
-  public ResultResponse getLetterDetails(HttpServletRequest request, Long letterSeq) {
+  public ResultResponse getLetterDetails(HttpServletRequest request, Long letterStatusSeq) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
 
-    LetterDetailsDTO letterDetails = letterFacade.getLetterDetails(user, letterSeq);
+    LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
+    LetterDetailsDTO letterDetails = letterFacade.getLetterDetails(user, letterStatus);
+
     return new ResultResponse(SuccessResultType.SUCCESS_GET_LETTER_DETAILS, letterDetails);
+  }
+
+  /**
+   * 편지 전달(Throw) 로직을 수행하는 메서드
+   *
+   * @param request          HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param letterStatusSeq  전달할 편지의 고유 식별자 (ID)
+   * @return                 결과 응답 객체 (성공/실패 여부 포함)
+   * @throws GlobalException 멘티가 편지를 전달하려 하거나, 이미 답장이 완료된 경우 예외 발생
+   */
+  @Override
+  public ResultResponse throwLetter(HttpServletRequest request, Long letterStatusSeq) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    if(user.getRole().getRoleName().equals("MENTEE")) {
+      throw new GlobalException(FailedResultType.MENTEE_PERMISSION_DENIED);
+    }
+
+    LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
+    if (!(letterStatus.getMentorLetter() == null)) {
+      throw new GlobalException(FailedResultType.ALREADY_REPLIED);
+    }
+
+    String birdName = letterStatus.getMentee().getBird().getBirdName();
+    String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+
+    UserEntity newMentor = userFacade.getMentorByBirdAndCategory(birdName, categoryName);
+    letterFacade.throwLetter(letterStatus, newMentor);
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_THROW_LETTER);
   }
 }

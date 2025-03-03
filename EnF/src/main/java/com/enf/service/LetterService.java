@@ -17,7 +17,9 @@ public interface LetterService {
 
   ResultResponse getSaveLetterList(HttpServletRequest request, int pageNumber);
 
-  ResultResponse saveLetter(HttpServletRequest request, Long letterSeq);
+  ResultResponse saveLetter(HttpServletRequest request, Long letterStatusSeq);
 
-  ResultResponse getLetterDetails(HttpServletRequest request, Long letterSeq);
+  ResultResponse getLetterDetails(HttpServletRequest request, Long letterStatusSeq);
+
+  ResultResponse throwLetter(HttpServletRequest request, Long letterStatusSeq);
 }
