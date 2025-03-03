@@ -26,13 +26,15 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
-      + "SET ls.isMenteeSaved = true WHERE ls.letterStatusSeq = :letterSeq")
+      + "SET ls.isMenteeSaved = CASE WHEN ls.isMenteeSaved = true THEN false ELSE true END "
+      + "WHERE ls.letterStatusSeq = :letterSeq")
   void saveLetterForMentee(@Param("letterSeq") Long letterSeq);
 
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
-      + "SET ls.isMentorSaved = true WHERE ls.letterStatusSeq = :letterSeq")
+      + "SET ls.isMentorSaved = CASE WHEN ls.isMentorSaved = true THEN false ELSE true END "
+      + "WHERE ls.letterStatusSeq = :letterSeq")
   void saveLetterForMentor(@Param("letterSeq") Long letterSeq);
 
   Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterSeq);
