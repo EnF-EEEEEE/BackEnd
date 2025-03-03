@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReceiveLetterDTO {
 
-  private Long letterSeq;
+  private Long letterStatusSeq;
 
   private String birdName;
 

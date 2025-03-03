@@ -32,6 +32,7 @@ public class SendLetterDTO {
 
   public static LetterEntity of(SendLetterDTO sendLetter) {
     return LetterEntity.builder()
+        .birdName(sendLetter.birdName)
         .categoryName(sendLetter.getCategoryName())
         .letterTitle(sendLetter.getTitle())
         .letter(sendLetter.getLetter())

@@ -4,12 +4,12 @@ import com.enf.component.token.HttpCookieUtil;
 import com.enf.component.token.TokenProvider;
 import com.enf.entity.BirdEntity;
 import com.enf.entity.CategoryEntity;
+import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.QuotaEntity;
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
-import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
@@ -117,16 +117,30 @@ public class UserFacade {
   /**
    * 새 이름, 카테고리 정보와 일치하는 UserEntity 조회
    *
-   * @param sendLetter 작성한 편지 정보
+   * @param birdName 작성한 사용자의 새이름
+   * @param categoryName 작성한 편지의 카테고리
    */
-  public UserEntity getMentorByBirdAndCategory(SendLetterDTO sendLetter) {
-    return userQueryRepository.getMentor(sendLetter.getBirdName(), sendLetter.getCategoryName());
+  public UserEntity getMentorByBirdAndCategory(String birdName, String categoryName) {
+
+    return userQueryRepository.getMentor(birdName, categoryName, null);
   }
 
-  public UserEntity findByNickname(String receiveUser) {
-    return userRepository.findByNickname(receiveUser)
-        .orElseThrow(() -> new GlobalException(FailedResultType.USER_NOT_FOUND));
+  /**
+   * 새로운 멘토 조회 (편지를 넘긴 사용자 제외)
+   *
+   * @param letterStatus 현재 편지의 상태 정보
+   * @return 새로운 멘토 사용자 엔티티
+   */
+  public UserEntity getNewMentor(LetterStatusEntity letterStatus) {
+    String birdName = letterStatus.getMenteeLetter().getBirdName();
+    String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+
+    log.info("birdName : {}", birdName);
+    log.info("categoryName : {}", categoryName);
+
+    return userQueryRepository.getMentor(birdName, categoryName, letterStatus.getLetterStatusSeq());
   }
+
 
   // ============================= Role 관련 메서드 =============================
 
@@ -226,5 +240,4 @@ public class UserFacade {
             .build()
     );
   }
-
 }

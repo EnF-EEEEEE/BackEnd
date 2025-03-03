@@ -3,8 +3,10 @@ package com.enf.component.facade;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.NotificationEntity;
+import com.enf.entity.ThrowLetterEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
+import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
@@ -13,6 +15,7 @@ import com.enf.model.type.LetterListType;
 import com.enf.repository.LetterRepository;
 import com.enf.repository.LetterStatusRepository;
 import com.enf.repository.NotificationRepository;
+import com.enf.repository.ThrowLetterRepository;
 import com.enf.repository.querydsl.LetterQueryRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +32,7 @@ public class LetterFacade {
   private final NotificationRepository notificationRepository;
   private final LetterStatusRepository letterStatusRepository;
   private final LetterQueryRepository letterQueryRepository;
+  private final ThrowLetterRepository throwLetterRepository;
 
   /**
    * 특정 사용자의 모든 알림 조회
@@ -87,27 +91,17 @@ public class LetterFacade {
   /**
    * 멘토가 답장을 보낼 때 편지 저장 및 상태 업데이트
    *
-   * @param letter 저장할 멘토의 답장 편지 엔티티
-   * @param menteeLetter 멘티가 보낸 원본 편지 엔티티
+   * @param letterStatus 저장할 멘토의 답장 편지 엔티티
+   * @param replyLetter 멘티가 보낸 원본 편지 엔티티
    */
-  public void saveMentorLetter(LetterEntity letter, LetterEntity menteeLetter) {
+  public void saveMentorLetter(LetterStatusEntity letterStatus, ReplyLetterDTO replyLetter) {
+    LetterEntity letter = ReplyLetterDTO
+        .of(replyLetter, letterStatus.getMenteeLetter().getCategoryName());
     // 멘토의 답장 편지를 저장
     LetterEntity mentorLetter = letterRepository.save(letter);
 
     // 기존 편지 상태 업데이트 (멘토의 답장을 반영)
-    letterStatusRepository.updateLetterStatus(mentorLetter, menteeLetter);
-  }
-
-  /**
-   * 특정 편지 ID로 편지 조회
-   *
-   * @param letterSeq 조회할 편지의 ID
-   * @return 조회된 LetterEntity 객체
-   * @throws GlobalException 편지가 존재하지 않을 경우 예외 발생
-   */
-  public LetterEntity findLetterByLetterSeq(Long letterSeq) {
-    return letterRepository.findByLetterSeq(letterSeq)
-        .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
+    letterStatusRepository.updateLetterStatus(letterStatus.getLetterStatusSeq(), mentorLetter);
   }
 
   /**
@@ -137,49 +131,80 @@ public class LetterFacade {
    * 4. 해당 편지가 성공적으로 저장되었음을 나타내는 응답을 반환한다.
    *
    * @param user      현재 로그인한 사용자 (멘티 또는 멘토)
-   * @param letterSeq 저장할 편지의 고유 식별자 (ID)
+   * @param letterStatusSeq 저장할 편지의 고유 식별자 (ID)
    */
-  public void saveLetter(UserEntity user, Long letterSeq) {
+  public void saveLetter(UserEntity user, Long letterStatusSeq) {
     boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
 
     if (isMentee) {
-      letterStatusRepository.saveLetterForMentee(letterSeq);
+      letterStatusRepository.saveLetterForMentee(letterStatusSeq);
     } else {
-      letterStatusRepository.saveLetterForMentor(letterSeq);
+      letterStatusRepository.saveLetterForMentor(letterStatusSeq);
     }
+  }
+
+  /**
+   * 특정 편지 상태 정보를 조회
+   *
+   * @param letterStatusSeq 편지 상태 ID
+   * @return 조회된 LetterStatusEntity 객체
+   * @throws GlobalException 편지가 존재하지 않을 경우 예외 발생
+   */
+  public LetterStatusEntity getLetterStatus(Long letterStatusSeq) {
+    return letterStatusRepository
+        .findLetterStatusByLetterStatusSeq(letterStatusSeq)
+        .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
   }
 
   /**
    * 편지 상세 정보 조회 메서드
    *
-   * 1. 요청한 편지 ID(letterSeq)에 해당하는 편지 상태 정보를 조회
-   * 2. 해당 편지가 존재하지 않으면 예외 발생 (LETTER_NOT_FOUND)
-   * 3. 사용자의 역할(멘티/멘토)에 따라 다른 DTO 변환 로직 수행
+   * 사용자의 역할(멘티/멘토)에 따라 다른 DTO 변환 로직 수행
    *
    * @param user      요청한 사용자 (멘티 또는 멘토)
-   * @param letterSeq 조회할 편지의 고유 식별자 (ID)
+   * @param letterStatus 조회할 편지
    * @return 편지 상세 정보를 포함하는 LetterDetailsDTO
    * @throws GlobalException 편지를 찾을 수 없는 경우 LETTER_NOT_FOUND 예외 발생
    */
-  public LetterDetailsDTO getLetterDetails(UserEntity user, Long letterSeq) {
-    LetterStatusEntity letterStatus = letterStatusRepository
-        .findLetterStatusByLetterStatusSeq(letterSeq)
-        .orElseThrow(() -> new GlobalException(FailedResultType.LETTER_NOT_FOUND));
+  public LetterDetailsDTO getLetterDetails(UserEntity user, LetterStatusEntity letterStatus) {
 
     boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
 
     if (isMentee) {
       if (!letterStatus.isMenteeRead()) {
-        letterStatusRepository.updateIsMenteeRead(letterSeq);
+        letterStatusRepository.updateIsMenteeRead(letterStatus.getLetterStatusSeq());
       }
     } else {
       if (!letterStatus.isMentorRead()) {
-        letterStatusRepository.updateIsMentorRead(letterSeq);
+        letterStatusRepository.updateIsMentorRead(letterStatus.getLetterStatusSeq());
       }
     }
 
     return user.getRole().getRoleName().equals("MENTEE")
         ? LetterDetailsDTO.ofMentee(letterStatus)
         : LetterDetailsDTO.ofMentor(letterStatus);
+  }
+
+  /**
+   * 편지를 새로운 멘토에게 전달하는 메서드
+   *
+   * @param letterStatus  현재 편지의 상태 정보
+   */
+  public void throwLetter(LetterStatusEntity letterStatus) {
+    ThrowLetterEntity throwLetterEntity = ThrowLetterEntity.builder()
+        .letterStatus(letterStatus)
+        .throwUser(letterStatus.getMentor())
+        .build();
+    throwLetterRepository.save(throwLetterEntity);
+  }
+
+  /**
+   * 편지의 멘토를 새로운 멘토로 변경
+   *
+   * @param letterStatus 현재 편지의 상태 정보
+   * @param newMentor 새로운 멘토 정보
+   */
+  public void updateMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
+    letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
   }
 }

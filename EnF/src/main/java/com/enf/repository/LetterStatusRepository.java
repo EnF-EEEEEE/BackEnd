@@ -2,6 +2,7 @@ package com.enf.repository;
 
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,37 +18,43 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Transactional
   @Query("UPDATE letter_status ls "
       + "SET ls.mentorLetter = :mentorLetter, ls.createAt = CURRENT_TIMESTAMP "
-      + "WHERE ls.menteeLetter = :menteeLetter")
+      + "WHERE ls.letterStatusSeq = :letterStatusSeq")
   void updateLetterStatus(
-      @Param("mentorLetter") LetterEntity mentorLetter,
-      @Param("menteeLetter") LetterEntity menteeLetter
+      @Param("letterStatusSeq") Long letterStatusSeq,
+      @Param("mentorLetter") LetterEntity mentorLetter
   );
 
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
       + "SET ls.isMenteeSaved = CASE WHEN ls.isMenteeSaved = true THEN false ELSE true END "
-      + "WHERE ls.letterStatusSeq = :letterSeq")
-  void saveLetterForMentee(@Param("letterSeq") Long letterSeq);
+      + "WHERE ls.letterStatusSeq = :letterStatusSeq")
+  void saveLetterForMentee(@Param("letterStatusSeq") Long letterStatusSeq);
 
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
       + "SET ls.isMentorSaved = CASE WHEN ls.isMentorSaved = true THEN false ELSE true END "
-      + "WHERE ls.letterStatusSeq = :letterSeq")
-  void saveLetterForMentor(@Param("letterSeq") Long letterSeq);
+      + "WHERE ls.letterStatusSeq = :letterStatusSeq")
+  void saveLetterForMentor(@Param("letterStatusSeq") Long letterStatusSeq);
 
-  Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterSeq);
-
-  @Modifying
-  @Transactional
-  @Query("UPDATE letter_status ls "
-      + "SET ls.isMenteeRead = true WHERE ls.letterStatusSeq = :letterSeq")
-  void updateIsMenteeRead(@Param("letterSeq") Long letterSeq);
+  Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterStatusSeq);
 
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
-      + "SET ls.isMentorRead = true WHERE ls.letterStatusSeq = :letterSeq")
-  void updateIsMentorRead(@Param("letterSeq") Long letterSeq);
+      + "SET ls.isMenteeRead = true WHERE ls.letterStatusSeq = :letterStatusSeq")
+  void updateIsMenteeRead(@Param("letterStatusSeq") Long letterStatusSeq);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE letter_status ls "
+      + "SET ls.isMentorRead = true WHERE ls.letterStatusSeq = :letterStatusSeq")
+  void updateIsMentorRead(@Param("letterStatusSeq") Long letterStatusSeq);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE letter_status ls "
+      + "SET ls.mentor = :newMentor, ls.isMentorRead = false WHERE ls.letterStatusSeq = :letterStatusSeq")
+  void updateMentor(@Param("letterStatusSeq") Long letterStatusSeq, @Param("newMentor")UserEntity newMentor);
 }
