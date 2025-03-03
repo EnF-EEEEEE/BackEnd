@@ -9,7 +9,6 @@ import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
-import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
@@ -117,10 +116,11 @@ public class UserFacade {
   /**
    * 새 이름, 카테고리 정보와 일치하는 UserEntity 조회
    *
-   * @param sendLetter 작성한 편지 정보
+   * @param birdName 작성한 사용자의 새이름
+   * @param categoryName 작성한 편지의 카테고리
    */
-  public UserEntity getMentorByBirdAndCategory(SendLetterDTO sendLetter) {
-    return userQueryRepository.getMentor(sendLetter.getBirdName(), sendLetter.getCategoryName());
+  public UserEntity getMentorByBirdAndCategory(String birdName, String categoryName) {
+    return userQueryRepository.getMentor(birdName, categoryName);
   }
 
   public UserEntity findByNickname(String receiveUser) {
