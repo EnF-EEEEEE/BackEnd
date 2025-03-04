@@ -208,4 +208,27 @@ public class LetterServiceImpl implements LetterService {
 
     return ResultResponse.of(SuccessResultType.SUCCESS_THROW_LETTER);
   }
+
+  /**
+   * 고마움 전달 로직을 수행하는 메서드
+   *
+   * @param request          HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param letterSeq        고마움을 전달할 멘토 편지의 고유 식별자 (ID)
+   * @return                 결과 응답 객체 (성공/실패 여부 포함)
+   * @throws GlobalException 멘토가 해당 경로를 호출할 경우 예외처리
+   */
+  @Override
+  public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    if(user.getRole().getRoleName().equals("MENTOR")) {
+      throw new GlobalException(FailedResultType.MENTOR_PERMISSION_DENIED);
+    }
+
+    LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq);
+    redisTemplate.convertAndSend("notifications", NotificationDTO
+        .thanksToMentor(letterStatus.getMentee(), letterStatus.getMentor()));
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
+  }
 }

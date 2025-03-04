@@ -83,6 +83,7 @@ public class LetterFacade {
             .isMentorRead(false)
             .isMenteeSaved(false)
             .isMentorSaved(false)
+            .isThanksToMentor(false)
             .createAt(LocalDateTime.now())
             .build()
     );
@@ -206,5 +207,19 @@ public class LetterFacade {
    */
   public void updateMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
     letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
+  }
+
+  /**
+   * 고마움 전달을 위한 메서드
+   *
+   * @param letterSeq 고마움을 전달할 멘토 편지의 고유 식별자
+   */
+  public LetterStatusEntity thanksToMentor(Long letterSeq) {
+    LetterStatusEntity letterStatus = letterStatusRepository
+        .getLetterStatusByMentorLetterLetterSeq(letterSeq);
+
+    letterStatusRepository.updateIsThankToMentor(letterStatus.getLetterStatusSeq());
+
+    return letterStatus;
   }
 }

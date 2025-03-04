@@ -38,9 +38,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
+        log.info("request URI : {}", request.getRequestURI());
         // 검증 필요한 경로인지 확인
         if(isExcludedPath(request.getRequestURI())) {
-            log.info("request URI : {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -102,6 +102,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         return requestURI.equals("/")
             || requestURI.equals("/api/v1/auth/callback")
             || requestURI.equals("/api/v1/auth/kakao")
-            || requestURI.equals("/api/v1/auth/reissue-token");
+            || requestURI.equals("/api/v1/auth/reissue-token")
+            || requestURI.matches("/v3/api-docs/.*")
+            || requestURI.matches("/v3/api-docs")
+            || requestURI.matches("/swagger-ui/.*")
+            || requestURI.equals("/swagger-ui.html")
+            || requestURI.matches("/swagger-resources/.*");
     }
 }

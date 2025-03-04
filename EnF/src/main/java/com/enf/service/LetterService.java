@@ -22,4 +22,6 @@ public interface LetterService {
   ResultResponse getLetterDetails(HttpServletRequest request, Long letterStatusSeq);
 
   ResultResponse throwLetter(HttpServletRequest request, Long letterStatusSeq);
+
+  ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq);
 }
