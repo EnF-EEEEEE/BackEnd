@@ -38,9 +38,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
+        log.info("request URI : {}", request.getRequestURI());
         // 검증 필요한 경로인지 확인
         if(isExcludedPath(request.getRequestURI())) {
-            log.info("request URI : {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
