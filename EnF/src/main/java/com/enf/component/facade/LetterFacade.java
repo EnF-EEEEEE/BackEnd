@@ -209,6 +209,11 @@ public class LetterFacade {
     letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
   }
 
+  /**
+   * 고마움 전달을 위한 메서드
+   *
+   * @param letterSeq 고마움을 전달할 멘토 편지의 고유 식별자
+   */
   public LetterStatusEntity thanksToMentor(Long letterSeq) {
     LetterStatusEntity letterStatus = letterStatusRepository
         .getLetterStatusByMentorLetterLetterSeq(letterSeq);
