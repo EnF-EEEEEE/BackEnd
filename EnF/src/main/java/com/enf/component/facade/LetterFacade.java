@@ -208,4 +208,13 @@ public class LetterFacade {
   public void updateMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
     letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
   }
+
+  public LetterStatusEntity thanksToMentor(Long letterSeq) {
+    LetterStatusEntity letterStatus = letterStatusRepository
+        .getLetterStatusByMentorLetterLetterSeq(letterSeq);
+
+    letterStatusRepository.updateIsThankToMentor(letterStatus.getLetterStatusSeq());
+
+    return letterStatus;
+  }
 }

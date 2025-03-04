@@ -208,4 +208,19 @@ public class LetterServiceImpl implements LetterService {
 
     return ResultResponse.of(SuccessResultType.SUCCESS_THROW_LETTER);
   }
+
+  @Override
+  public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    if(user.getRole().getRoleName().equals("MENTOR")) {
+      throw new GlobalException(FailedResultType.MENTOR_PERMISSION_DENIED);
+    }
+
+    LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq);
+    redisTemplate.convertAndSend("notifications", NotificationDTO
+        .thanksToMentor(letterStatus.getMentee(), letterStatus.getMentor()));
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
+  }
 }
