@@ -83,6 +83,7 @@ public class LetterFacade {
             .isMentorRead(false)
             .isMenteeSaved(false)
             .isMentorSaved(false)
+            .isThanksToMentor(false)
             .createAt(LocalDateTime.now())
             .build()
     );
