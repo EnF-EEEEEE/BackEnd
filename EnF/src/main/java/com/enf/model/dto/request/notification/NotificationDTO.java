@@ -34,6 +34,17 @@ public class NotificationDTO {
   }
 
   /**
+   * 멘티가 고마움 표시를 보냈을 때 생성되는 알림
+   */
+  public static NotificationDTO thanksToMentor(UserEntity mentee, UserEntity mentor) {
+    return new NotificationDTO(
+        mentor.getUserSeq(),
+        mentee.getNickname(),
+        mentee.getNickname() + " 버디가 고마움 표시를 남겼어요~"
+    );
+  }
+
+  /**
    * 멘티가 편지를 보냈을 때 생성되는 알림
    */
   public static NotificationDTO sendLetter(UserEntity mentee, UserEntity mentor) {
