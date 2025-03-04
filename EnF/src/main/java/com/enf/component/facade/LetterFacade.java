@@ -69,12 +69,12 @@ public class LetterFacade {
    * @param mentee 편지를 보낸 멘티
    * @param mentor 편지를 받는 멘토
    */
-  public void saveMenteeLetter(LetterEntity letter, UserEntity mentee, UserEntity mentor) {
+  public LetterStatusEntity saveMenteeLetter(LetterEntity letter, UserEntity mentee, UserEntity mentor) {
     // 편지를 저장
     LetterEntity menteeLetter = letterRepository.save(letter);
 
     // 편지 상태 저장 (멘토가 답장할 때 참조할 수 있도록 함)
-    letterStatusRepository.save(
+    return letterStatusRepository.save(
         LetterStatusEntity.builder()
             .mentee(mentee)
             .mentor(mentor)
