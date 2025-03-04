@@ -23,6 +23,8 @@ public class NotificationEntity {
 
   private Long userSeq;
 
+  private Long letterStatusSeq;
+
   private String sendUser;
 
   private String message;

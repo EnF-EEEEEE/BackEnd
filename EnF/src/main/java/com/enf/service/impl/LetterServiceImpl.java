@@ -50,8 +50,9 @@ public class LetterServiceImpl implements LetterService {
     UserEntity mentor = userFacade
         .getMentorByBirdAndCategory(sendLetter.getBirdName(), sendLetter.getCategoryName());
 
-    letterFacade.saveMenteeLetter(SendLetterDTO.of(sendLetter), mentee, mentor);
-    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(mentee, mentor));
+    LetterStatusEntity letterStatus = letterFacade.saveMenteeLetter(SendLetterDTO.of(sendLetter), mentee, mentor);
+    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus,
+        mentor));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
@@ -70,12 +71,10 @@ public class LetterServiceImpl implements LetterService {
    */
   @Override
   public ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter) {
-    UserEntity mentor = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(replyLetter.getLetterStatusSeq());
 
     letterFacade.saveMentorLetter(letterStatus, replyLetter);
-    redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(mentor, letterStatus.getMentee()));
+    redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(letterStatus));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_RECEIVE_LETTER);
   }
@@ -196,15 +195,11 @@ public class LetterServiceImpl implements LetterService {
     }
 
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
-    if (!(letterStatus.getMentorLetter() == null)) {
-      throw new GlobalException(FailedResultType.ALREADY_REPLIED);
-    }
-
     letterFacade.throwLetter(letterStatus);
     UserEntity newMentor = userFacade.getNewMentor(letterStatus);
 
     letterFacade.updateMentor(letterStatus, newMentor);
-    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus.getMentee(), newMentor));
+    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, newMentor));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_THROW_LETTER);
   }
@@ -226,8 +221,7 @@ public class LetterServiceImpl implements LetterService {
     }
 
     LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq);
-    redisTemplate.convertAndSend("notifications", NotificationDTO
-        .thanksToMentor(letterStatus.getMentee(), letterStatus.getMentor()));
+    redisTemplate.convertAndSend("notifications", NotificationDTO.thanksToMentor(letterStatus));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
   }

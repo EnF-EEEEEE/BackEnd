@@ -35,6 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
   private final ObjectMapper mapper = new ObjectMapper();
+  private final Long TIME_OUT = 30 * 60 * 1000L;
 
   /**
    * SSE 연결을 생성하고 사용자를 구독 처리
@@ -44,7 +45,7 @@ public class NotificationServiceImpl implements NotificationService {
    */
   public SseEmitter createEmitter(HttpServletRequest request) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+    SseEmitter emitter = new SseEmitter(TIME_OUT);
 
     emitters.put(user.getUserSeq(), emitter);
     emitter.onCompletion(() -> emitters.remove(user.getUserSeq()));
@@ -53,10 +54,14 @@ public class NotificationServiceImpl implements NotificationService {
     log.info("사용자 {} SSE 구독 시작", user.getNickname());
 
     // 구독 성공 알림 전송
-    sendNotification(NotificationDTO.subscribe(user));
+    try {
+      emitter.send(SseEmitter.event().name("notifications").data(user.getNickname() + "구독 성공"));
+    } catch (IOException e) {
+      log.error("사용자 {} SSE 전송 오류: {}", user.getNickname(), e.getMessage());
+    }
 
     // 미확인 알림 전송
-    sendPendingNotifications(user.getUserSeq());
+    sendPendingNotifications(user);
 
     return emitter;
   }
@@ -64,29 +69,29 @@ public class NotificationServiceImpl implements NotificationService {
   /**
    * 사용자가 SSE를 구독할 때, 저장된 미확인 알림을 Redis를 통해 전송
    *
-   * @param userSeq 사용자 ID
+   * @param user 사용자
    */
-  private void sendPendingNotifications(Long userSeq) {
-    List<NotificationEntity> notifications = letterFacade.findAllByUserSeq(userSeq);
+  private void sendPendingNotifications(UserEntity user) {
+    List<NotificationEntity> notifications = letterFacade.findAllByUserSeq(user.getUserSeq());
     if (notifications.isEmpty()) {
-      log.info("사용자 {}: 미확인 알림 없음", userSeq);
+      log.info("사용자 {} : 미확인 알림 없음", user.getNickname());
       return;
     }
+    log.info("사용자 {} : 미확인 알림 : {}", user.getNickname(), notifications.size());
 
-    // 알림 개수에 따라 메시지 생성
-    NotificationDTO notificationDTO = (notifications.size() == 1)
-        ? NotificationDTO.of(userSeq, notifications.get(0))
-        : NotificationDTO.of(userSeq, notifications.get(0), notifications.size() - 1);
 
-    try {
-      String message = mapper.writeValueAsString(notificationDTO);
-      redisTemplate.convertAndSend("notifications", message);
+    for (NotificationEntity notification : notifications) {
+      NotificationDTO notificationDTO = NotificationDTO.of(user.getUserSeq(), notification);
+      try {
+        String message = mapper.writeValueAsString(notificationDTO);
+        redisTemplate.convertAndSend("notifications", message);
 
-      letterFacade.deleteAllByUserSeq(userSeq);
-    } catch (JsonProcessingException e) {
-      log.error("Redis 메시지 직렬화 오류: {}", e.getMessage(), e);
+      } catch (JsonProcessingException e) {
+        log.error("Redis 메시지 직렬화 오류: {}", e.getMessage(), e);
+      }
     }
 
+    letterFacade.deleteAllByUserSeq(user.getUserSeq());
   }
 
   /**
@@ -104,7 +109,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     try {
-      emitter.send(SseEmitter.event().name("notifications").data(notification.getMessage()));
+      emitter.send(SseEmitter.event().name("notifications").data(notification));
     } catch (IOException e) {
       log.error("사용자 {} SSE 전송 오류: {}, 알림을 DB에 저장", notification.getUserSeq(), e.getMessage());
       letterFacade.saveNotification(NotificationDTO.toEntity(notification));
