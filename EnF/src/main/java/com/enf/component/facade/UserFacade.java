@@ -138,14 +138,47 @@ public class UserFacade {
    * @param user UserEntity
    */
   public void pendingWithdrawal(UserEntity user) {
-    RoleEntity role = roleRepository.findByRoleName("WITHDRAWAL_PENDING");
-    userRepository.pendingWithdrawal(user.getUserSeq(), role);
+    userRepository.pendingWithdrawal(user.getUserSeq());
   }
 
   // ============================= Role 관련 메서드 =============================
 
+  /**
+   * roleName과 일치하는 RoleEntity 조회
+   *
+   * @param roleName 역할 이름
+   * @return 조회된 RoleEntity
+   */
   public RoleEntity findRoleByRoleName(String roleName) {
     return roleRepository.findByRoleName(roleName);
+  }
+
+  // ============================= Bird 관련 메서드 =============================
+
+  /**
+   * birdName과 일치하는 BirdEntity 조회
+   *
+   * @param birdName 새 이름
+   * @return 조회된 BirdEntity
+   */
+  public BirdEntity findBirdByBirdName(String birdName) {
+    return birdRepository.findByBirdName(birdName);
+  }
+
+  // ============================= Category 관련 메서드 =============================
+
+  /**
+   * 카테고리 저장 (멘토 역할인 경우에만 저장)
+   *
+   * @param role 사용자 역할
+   * @param additionalInfoDTO 추가 정보 DTO
+   * @return 저장된 CategoryEntity (멘토가 아닌 경우 null)
+   */
+  public CategoryEntity saveCategory(RoleEntity role, UserCategoryDTO additionalInfoDTO) {
+    if ("MENTOR".equals(role.getRoleName())) {
+      return categoryRepository.save(UserCategoryDTO.of(additionalInfoDTO));
+    }
+    return null;
   }
 
   // ============================= Token 관련 메서드 =============================
@@ -188,5 +221,20 @@ public class UserFacade {
 
   public void resetQuota(UserEntity user, int quota) {
     quotaRepository.updateQuota(user, quota);
+  }
+
+  public List<UserEntity> getWithdrawalPendingUsers() {
+    return userRepository.getWithdrawalPendingUsers();
+  }
+
+  public void withdrawal(UserEntity user) {
+    RoleEntity role = roleRepository.findByRoleName("WITHDRAWAL");
+    String nickname = "떠나간 새";
+
+    userRepository.withdrawal(user.getUserSeq(), role, nickname);
+  }
+
+  public void cancelWithdrawal(UserEntity user) {
+    userRepository.cancelWithdrawal(user.getUserSeq());
   }
 }

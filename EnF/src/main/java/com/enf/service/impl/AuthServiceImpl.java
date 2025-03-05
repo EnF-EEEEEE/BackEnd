@@ -47,6 +47,9 @@ public class AuthServiceImpl implements AuthService {
 
     return userFacade.findByProviderId(kakaoUserDetails.getProviderId())
         .map(user -> {
+          if (user.getDeleteAt() != null) {
+            userFacade.cancelWithdrawal(user);
+          }
           log.info("Kakao 로그인 진행");
           userFacade.updateLastLoginAt(user.getUserSeq());
           userFacade.generateAndSetToken(user, response);
