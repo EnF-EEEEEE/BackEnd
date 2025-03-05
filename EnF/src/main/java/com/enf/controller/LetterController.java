@@ -6,6 +6,7 @@ import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.LetterService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -141,6 +142,21 @@ public class LetterController {
       @RequestParam(name = "letterStatusSeq") Long letterStatusSeq) {
 
     ResultResponse response = letterService.throwLetter(request, letterStatusSeq);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  /**
+   * 편지 전달(Throw) API
+   *
+   * @param request           HTTP 요청 객체 (사용자 인증 정보 포함)
+   * @param letterSeq         고마움 표시할 멘토 편지의 고유 식별자 (ID)
+   * @return                  결과 응답 객체 (성공/실패 여부 포함)
+   */
+  @GetMapping("/thanks")
+  public ResponseEntity<ResultResponse> thanksToMentor(HttpServletRequest request,
+      @RequestParam(name = "letterSeq") Long letterSeq) {
+
+    ResultResponse response = letterService.thanksToMentor(request, letterSeq);
     return new ResponseEntity<>(response, response.getStatus());
   }
 }

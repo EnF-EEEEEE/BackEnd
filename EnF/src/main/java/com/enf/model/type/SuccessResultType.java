@@ -23,6 +23,7 @@ public enum SuccessResultType {
   SUCCESS_SAVE_LETTER(HttpStatus.OK, "편지 저장 성공"),
   SUCCESS_GET_LETTER_DETAILS(HttpStatus.OK, "편지 상세 조회 성공"),
   SUCCESS_THROW_LETTER(HttpStatus.OK, "편지 넘기기 성공"),
+  SUCCESS_THANKS_TO_MENTOR(HttpStatus.OK, "고마움 표시하기 성공"),
   ;
 
   private final HttpStatus status;

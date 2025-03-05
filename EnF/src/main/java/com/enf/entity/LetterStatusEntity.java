@@ -52,5 +52,8 @@ public class LetterStatusEntity {
   @Column(name = "is_mentor_saved")
   private boolean isMentorSaved;
 
+  @Column(name = "is_thanks_to_mentor")
+  private boolean isThanksToMentor;
+
   private LocalDateTime createAt;
 }

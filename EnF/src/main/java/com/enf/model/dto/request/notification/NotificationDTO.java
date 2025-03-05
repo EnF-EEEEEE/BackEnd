@@ -1,5 +1,6 @@
 package com.enf.model.dto.request.notification;
 
+import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.NotificationEntity;
 import com.enf.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,41 +18,48 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NotificationDTO {
 
-  private Long userSeq;    // 알림을 받을 사용자 ID
-  private String sendUser; // 알림을 보낸 사용자 (없을 수도 있음)
-  private String message;  // 알림 메시지
+  private Long userSeq;           // 알림을 받을 사용자 ID
+  private Long letterStatusSeq;   // 보낸 편지의 일련번호
+  private String sendUser;        // 알림을 보낸 사용자 (없을 수도 있음)
+  private String message;         // 알림 메시지
+
 
 
   /**
-   * SSE 구독 성공 시 생성되는 알림
+   * 멘티가 고마움 표시를 보냈을 때 생성되는 알림
    */
-  public static NotificationDTO subscribe(UserEntity user) {
+  public static NotificationDTO thanksToMentor(LetterStatusEntity letterStatus) {
     return new NotificationDTO(
-        user.getUserSeq(),
-        null,
-        user.getNickname() + " 버디 구독 성공!"
+        letterStatus.getMentor().getUserSeq(),
+        letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentee().getNickname(),
+        letterStatus.getMentee().getNickname() + "님으로부터 나의 답장에 대한 고마움 표시가 도착했어요."
+
     );
   }
 
   /**
    * 멘티가 편지를 보냈을 때 생성되는 알림
    */
-  public static NotificationDTO sendLetter(UserEntity mentee, UserEntity mentor) {
+  public static NotificationDTO sendLetter(
+      LetterStatusEntity letterStatus, UserEntity mentor) {
     return new NotificationDTO(
         mentor.getUserSeq(),
-        mentee.getNickname(),
-        mentee.getNickname() + " 버디가 편지를 보냈어요~"
+        letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentee().getNickname(),
+        letterStatus.getMentee().getNickname() + "님으로부터 날아온 답장을 확인해보세요"
     );
   }
 
   /**
    * 멘토가 편지를 보냈을 때 생성되는 알림
    */
-  public static NotificationDTO replyLetter(UserEntity mentor, UserEntity mentee) {
+  public static NotificationDTO replyLetter(LetterStatusEntity letterStatus) {
     return new NotificationDTO(
-        mentee.getUserSeq(),
-        mentor.getNickname(),
-        mentor.getNickname() + " 버디가 편지를 보냈어요~"
+        letterStatus.getMentee().getUserSeq(),
+        letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentor().getNickname(),
+        letterStatus.getMentor().getNickname() + "님으로부터 날아온 답장을 확인해보세요"
     );
   }
 
@@ -61,19 +69,9 @@ public class NotificationDTO {
   public static NotificationDTO of(Long userSeq, NotificationEntity notification) {
     return new NotificationDTO(
         userSeq,
+        notification.getLetterStatusSeq(),
         notification.getSendUser(),
         notification.getMessage()
-    );
-  }
-
-  /**
-   * 여러 개의 알림을 묶어서 보낼 때 사용
-   */
-  public static NotificationDTO of(Long userSeq, NotificationEntity notification, int size) {
-    return new NotificationDTO(
-        userSeq,
-        notification.getSendUser(),
-        notification.getSendUser() + "외 " + size + "명의 버디가 편지를 보냈어요~"
     );
   }
 
@@ -83,6 +81,7 @@ public class NotificationDTO {
   public static NotificationEntity toEntity(NotificationDTO notification) {
     return NotificationEntity.builder()
         .userSeq(notification.getUserSeq())
+        .letterStatusSeq(notification.getLetterStatusSeq())
         .sendUser(notification.getSendUser())
         .message(notification.getMessage())
         .createdAt(LocalDateTime.now())

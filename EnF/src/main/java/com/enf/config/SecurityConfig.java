@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(                         // 경로별 인가 설정
                 authorizeRequests -> authorizeRequests
+                                .requestMatchers(SecurityConstants.swaggerUrls).permitAll()
                                 .requestMatchers(SecurityConstants.allowedUrls).permitAll()  // 허용 URL 설정
                                 .requestMatchers(SecurityConstants.adminUrls).hasAnyAuthority("ADMIN","DEVELOPER") // 관리자만 접근 가능
                                 .requestMatchers(SecurityConstants.userUrls).hasAnyAuthority("UNKNOWN","MENTEE","MENTOR","ADMIN","DEVELOPER") // 주니어 사용자 접근 가능

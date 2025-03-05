@@ -69,12 +69,12 @@ public class LetterFacade {
    * @param mentee 편지를 보낸 멘티
    * @param mentor 편지를 받는 멘토
    */
-  public void saveMenteeLetter(LetterEntity letter, UserEntity mentee, UserEntity mentor) {
+  public LetterStatusEntity saveMenteeLetter(LetterEntity letter, UserEntity mentee, UserEntity mentor) {
     // 편지를 저장
     LetterEntity menteeLetter = letterRepository.save(letter);
 
     // 편지 상태 저장 (멘토가 답장할 때 참조할 수 있도록 함)
-    letterStatusRepository.save(
+    return letterStatusRepository.save(
         LetterStatusEntity.builder()
             .mentee(mentee)
             .mentor(mentor)
@@ -83,6 +83,7 @@ public class LetterFacade {
             .isMentorRead(false)
             .isMenteeSaved(false)
             .isMentorSaved(false)
+            .isThanksToMentor(false)
             .createAt(LocalDateTime.now())
             .build()
     );
@@ -206,5 +207,19 @@ public class LetterFacade {
    */
   public void updateMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
     letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
+  }
+
+  /**
+   * 고마움 전달을 위한 메서드
+   *
+   * @param letterSeq 고마움을 전달할 멘토 편지의 고유 식별자
+   */
+  public LetterStatusEntity thanksToMentor(Long letterSeq) {
+    LetterStatusEntity letterStatus = letterStatusRepository
+        .getLetterStatusByMentorLetterLetterSeq(letterSeq);
+
+    letterStatusRepository.updateIsThankToMentor(letterStatus.getLetterStatusSeq());
+
+    return letterStatus;
   }
 }
