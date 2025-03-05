@@ -47,6 +47,8 @@ public class UserEntity {
 
   private LocalDateTime lastLoginAt;
 
+  private LocalDateTime deleteAt;
+
   private String refreshToken;
 
 }

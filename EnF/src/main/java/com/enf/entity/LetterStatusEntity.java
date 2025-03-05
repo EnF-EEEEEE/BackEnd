@@ -56,4 +56,18 @@ public class LetterStatusEntity {
   private boolean isThanksToMentor;
 
   private LocalDateTime createAt;
+
+  public static LetterStatusEntity of(LetterEntity menteeLetter, UserEntity mentee, UserEntity mentor) {
+    return LetterStatusEntity.builder()
+        .mentee(mentee)
+        .mentor(mentor)
+        .menteeLetter(menteeLetter)
+        .isMenteeRead(false)
+        .isMentorRead(false)
+        .isMenteeSaved(false)
+        .isMentorSaved(false)
+        .isThanksToMentor(false)
+        .createAt(LocalDateTime.now())
+        .build();
+  }
 }

@@ -19,6 +19,7 @@ public enum FailedResultType {
   MENTEE_PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "멘티는 접근 권한이 없습니다."),
   MENTOR_PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "멘토는 접근 권한이 없습니다."),
   ALREADY_REPLIED(HttpStatus.BAD_REQUEST, "이미 답장한 편지는 넘길 수 없습니다."),
+  UNLINK_FAILED(HttpStatus.BAD_REQUEST, "회원탈퇴 실패 했습니다")
   ;
 
   private final HttpStatus status;
