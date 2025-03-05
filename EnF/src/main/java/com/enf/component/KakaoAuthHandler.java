@@ -1,6 +1,7 @@
 package com.enf.component;
 
 
+import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.auth.KakaoUserDetailsDTO;
 import com.enf.model.type.FailedResultType;
@@ -107,4 +108,38 @@ public class KakaoAuthHandler {
     throw new GlobalException(FailedResultType.USER_INFO_RETRIEVAL);
   }
 
+  // 카카오 사용자 Unlink
+  public void unlinkUser(UserEntity user) {
+    // HTTP 헤더 설정
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Authorization", "KakaoAK " + adminKey);
+    headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+    // 요청 바디 설정
+    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+    body.add("target_id_type", "user_id");
+    body.add("target_id", user.getProviderId());
+
+    // HTTP 요청 객체 생성
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+
+    // RestTemplate 초기화
+    RestTemplate restTemplate = new RestTemplate();
+
+    // 요청 전송
+    ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+        UrlType.KAKAO_UNLINK_URL.getUrl(),
+        HttpMethod.POST,
+        request,
+        new ParameterizedTypeReference<>() {}
+    );
+
+    // 응답 처리
+    if (response.getStatusCode() == HttpStatus.OK) {
+      log.info("회원 탈퇴 성공: {}", user.getNickname());
+    } else {
+      log.error("회원 탈퇴 실패: {}", response.getStatusCode());
+      throw new GlobalException(FailedResultType.UNLINK_FAILED);
+    }
+  }
 }

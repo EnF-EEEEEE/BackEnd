@@ -1,6 +1,7 @@
 package com.enf.repository;
 
 import com.enf.entity.CategoryEntity;
+import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
@@ -43,7 +44,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u set u.category = :category WHERE u.userSeq = :userSeq")
   void updateCategoryByUserSeq(Long userSeq, CategoryEntity category);
 
-  Optional<UserEntity> findByNickname(String nickname);
 
-
+  @Modifying
+  @Transactional
+  @Query("UPDATE user u set u.deleteAt = CURRENT_TIMESTAMP, u.role = :role WHERE u.userSeq = :userSeq")
+  void pendingWithdrawal(Long userSeq, RoleEntity role);
 }

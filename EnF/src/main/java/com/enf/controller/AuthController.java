@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -63,6 +64,13 @@ public class AuthController {
       HttpServletResponse response) {
 
     ResultResponse resultResponse = authService.reissueToken(request, response);
+    return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
+  }
+
+  @GetMapping("/withdrawal")
+  public ResponseEntity<ResultResponse> withdrawal(HttpServletRequest request) {
+
+    ResultResponse resultResponse = authService.withdrawal(request);
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 }

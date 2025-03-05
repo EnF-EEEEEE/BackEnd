@@ -107,6 +107,20 @@ public class AuthServiceImpl implements AuthService {
   }
 
   /**
+   * 회원 탈퇴 처리하는 메서드
+   *
+   * @param request  HTTP 요청 객체
+   * @return 회원탈퇴 결과 응답 객체
+   */
+  @Override
+  public ResultResponse withdrawal(HttpServletRequest request) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    userFacade.pendingWithdrawal(user);
+
+    return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_WITHDRAWAL);
+  }
+
+  /**
    * 쿠키에서 Refresh Token을 추출하는 메서드
    *
    * @param cookies HTTP 요청에서 전달된 쿠키 배열
