@@ -12,6 +12,7 @@ import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
+import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
 import com.enf.model.type.SuccessResultType;
@@ -224,5 +225,13 @@ public class LetterServiceImpl implements LetterService {
     redisTemplate.convertAndSend("notifications", NotificationDTO.thanksToMentor(letterStatus));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
+  }
+
+  @Override
+  public ResultResponse getThrowLetterCategory(HttpServletRequest request) {
+    ThrowLetterCategoryDTO throwLetterCategory = ThrowLetterCategoryDTO
+        .of(letterFacade.getThrowLetterCategory());
+
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_THROW_LETTER_CATEGORY, throwLetterCategory);
   }
 }
