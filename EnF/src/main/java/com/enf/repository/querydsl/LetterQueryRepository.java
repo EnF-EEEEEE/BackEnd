@@ -1,12 +1,18 @@
 package com.enf.repository.querydsl;
 
+import static com.enf.entity.QThrowLetterCategoryEntity.throwLetterCategoryEntity;
+
 import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.QLetterStatusEntity;
+import com.enf.entity.QThrowLetterCategoryEntity;
+import com.enf.entity.ThrowLetterCategoryEntity;
 import com.enf.entity.UserEntity;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +26,7 @@ public class LetterQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
   QLetterStatusEntity letterStatus = QLetterStatusEntity.letterStatusEntity;
+  QThrowLetterCategoryEntity letterCategory = throwLetterCategoryEntity;
 
   /**
    * 멘티 또는 멘토의 편지 목록 조회 (페이징 지원)
@@ -70,6 +77,31 @@ public class LetterQueryRepository {
 
     // 페이징 처리 후 반환
     return PageResponse.pagination(receiveLetters, pageNumber);
+  }
+
+  @Transactional
+  public void incrementCategory(Long letterCategorySeq, String categoryName) {
+    NumberPath<Long> categoryField = getCategoryField(categoryName);
+
+    jpaQueryFactory
+        .update(throwLetterCategoryEntity)
+        .set(categoryField, categoryField.add(1))
+        .where(throwLetterCategoryEntity.throwLetterCategorySeq.eq(letterCategorySeq))
+        .execute();
+  }
+
+  private NumberPath<Long> getCategoryField(String categoryName) {
+    return switch (categoryName) {
+      case "career" -> throwLetterCategoryEntity.career;
+      case "mental" -> throwLetterCategoryEntity.mental;
+      case "relationship" -> throwLetterCategoryEntity.relationship;
+      case "love" -> throwLetterCategoryEntity.love;
+      case "life" -> throwLetterCategoryEntity.life;
+      case "finance" -> throwLetterCategoryEntity.finance;
+      case "housing" -> throwLetterCategoryEntity.housing;
+      case "other" -> throwLetterCategoryEntity.other;
+      default -> throw new IllegalArgumentException("Invalid category name: " + categoryName);
+    };
   }
 
 }

@@ -3,6 +3,7 @@ package com.enf.component.facade;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.NotificationEntity;
+import com.enf.entity.ThrowLetterCategoryEntity;
 import com.enf.entity.ThrowLetterEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
@@ -10,11 +11,13 @@ import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
+import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
 import com.enf.repository.LetterRepository;
 import com.enf.repository.LetterStatusRepository;
 import com.enf.repository.NotificationRepository;
+import com.enf.repository.ThrowLetterCategoryRepository;
 import com.enf.repository.ThrowLetterRepository;
 import com.enf.repository.querydsl.LetterQueryRepository;
 import java.time.LocalDateTime;
@@ -33,6 +36,7 @@ public class LetterFacade {
   private final LetterStatusRepository letterStatusRepository;
   private final LetterQueryRepository letterQueryRepository;
   private final ThrowLetterRepository throwLetterRepository;
+  private final ThrowLetterCategoryRepository throwLetterCategoryRepository;
 
   /**
    * 특정 사용자의 모든 알림 조회
@@ -196,7 +200,13 @@ public class LetterFacade {
         .letterStatus(letterStatus)
         .throwUser(letterStatus.getMentor())
         .build();
+
     throwLetterRepository.save(throwLetterEntity);
+
+    letterQueryRepository.incrementCategory(
+        getThrowLetterCategory().getThrowLetterCategorySeq(),
+        letterStatus.getMenteeLetter().getCategoryName()
+    );
   }
 
   /**
@@ -221,5 +231,10 @@ public class LetterFacade {
     letterStatusRepository.updateIsThankToMentor(letterStatus.getLetterStatusSeq());
 
     return letterStatus;
+  }
+
+  public ThrowLetterCategoryEntity getThrowLetterCategory() {
+    return throwLetterCategoryRepository.findByThrowLetterCategorySeq(1L)
+        .orElseGet(() -> throwLetterCategoryRepository.save(ThrowLetterCategoryDTO.create()));
   }
 }
