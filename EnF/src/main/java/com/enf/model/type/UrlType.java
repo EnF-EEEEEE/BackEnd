@@ -7,7 +7,7 @@ public enum UrlType {
 
   KAKAO_TOKEN_URL("https://kauth.kakao.com/oauth/token"),
   KAKAO_USER_INFO_URL("https://kapi.kakao.com/v2/user/me"),
-  FRONT_URL("추가 예정"),
+  FRONT_LOCAL_URL("http://localhost:3000"),
   ;
 
   private final String url;
