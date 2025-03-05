@@ -159,4 +159,11 @@ public class LetterController {
     ResultResponse response = letterService.thanksToMentor(request, letterSeq);
     return new ResponseEntity<>(response, response.getStatus());
   }
+
+  @GetMapping("/throws/category")
+  public ResponseEntity<ResultResponse> getThrowLetterCategory(HttpServletRequest request) {
+
+    ResultResponse response = letterService.getThrowLetterCategory(request);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
 }
