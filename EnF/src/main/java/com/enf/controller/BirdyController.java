@@ -30,10 +30,10 @@ public class BirdyController {
     return new ResponseEntity<>(response, response.getStatus());
   }
 
-  @GetMapping("/all/birdy")
-  public ResponseEntity<ResultResponse> getAllBirdy() {
+  @GetMapping("/mypage/birdy")
+  public ResponseEntity<ResultResponse> getMyPageBirdy() {
 
-    ResultResponse response = birdyService.getAllBirdy();
+    ResultResponse response = birdyService.getMyPageBirdy();
     return new ResponseEntity<>(response, response.getStatus());
   }
 }

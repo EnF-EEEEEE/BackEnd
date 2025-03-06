@@ -8,5 +8,5 @@ public interface BirdyService {
 
   ResultResponse getLetterBirdy();
 
-  ResultResponse getAllBirdy();
+  ResultResponse getMyPageBirdy();
 }

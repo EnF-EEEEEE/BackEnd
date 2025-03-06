@@ -34,10 +34,10 @@ public class BirdyServiceImpl implements BirdyService {
   }
 
   @Override
-  public ResultResponse getAllBirdy() {
+  public ResultResponse getMyPageBirdy() {
     List<BirdEntity> birdList = birdRepository.findAll();
 
-    BirdyListDTO birdyList = BirdyListDTO.toAllBirdyList(birdList);
+    BirdyListDTO birdyList = BirdyListDTO.toMyPageBirdyList(birdList);
     return new ResultResponse(SuccessResultType.SUCCESS_GET_ALL_BIRDY, birdyList);
   }
 }

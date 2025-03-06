@@ -24,7 +24,7 @@ public class BirdExplanationDTO {
     return new BirdExplanationDTO(bird.getBirdName(), bird.getTraits(), bird.getLetterBirdy());
   }
 
-  public static BirdExplanationDTO toAllBirdy(BirdEntity bird) {
+  public static BirdExplanationDTO toMyPageBirdy(BirdEntity bird) {
     return new BirdExplanationDTO(bird.getBirdName(), bird.getTraits(), bird.getMyPageBirdy());
   }
 }

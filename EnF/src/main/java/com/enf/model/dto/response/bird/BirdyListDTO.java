@@ -24,11 +24,11 @@ public class BirdyListDTO {
     return new BirdyListDTO(birdyList);
   }
 
-  public static BirdyListDTO toAllBirdyList(List<BirdEntity> birdList) {
+  public static BirdyListDTO toMyPageBirdyList(List<BirdEntity> birdList) {
     List<BirdExplanationDTO> birdyList = new ArrayList<>();
 
     for (BirdEntity bird : birdList) {
-      birdyList.add(BirdExplanationDTO.toAllBirdy(bird));
+      birdyList.add(BirdExplanationDTO.toMyPageBirdy(bird));
     }
 
     return new BirdyListDTO(birdyList);
