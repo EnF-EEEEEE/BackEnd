@@ -15,12 +15,13 @@ import com.enf.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 
 @Slf4j
@@ -39,9 +40,9 @@ public class AuthServiceImpl implements AuthService {
    * @return 로그인 또는 회원가입 결과 응답 객체
    */
   @Override
-  public ResultResponse oAuthForKakao(HttpServletResponse response, String code) {
+  public ResultResponse oAuthForKakao(HttpServletRequest request, HttpServletResponse response, String code) {
     // 카카오 액세스 토큰 요청
-    String kakaoAccessToken = kakaoAuthHandler.getAccessToken(code);
+    String kakaoAccessToken = kakaoAuthHandler.getAccessToken(request,code);
     // 카카오 사용자 정보 요청
     KakaoUserDetailsDTO kakaoUserDetails = kakaoAuthHandler.getUserDetails(kakaoAccessToken);
 

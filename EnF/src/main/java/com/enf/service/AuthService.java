@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface AuthService {
 
-  ResultResponse oAuthForKakao(HttpServletResponse response, String code);
+  ResultResponse oAuthForKakao(HttpServletRequest request, HttpServletResponse response, String code);
 
   UserDetails loadUserById(Long userSeq) throws UsernameNotFoundException;
 

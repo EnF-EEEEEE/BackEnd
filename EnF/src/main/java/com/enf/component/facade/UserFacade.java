@@ -19,6 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -107,6 +109,13 @@ public class UserFacade {
   }
 
   /**
+   * 전체 사용자 수 조회
+   */
+  public long getTotalUserCount() {
+    return userRepository.count();
+  }
+
+  /**
    * 새 이름, 카테고리 정보와 일치하는 UserEntity 조회
    *
    * @param birdName 작성한 사용자의 새이름
@@ -140,6 +149,7 @@ public class UserFacade {
   public void pendingWithdrawal(UserEntity user) {
     userRepository.pendingWithdrawal(user.getUserSeq());
   }
+
 
   // ============================= Role 관련 메서드 =============================
 

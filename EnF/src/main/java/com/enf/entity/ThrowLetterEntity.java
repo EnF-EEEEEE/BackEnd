@@ -30,3 +30,4 @@ public class ThrowLetterEntity {
   @JoinColumn(name = "letter_status_seq")
   private LetterStatusEntity letterStatus;
 }
+

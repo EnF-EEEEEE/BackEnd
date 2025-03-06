@@ -1,0 +1,2335 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DearBirdy 관리자 대시보드</title>
+  <!-- Chart.js 라이브러리 로드 - 그래프/차트 시각화를 위한 자바스크립트 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Bootstrap 5.1 CDN - 반응형 UI 프레임워크 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome - 아이콘 라이브러리 추가 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* 기본 스타일 정의 */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fb; /* 배경색 밝은 블루로 변경 */
+      padding-top: 30px;
+      color: #333;
+    }
+
+    .container {
+      margin-top: 20px;
+    }
+
+    /* 페이지 헤더 스타일 */
+    .admin-header {
+      background-color: #2c3e50; /* 진한 블루로 변경 */
+      color: white;
+      padding: 20px 0;
+      margin-bottom: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .header-subtitle {
+      text-align: center;
+      color: #ddd;
+      font-size: 1rem;
+      margin-bottom: 0;
+    }
+
+    /* 카드 디자인 개선 */
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      border: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    /* 카드 헤더 스타일 */
+    .card-header {
+      background-color: #3498db; /* 밝은 블루로 변경 */
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 15px 20px;
+      border-radius: 12px 12px 0 0 !important;
+      border-bottom: none;
+      display: flex;
+      align-items: center;
+    }
+
+    /* 카드 헤더에 아이콘 추가 */
+    .card-header i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .chart-container {
+      padding: 20px;
+      height: 230px; /* 모든 차트 높이 통일 */
+    }
+
+    /* 네비게이션 탭 */
+    .nav-tabs {
+      border-bottom: 2px solid #3498db;
+      margin-bottom: 30px;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      color: #7f8c8d;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.3s;
+    }
+
+    .nav-tabs .nav-link:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      color: #3498db;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #3498db;
+      background-color: #f5f7fb;
+      border-bottom: 3px solid #3498db;
+    }
+
+    .nav-tabs .nav-link i {
+      margin-right: 8px;
+    }
+
+    /* 버튼 스타일 개선 */
+    .btn-custom {
+      margin: 0 10px;
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 500;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-custom:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-custom i {
+      margin-right: 8px;
+    }
+
+    /* 데이터 요약 섹션 */
+    .data-summary {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .summary-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .summary-icon {
+      width: 45px;
+      height: 45px;
+      background-color: #e6f3ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      color: #3498db;
+    }
+
+    .summary-info {
+      flex-grow: 1;
+    }
+
+    .summary-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #3498db;
+      margin-bottom: 2px;
+    }
+
+    .summary-label {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+
+    /* 테이블 스타일 */
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table th {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .table tr {
+      transition: background-color 0.2s;
+    }
+
+    .table tr:hover {
+      background-color: rgba(52, 152, 219, 0.05);
+      cursor: pointer;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      padding: 0.4em 0.7em;
+    }
+
+    /* 페이지네이션 스타일 */
+    .pagination .page-link {
+      color: #3498db;
+      border-radius: 5px;
+      margin: 0 3px;
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #3498db;
+      border-color: #3498db;
+    }
+
+    /* 문의 상세보기 스타일 */
+    .inquiry-meta, .report-meta, .user-meta {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .inquiry-content, .report-content, .user-content {
+      padding: 25px;
+      min-height: 150px;
+      white-space: pre-line;
+    }
+
+    .response-card {
+      border-left: 4px solid #3498db;
+    }
+
+    /* 섹션 표시/숨김 */
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    /* 로딩 인디케이터 */
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #7f8c8d;
+    }
+
+    .loading i {
+      font-size: 3rem;
+      animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="admin-header">
+    <h2><i class="fas fa-lock"></i> 관리자 시스템</h2>
+    <p class="header-subtitle">서비스 관리 및 모니터링</p>
+  </div>
+
+  <!-- 네비게이션 탭 -->
+  <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" onclick="showSection('dashboard-section')">
+        <i class="fas fa-chart-line"></i> 대시보드
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" onclick="showSection('inquiries-section')">
+        <i class="fas fa-question-circle"></i> 문의 관리
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" onclick="showSection('reports-section')">
+        <i class="fas fa-flag"></i> 신고 관리
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" onclick="showSection('users-section')">
+        <i class="fas fa-envelope-open-text"></i> 편지 관리
+      </button>
+    </li>
+  </ul>
+
+  <!-- 대시보드 섹션 -->
+  <div id="dashboard-section" class="content-section active">
+    <!-- 데이터 요약 섹션 -->
+    <div class="data-summary">
+      <div class="summary-title"><i class="fas fa-info-circle"></i> 요약 정보</div>
+      <div class="row">
+        <!-- 총 사용자 -->
+        <div class="col-md-3">
+          <div class="summary-item">
+            <div class="summary-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="summary-info">
+              <div class="summary-value" id="totalUsers">0</div>
+              <div class="summary-label">총 사용자</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 활성 사용자 -->
+        <div class="col-md-3">
+          <div class="summary-item">
+            <div class="summary-icon">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div class="summary-info">
+              <div class="summary-value" id="activeUsers">0</div>
+              <div class="summary-label">주간 활성 사용자 (월~일)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 총 편지 수 -->
+        <div class="col-md-3">
+          <div class="summary-item">
+            <div class="summary-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="summary-info">
+              <div class="summary-value" id="totalLetters">0</div>
+              <div class="summary-label">총 편지 수</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 답장된 편지 수 -->
+        <div class="col-md-3">
+          <div class="summary-item">
+            <div class="summary-icon">
+              <i class="fas fa-reply"></i>
+            </div>
+            <div class="summary-info">
+              <div class="summary-value" id="respondedLetters">0</div>
+              <div class="summary-label">답장된 편지</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- 가입 전환율 (Pie Chart) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-user-plus"></i> 가입 전환율
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="conversionRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 첫날 이탈율 (Line Chart) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-sign-out-alt"></i> 첫날 이탈율
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="churnRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 고마움을 표시한 비율 (Bar Chart) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-heart"></i> 고마움을 표시한 비율
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="gratitudeRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- 돌리기 버튼을 누른 편지의 카테고리 (Bar Chart) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-tag"></i> 돌리기 버튼 카테고리
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="categoryRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 편지 답장율 (Pie Chart) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-reply-all"></i> 편지 답장율
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="responseRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 활성 사용자 비율 (Pie Chart) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-user-check"></i> 활성 사용자 비율
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="activeUserRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 새로 추가할 이탈율 분석 섹션 -->
+    <div class="row">
+      <!-- 멘토-멘티 이탈율 추이 (Line Chart) -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-sign-out-alt"></i> 멘토-멘티 이탈율 추이
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="mentorMenteeChurnRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 편지 상호작용 단계별 전환율 (Bar Chart) -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-exchange-alt"></i> 편지 상호작용 전환율
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="letterInteractionRate"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 문의 관리 섹션 -->
+  <div id="inquiries-section" class="content-section">
+    <!-- 문의 목록 페이지 -->
+    <div id="inquiries-list-page">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary active" onclick="filterInquiries('ALL')">전체</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterInquiries('PENDING')">미답변</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterInquiries('ANSWERED')">답변완료</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="검색어를 입력하세요" id="searchInput">
+            <button class="btn btn-primary" type="button" onclick="searchInquiries()">
+              <i class="fas fa-search"></i> 검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">제목</th>
+                <th scope="col">카테고리</th>
+                <th scope="col">작성자</th>
+                <th scope="col">작성일</th>
+                <th scope="col">상태</th>
+              </tr>
+              </thead>
+              <tbody id="inquiryTableBody">
+              <!-- 데이터 로딩 전 표시 -->
+              <tr>
+                <td colspan="6" class="text-center py-4">데이터를 불러오는 중입니다...</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center" id="inquiriesPagination">
+          <!-- 페이지네이션 버튼이 JavaScript로 추가됨 -->
+        </ul>
+      </nav>
+    </div>
+
+    <!-- 문의 상세 페이지 -->
+    <div id="inquiry-detail-page" style="display: none;">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span id="inquiryTitle">문의 제목</span>
+          <span id="inquiryStatusBadge" class="badge bg-warning">상태</span>
+        </div>
+        <div class="inquiry-meta">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>작성자:</strong> <span id="inquiryAuthor">-</span></p>
+              <p class="mb-1"><strong>카테고리:</strong> <span id="inquiryCategory">-</span></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <p class="mb-1"><strong>작성일:</strong> <span id="inquiryDate">-</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="inquiry-content">
+          <p id="inquiryContent">문의 내용이 여기에 표시됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 답변 영역 -->
+      <div id="responseSection">
+        <!-- 기존 답변이 여기에 표시됨 -->
+      </div>
+
+      <!-- 답변 작성 폼 -->
+      <div id="responseFormSection" class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-reply"></i> 답변 작성
+        </div>
+        <div class="card-body">
+          <form id="responseForm">
+            <div class="mb-3">
+              <textarea class="form-control" id="responseContent" rows="6" placeholder="답변 내용을 작성해주세요"></textarea>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-primary btn-custom" onclick="submitResponse()">
+                <i class="fas fa-paper-plane"></i> 답변 등록
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 네비게이션 버튼 -->
+      <div class="d-flex justify-content-between mb-5">
+        <button class="btn btn-secondary btn-custom" onclick="showInquiriesList()">
+          <i class="fas fa-arrow-left"></i> 목록으로 돌아가기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 신고 관리 섹션 -->
+  <div id="reports-section" class="content-section">
+    <!-- 신고 목록 페이지 -->
+    <div id="reports-list-page">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary active" onclick="filterReports('ALL')">전체</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterReports('PENDING')">미처리</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterReports('PROCESSING')">처리중</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterReports('COMPLETED')">처리완료</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterReports('REJECTED')">거부</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="검색어를 입력하세요" id="reportSearchInput">
+            <button class="btn btn-primary" type="button" onclick="searchReports()">
+              <i class="fas fa-search"></i> 검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">신고 유형</th>
+                <th scope="col">신고 대상</th>
+                <th scope="col">신고자</th>
+                <th scope="col">신고일</th>
+                <th scope="col">상태</th>
+              </tr>
+              </thead>
+              <tbody id="reportTableBody">
+              <!-- 데이터 로딩 전 표시 -->
+              <tr>
+                <td colspan="6" class="text-center py-4">데이터를 불러오는 중입니다...</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center" id="reportsPagination">
+          <!-- 페이지네이션 버튼이 JavaScript로 추가됨 -->
+        </ul>
+      </nav>
+    </div>
+
+    <!-- 신고 상세 페이지 -->
+    <div id="report-detail-page" style="display: none;">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <i class="fas fa-eye"></i> 신고된 콘텐츠
+          <span id="reportStatusBadge" class="badge bg-warning">상태</span>
+        </div>
+        <div class="report-meta">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>신고자:</strong> <span id="reporterName">-</span></p>
+              <p class="mb-1"><strong>신고 대상:</strong> <span id="reportedTarget">-</span></p>
+              <p class="mb-1"><strong>편지 제목:</strong> <span id="reportLetterTitle">-</span></p>
+              <p class="mb-1"><strong>신고 카테고리:</strong> <span id="reportType">-</span></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <p class="mb-1"><strong>신고일:</strong> <span id="reportDate">-</span></p>
+              <p class="mb-1" id="reportTargetTypeWrapper"><strong>대상 유형:</strong> <span id="reportTargetType">-</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="report-content">
+          <p id="reportedContent">신고 내용이 여기에 표시됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 처리 현황 영역 -->
+      <div id="reportHandlingSection">
+        <!-- 처리 현황이 여기에 표시됨 -->
+      </div>
+
+      <!-- 처리 상태 변경 폼 -->
+      <div id="reportProcessFormSection" class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-tasks"></i> 처리 상태 변경
+        </div>
+        <div class="card-body">
+          <form id="reportProcessForm">
+            <div class="mb-3">
+              <label for="reportStatus" class="form-label">처리 상태</label>
+              <select class="form-select" id="reportStatus">
+                <option value="PENDING">미처리</option>
+                <option value="PROCESSING">처리중</option>
+                <option value="COMPLETED">처리완료</option>
+                <option value="REJECTED">거부</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="reportProcessNote" class="form-label">처리 내용</label>
+              <textarea class="form-control" id="reportProcessNote" rows="4" placeholder="처리 내용을 작성해주세요"></textarea>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-primary btn-custom" onclick="updateReportStatus()">
+                <i class="fas fa-save"></i> 상태 변경
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 네비게이션 버튼 -->
+      <div class="d-flex justify-content-between mb-5">
+        <button class="btn btn-secondary btn-custom" onclick="showReportsList()">
+          <i class="fas fa-arrow-left"></i> 목록으로 돌아가기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 편지 관리 섹션 -->
+  <div id="users-section" class="content-section">
+    <!-- 편지 목록 페이지 -->
+    <div id="letters-list-page">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary active" onclick="filterLetters('ALL')">전체</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterLetters('NO_RESPONSE')">미답장</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterLetters('RESPONDED')">답장완료</button>
+            <button type="button" class="btn btn-outline-primary" onclick="filterLetters('SAVED')">저장됨</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="제목 또는 내용으로 검색" id="letterSearchInput">
+            <button class="btn btn-primary" type="button" onclick="searchLetters()">
+              <i class="fas fa-search"></i> 검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">제목</th>
+                <th scope="col">작성 멘티</th>
+                <th scope="col">답변 멘토</th>
+                <th scope="col">보낸 시간</th>
+                <th scope="col">답장 여부</th>
+                <th scope="col">답장 시간</th>
+                <th scope="col">저장 여부</th>
+              </tr>
+              </thead>
+              <tbody id="letterTableBody">
+              <!-- 데이터 로딩 전 표시 -->
+              <tr>
+                <td colspan="8" class="text-center py-4">데이터를 불러오는 중입니다...</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center" id="lettersPagination">
+          <!-- 페이지네이션 버튼이 JavaScript로 추가됨 -->
+        </ul>
+      </nav>
+    </div>
+
+    <!-- 편지 상세 페이지 -->
+    <div id="letter-detail-page" style="display: none;">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span id="letterTitle">편지 제목</span>
+          <div>
+            <span id="letterSavedBadge" class="badge bg-info me-2">저장됨</span>
+            <span id="letterResponseBadge" class="badge bg-success">답장완료</span>
+          </div>
+        </div>
+        <div class="user-meta">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>발신자:</strong> <span id="letterSender">-</span></p>
+              <p class="mb-1"><strong>수신자:</strong> <span id="letterReceiver">-</span></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <p class="mb-1"><strong>보낸 시간:</strong> <span id="letterSentAt">-</span></p>
+              <p class="mb-1"><strong>카테고리:</strong> <span id="letterCategory">-</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="user-content">
+          <h5 class="mb-3">편지 내용</h5>
+          <div class="letter-body p-3 bg-light rounded mb-4">
+            <p id="letterContent">편지 내용이 여기에 표시됩니다.</p>
+          </div>
+
+          <!-- 답장 내용 -->
+          <div id="letterResponseSection">
+            <h5 class="mb-3">답장 내용</h5>
+            <div class="letter-body p-3 bg-light rounded mb-4">
+              <p id="letterResponseContent">답장 내용이 여기에 표시됩니다.</p>
+              <div class="text-end">
+                <small class="text-muted">답장 시간: <span id="letterResponseTime">-</span></small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 편지 정보만 표시하고 관리 버튼은 제거 -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-info-circle"></i> 편지 정보
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><strong>편지 ID:</strong> <span id="letterId">-</span></p>
+              <p class="mb-2"><strong>IP 주소:</strong> <span id="letterIp">-</span></p>
+              <p class="mb-2"><strong>기기 정보:</strong> <span id="letterDevice">-</span></p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong>열람 횟수:</strong> <span id="letterViewCount">-</span></p>
+              <p class="mb-2"><strong>고마움 표시:</strong> <span id="letterThanks">-</span></p>
+              <p class="mb-2"><strong>카테고리:</strong> <span id="letterDetailCategory">-</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 네비게이션 버튼 -->
+      <div class="d-flex justify-content-between mb-5">
+        <button class="btn btn-secondary btn-custom" onclick="showLettersList()">
+          <i class="fas fa-arrow-left"></i> 목록으로 돌아가기
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<footer class="mt-5 text-center p-4" style="background-color: #f5f7fb; color: #7f8c8d;">
+  <div class="container">
+    <p>© 2025 관리자 대시보드 | 마지막 업데이트: <span id="lastUpdate"></span></p>
+  </div>
+</footer>
+
+<!-- Bootstrap JS 및 Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+<!-- 관리자 대시보드 스크립트 -->
+<script th:inline="javascript">
+  // 전역 변수
+  let accessToken;
+  let dashboardData = null;
+  let inquiriesData = { inquiries: [], currentPage: 0, totalPages: 0 };
+  let reportsData = { reports: [], currentPage: 0, totalPages: 0 };
+  let lettersData = { letters: [], currentPage: 0, totalPages: 0 };
+  let currentInquiryId = null;
+  let currentReportId = null;
+  let currentLetterId = null;
+  let currentInquiryFilter = 'ALL';
+  let currentReportFilter = 'ALL';
+  let currentLetterFilter = 'ALL';
+  let currentInquirySearch = '';
+  let currentReportSearch = '';
+  let currentLetterSearch = '';
+  let currentInquiryPage = 0;
+  let currentReportPage = 0;
+  let currentLetterPage = 0;
+
+  // 페이지 로드 시 실행
+  document.addEventListener('DOMContentLoaded', function() {
+    // 서버에서 전달받은 access 토큰 처리
+    var serverToken = /*[[${access}]]*/ "";
+    if (serverToken) {
+      accessToken = serverToken;
+      sessionStorage.setItem('accessToken', accessToken);
+    } else {
+      // 세션 스토리지에서 토큰 확인
+      accessToken = sessionStorage.getItem('accessToken');
+    }
+
+    // 토큰 검증
+    if (!accessToken) {
+      console.error("Access token is missing.");
+      alert("인증 토큰이 없습니다. 다시 로그인해 주세요.");
+      window.location.href = '/admin/login';
+      return;
+    }
+
+    // 마지막 업데이트 시간 표시
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+
+    // 초기 데이터 로드
+    loadDashboardData();
+
+    // 페이지 이동 시 뒤로가기/앞으로가기 지원
+    window.addEventListener('popstate', handlePopState);
+
+    // 초기 URL 상태 설정
+    const urlParams = new URLSearchParams(window.location.search);
+    const section = urlParams.get('section');
+    if (section) {
+      showSection(section + '-section');
+    } else {
+      history.replaceState({ section: 'dashboard' }, '', '?section=dashboard');
+    }
+  });
+
+  // 각 섹션 표시 함수
+  function showSection(sectionId) {
+    // 모든 섹션 숨기기
+    document.querySelectorAll('.content-section').forEach(section => {
+      section.classList.remove('active');
+    });
+
+    // 모든 탭 비활성화
+    document.querySelectorAll('#adminTabs .nav-link').forEach(tab => {
+      tab.classList.remove('active');
+    });
+
+    // 선택한 섹션 표시
+    document.getElementById(sectionId).classList.add('active');
+
+    // 선택한 탭 활성화
+    const tabIndex = {
+      'dashboard-section': 0,
+      'inquiries-section': 1,
+      'reports-section': 2,
+      'users-section': 3
+    };
+    document.querySelectorAll('#adminTabs .nav-link')[tabIndex[sectionId]].classList.add('active');
+
+    // 섹션별 데이터 로드
+    if (sectionId === 'dashboard-section') {
+      if (!dashboardData) {
+        loadDashboardData();
+      }
+      history.pushState({ section: 'dashboard' }, '', '?section=dashboard');
+    } else if (sectionId === 'inquiries-section') {
+      showInquiriesList();
+      if (inquiriesData.inquiries.length === 0) {
+        loadInquiriesData();
+      }
+      history.pushState({ section: 'inquiries' }, '', '?section=inquiries');
+    } else if (sectionId === 'reports-section') {
+      showReportsList();
+      if (reportsData.reports.length === 0) {
+        loadReportsData();
+      }
+      history.pushState({ section: 'reports' }, '', '?section=reports');
+    } else if (sectionId === 'users-section') {
+      showLettersList();
+      if (lettersData.letters.length === 0) {
+        loadLettersData();
+      }
+      history.pushState({ section: 'letters' }, '', '?section=letters');
+    }
+  }
+
+  // 브라우저 뒤로가기/앞으로가기 처리
+  function handlePopState(event) {
+    if (event.state && event.state.section) {
+      showSection(event.state.section + '-section');
+
+      if (event.state.inquiryId) {
+        showInquiryDetail(event.state.inquiryId);
+      } else if (event.state.section === 'inquiries') {
+        showInquiriesList();
+      }
+
+      if (event.state.reportId) {
+        showReportDetail(event.state.reportId);
+      } else if (event.state.section === 'reports') {
+        showReportsList();
+      }
+
+      if (event.state.letterId) {
+        showLetterDetail(event.state.letterId);
+      } else if (event.state.section === 'letters') {
+        showLettersList();
+      }
+    } else {
+      showSection('dashboard-section');
+    }
+  }
+
+  // 대시보드 데이터 로드
+  function loadDashboardData() {
+    fetch('/api/v1/admin/dashboard-data', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                dashboardData = data;
+                updateDashboard(data);
+              }
+            })
+            .catch(error => {
+              console.error("데이터 로딩 중 오류:", error);
+              alert("대시보드 데이터를 불러오는 중 오류가 발생했습니다.");
+            });
+  }
+
+  // 대시보드 데이터 업데이트
+  function updateDashboard(data) {
+    // 요약 정보 업데이트
+    document.getElementById('totalUsers').textContent = data.totalUsers.toLocaleString();
+
+    document.getElementById('activeUsers').textContent = data.activeUserCount.toLocaleString();
+
+    document.getElementById('totalLetters').textContent = data.totalLetters.toLocaleString();
+
+    const respondedLetters = Math.round(data.totalLetters * (data.responseRate / 100));
+    document.getElementById('respondedLetters').textContent = respondedLetters.toLocaleString();
+
+    // 차트 업데이트
+    updateCharts(data);
+  }
+
+  // 차트 업데이트 함수
+  function updateCharts(data) {
+    // 각 차트에 대한 공통 옵션 설정
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            font: { size: 12 }
+          }
+        },
+        tooltip: {
+          padding: 10,
+          cornerRadius: 8,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)'
+        }
+      }
+    };
+
+    // 1. 가입 전환율 (Pie Chart로 변경)
+    new Chart(document.getElementById('conversionRate').getContext('2d'), {
+      type: 'pie', // doughnut에서 pie로 변경
+      data: {
+        labels: ['가입', '미가입'],
+        datasets: [{
+          data: [data.conversionRate, 100 - data.conversionRate],
+          backgroundColor: ['rgba(52, 152, 219, 0.7)', 'rgba(231, 76, 60, 0.7)'],
+          borderColor: ['rgba(52, 152, 219, 1)', 'rgba(231, 76, 60, 1)'],
+          borderWidth: 1,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        ...commonOptions,
+        // cutout 속성 제거 (파이 차트에서는 사용하지 않음)
+        plugins: {
+          ...commonOptions.plugins,
+          subtitle: {
+            display: true,
+            text: `${data.conversionRate}% 가입율`,
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 10
+            }
+          }
+        }
+      }
+    });
+
+    // 2. 첫날 이탈율 (Line Chart)
+    new Chart(document.getElementById('churnRate').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: data.days,
+        datasets: [{
+          label: '이탈율 (%)',
+          data: data.churnRate,
+          fill: {
+            target: 'origin',
+            above: 'rgba(52, 152, 219, 0.1)',
+          },
+          borderColor: 'rgba(52, 152, 219, 1)',
+          borderWidth: 2,
+          tension: 0.3,
+          pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+          pointBorderColor: '#fff',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // 3. 고마움을 표시한 비율 (Pie Chart로 변경)
+    new Chart(document.getElementById('gratitudeRate').getContext('2d'), {
+      type: 'pie',  // 'bar'에서 'pie'로 변경
+      data: {
+        labels: ['고마움을 표시함', '표시하지 않음'],
+        datasets: [{
+          data: [data.gratitudeRate, 100 - data.gratitudeRate],
+          backgroundColor: ['rgba(46, 204, 113, 0.7)', 'rgba(231, 76, 60, 0.7)'],
+          borderColor: ['rgba(46, 204, 113, 1)', 'rgba(231, 76, 60, 1)'],
+          borderWidth: 1,
+          hoverOffset: 4  // 마우스 오버시 조각이 약간 튀어나오는 효과
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.raw + '%';
+              }
+            }
+          },
+          subtitle: {
+            display: true,
+            text: `${data.gratitudeRate}% 고마움 표시`,
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 10
+            }
+          }
+        }
+      }
+    });
+
+    // 4. 돌리기 버튼을 누른 편지의 카테고리 (Bar Chart)
+    new Chart(document.getElementById('categoryRate').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: data.categories,
+        datasets: [{
+          label: '카테고리별 돌리기 버튼 클릭수',
+          data: data.categoryClicks,
+          backgroundColor: 'rgba(52, 152, 219, 0.7)',
+          borderColor: 'rgba(52, 152, 219, 1)',
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // 5. 편지 답장율 (Pie Chart로 변경)
+    new Chart(document.getElementById('responseRate').getContext('2d'), {
+      type: 'pie', // doughnut에서 pie로 변경
+      data: {
+        labels: ['답장', '미답장'],
+        datasets: [{
+          data: [data.responseRate, 100 - data.responseRate],
+          backgroundColor: ['rgba(52, 152, 219, 0.7)', 'rgba(189, 195, 199, 0.7)'],
+          borderColor: ['rgba(52, 152, 219, 1)', 'rgba(189, 195, 199, 1)'],
+          borderWidth: 1,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        ...commonOptions,
+        // cutout 속성 제거 (파이 차트에서는 사용하지 않음)
+        plugins: {
+          ...commonOptions.plugins,
+          subtitle: {
+            display: true,
+            text: `${data.responseRate}% 답장율`,
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 10
+            }
+          }
+        }
+      }
+    });
+
+    // 6. 활성 사용자 비율 (Pie Chart)
+    new Chart(document.getElementById('activeUserRate').getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: ['활성 사용자', '비활성 사용자'],
+        datasets: [{
+          data: [data.activeUserRate, 100 - data.activeUserRate],
+          backgroundColor: ['rgba(46, 204, 113, 0.7)', 'rgba(189, 195, 199, 0.7)'],
+          borderColor: ['rgba(46, 204, 113, 1)', 'rgba(189, 195, 199, 1)'],
+          borderWidth: 1,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          ...commonOptions.plugins,
+          subtitle: {
+            display: true,
+            text: `${data.activeUserRate}% 활성율`,
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 10
+            }
+          }
+        }
+      }
+    });
+
+    // 7. 멘토-멘티 이탈율 추이 (Line Chart)
+    new Chart(document.getElementById('mentorMenteeChurnRate').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: data.weeks || ['1주차', '2주차', '3주차', '4주차', '5주차', '6주차', '7주차', '8주차'],
+        datasets: [{
+          label: '멘티 이탈율',
+          data: data.menteeChurnRate || [18.5, 16.7, 15.3, 14.8, 13.2, 12.5, 11.9, 10.8],
+          borderColor: 'rgba(231, 76, 60, 1)',
+          backgroundColor: 'rgba(231, 76, 60, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+          pointBorderColor: '#fff',
+          pointRadius: 4
+        }, {
+          label: '멘토 이탈율',
+          data: data.mentorChurnRate || [8.2, 7.8, 7.5, 6.9, 6.5, 5.8, 5.2, 4.9],
+          borderColor: 'rgba(52, 152, 219, 1)',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+          pointBorderColor: '#fff',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // 8. 편지 상호작용 단계별 전환율 (Bar Chart)
+    new Chart(document.getElementById('letterInteractionRate').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: data.interactionStages || ['첫 편지 작성', '멘토 답장 확인', '후속 편지 작성', '3회 이상 교류', '장기 활성 사용자'],
+        datasets: [{
+          label: '전환율 (%)',
+          data: data.interactionRates || [82, 91, 54, 32, 21],
+          backgroundColor: 'rgba(52, 152, 219, 0.7)',
+          borderColor: 'rgba(52, 152, 219, 1)',
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // --------------- 문의 관리 관련 함수 ---------------
+
+  // 문의 목록 페이지 표시
+  function showInquiriesList() {
+    document.getElementById('inquiries-list-page').style.display = 'block';
+    document.getElementById('inquiry-detail-page').style.display = 'none';
+  }
+
+  // 문의 상세 페이지 표시
+  function showInquiryDetail(inquiryId) {
+    document.getElementById('inquiries-list-page').style.display = 'none';
+    document.getElementById('inquiry-detail-page').style.display = 'block';
+
+    currentInquiryId = inquiryId;
+    loadInquiryDetail(inquiryId);
+
+    // URL 상태 업데이트
+    history.pushState({ section: 'inquiries', inquiryId: inquiryId }, '', `?section=inquiries&id=${inquiryId}`);
+  }
+
+  // 문의 목록 데이터 로드
+  function loadInquiriesData() {
+    let url = `/api/v1/admin/inquiries?page=${currentInquiryPage}&size=10`;
+
+    // 필터 및 검색어 적용
+    if (currentInquiryFilter !== 'ALL') {
+      url += `&status=${currentInquiryFilter}`;
+    }
+
+    if (currentInquirySearch) {
+      url += `&search=${encodeURIComponent(currentInquirySearch)}`;
+    }
+
+    // 로딩 메시지 표시
+    document.getElementById('inquiryTableBody').innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center py-4">
+          <i class="fas fa-circle-notch fa-spin me-2"></i> 데이터를 불러오는 중입니다...
+        </td>
+      </tr>
+    `;
+
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                inquiriesData = data;
+                renderInquiriesList(data);
+              }
+            })
+            .catch(error => {
+              console.error("문의 목록 로딩 중 오류:", error);
+              document.getElementById('inquiryTableBody').innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <div class="alert alert-danger">데이터를 불러오는 중 오류가 발생했습니다.</div>
+          </td>
+        </tr>
+      `;
+            });
+  }
+
+  // 문의 목록 렌더링
+  function renderInquiriesList(data) {
+    const inquiries = data.inquiries;
+    const tableBody = document.getElementById('inquiryTableBody');
+    const pagination = document.getElementById('inquiriesPagination');
+
+    // 테이블 내용 초기화
+    tableBody.innerHTML = '';
+
+    // 데이터가 없는 경우
+    if (inquiries.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            문의 내역이 없습니다.
+          </td>
+        </tr>
+      `;
+      pagination.innerHTML = '';
+      return;
+    }
+
+    // 문의 목록 표시
+    inquiries.forEach(inquiry => {
+      const row = document.createElement('tr');
+      row.style.cursor = 'pointer';
+      row.onclick = function() {
+        showInquiryDetail(inquiry.id);
+      };
+
+      // 날짜 포맷팅
+      const createdAt = new Date(inquiry.createdAt);
+      const formattedDate = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')}`;
+
+      // 상태 뱃지 스타일
+      const statusBadge = inquiry.status === 'PENDING'
+              ? '<span class="badge bg-warning">미답변</span>'
+              : '<span class="badge bg-success">답변완료</span>';
+
+      row.innerHTML = `
+        <td>${inquiry.id}</td>
+        <td>${inquiry.title}</td>
+        <td>${inquiry.category}</td>
+        <td>${inquiry.author}</td>
+        <td>${formattedDate}</td>
+        <td>${statusBadge}</td>
+      `;
+
+      tableBody.appendChild(row);
+    });
+
+    // 페이지네이션 렌더링
+    renderInquiriesPagination(data.currentPage, data.totalPages);
+  }
+
+  // 문의 목록 페이지네이션 렌더링
+  function renderInquiriesPagination(currentPage, totalPages) {
+    const pagination = document.getElementById('inquiriesPagination');
+    pagination.innerHTML = '';
+
+    // 페이지가 하나밖에 없으면 페이지네이션 숨김
+    if (totalPages <= 1) {
+      return;
+    }
+
+    // 이전 버튼
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 0 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `
+      <a class="page-link" href="#" aria-label="Previous" onclick="changePage(${currentPage - 1}); return false;">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    `;
+    pagination.appendChild(prevLi);
+
+    // 페이지 번호
+    for (let i = 0; i < totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i}); return false;">${i + 1}</a>`;
+      pagination.appendChild(li);
+    }
+
+    // 다음 버튼
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`;
+    nextLi.innerHTML = `
+      <a class="page-link" href="#" aria-label="Next" onclick="changePage(${currentPage + 1}); return false;">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    `;
+    pagination.appendChild(nextLi);
+  }
+
+  // 페이지 변경
+  function changePage(page) {
+    if (page < 0) return;
+    currentInquiryPage = page;
+    loadInquiriesData();
+  }
+
+  // 필터 적용
+  function filterInquiries(filter) {
+    currentInquiryFilter = filter;
+    currentInquiryPage = 0;
+    loadInquiriesData();
+
+    // 버튼 스타일 업데이트
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`.btn[onclick="filterInquiries('${filter}')"]`).classList.add('active');
+  }
+
+  // 검색 기능
+  function searchInquiries() {
+    const searchInput = document.getElementById('searchInput');
+    currentInquirySearch = searchInput.value.trim();
+    currentInquiryPage = 0;
+    loadInquiriesData();
+  }
+
+  // 문의 상세 정보 로드
+  function loadInquiryDetail(id) {
+    fetch(`/api/v1/admin/inquiries/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                renderInquiryDetail(data);
+              }
+            })
+            .catch(error => {
+              console.error("문의 상세 정보 로딩 중 오류:", error);
+              alert("문의 상세 정보를 불러오는 중 오류가 발생했습니다.");
+            });
+  }
+
+  // 문의 상세 정보 렌더링
+  function renderInquiryDetail(inquiry) {
+    // 문의 기본 정보 업데이트
+    document.getElementById('inquiryTitle').textContent = inquiry.title;
+    document.getElementById('inquiryAuthor').textContent = inquiry.author;
+    document.getElementById('inquiryCategory').textContent = inquiry.category;
+    document.getElementById('inquiryContent').textContent = inquiry.content;
+
+    // 날짜 포맷팅
+    const createdAt = new Date(inquiry.createdAt);
+    const formattedDate = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
+    document.getElementById('inquiryDate').textContent = formattedDate;
+
+    // 상태 표시
+    const statusBadge = document.getElementById('inquiryStatusBadge');
+    if (inquiry.status === 'PENDING') {
+      statusBadge.className = 'badge bg-warning';
+      statusBadge.textContent = '미답변';
+    } else {
+      statusBadge.className = 'badge bg-success';
+      statusBadge.textContent = '답변완료';
+    }
+
+    // 답변 영역 처리
+    const responseSection = document.getElementById('responseSection');
+    const responseFormSection = document.getElementById('responseFormSection');
+
+    if (inquiry.response) {
+      // 이미 답변이 있는 경우
+      const responseDate = new Date(inquiry.response.createdAt);
+      const formattedResponseDate = `${responseDate.getFullYear()}-${String(responseDate.getMonth() + 1).padStart(2, '0')}-${String(responseDate.getDate()).padStart(2, '0')} ${String(responseDate.getHours()).padStart(2, '0')}:${String(responseDate.getMinutes()).padStart(2, '0')}`;
+
+      responseSection.innerHTML = `
+        <div class="card mb-4 response-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-reply"></i> 답변 내용</span>
+          </div>
+          <div class="inquiry-meta">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-1"><strong>답변자:</strong> ${inquiry.response.respondent}</p>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <p class="mb-1"><strong>답변일:</strong> ${formattedResponseDate}</p>
+              </div>
+            </div>
+          </div>
+          <div class="inquiry-content">
+            <p>${inquiry.response.content}</p>
+          </div>
+        </div>
+      `;
+
+      // 이미 답변이 있으면 답변 폼 숨김
+      responseFormSection.style.display = 'none';
+    } else {
+      // 답변이 없는 경우
+      responseSection.innerHTML = '';
+      responseFormSection.style.display = 'block';
+
+      // 답변 폼 초기화
+      document.getElementById('responseContent').value = '';
+    }
+  }
+
+  // 답변 제출
+  function submitResponse() {
+    const responseContent = document.getElementById('responseContent').value.trim();
+
+    if (!responseContent) {
+      alert('답변 내용을 입력해주세요.');
+      return;
+    }
+
+    fetch(`/api/v1/admin/inquiries/${currentInquiryId}/responses`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      },
+      body: JSON.stringify({
+        content: responseContent
+      })
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                alert('답변이 성공적으로 등록되었습니다.');
+                // 문의 상세 정보 다시 로드
+                loadInquiryDetail(currentInquiryId);
+                // 문의 목록도 갱신
+                loadInquiriesData();
+              }
+            })
+            .catch(error => {
+              console.error("답변 등록 중 오류:", error);
+              alert("답변 등록에 실패했습니다.");
+            });
+  }
+
+  // --------------- 신고 관리 관련 함수 ---------------
+
+  // 신고 목록 페이지 표시
+  function showReportsList() {
+    document.getElementById('reports-list-page').style.display = 'block';
+    document.getElementById('report-detail-page').style.display = 'none';
+  }
+
+  // 신고 상세 페이지 표시
+  function showReportDetail(reportId) {
+    document.getElementById('reports-list-page').style.display = 'none';
+    document.getElementById('report-detail-page').style.display = 'block';
+
+    currentReportId = reportId;
+    loadReportDetail(reportId);
+
+    // URL 상태 업데이트
+    history.pushState({ section: 'reports', reportId: reportId }, '', `?section=reports&id=${reportId}`);
+  }
+
+  // 신고 목록 데이터 로드
+  function loadReportsData() {
+    let url = `/api/v1/admin/reports?page=${currentReportPage}&size=10`;
+
+    // 필터 및 검색어 적용
+    if (currentReportFilter !== 'ALL') {
+      url += `&status=${currentReportFilter}`;
+    }
+
+    if (currentReportSearch) {
+      url += `&search=${encodeURIComponent(currentReportSearch)}`;
+    }
+
+    // 로딩 메시지 표시
+    document.getElementById('reportTableBody').innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center py-4">
+          <i class="fas fa-circle-notch fa-spin me-2"></i> 데이터를 불러오는 중입니다...
+        </td>
+      </tr>
+    `;
+
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                reportsData = data;
+                renderReportsList(data);
+              }
+            })
+            .catch(error => {
+              console.error("신고 목록 로딩 중 오류:", error);
+              document.getElementById('reportTableBody').innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <div class="alert alert-danger">데이터를 불러오는 중 오류가 발생했습니다.</div>
+          </td>
+        </tr>
+      `;
+            });
+  }
+
+  // 신고 목록 렌더링
+  function renderReportsList(data) {
+    const reports = data.reports;
+    const tableBody = document.getElementById('reportTableBody');
+    const pagination = document.getElementById('reportsPagination');
+
+    // 테이블 내용 초기화
+    tableBody.innerHTML = '';
+
+    // 데이터가 없는 경우
+    if (reports.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            신고 내역이 없습니다.
+          </td>
+        </tr>
+      `;
+      pagination.innerHTML = '';
+      return;
+    }
+
+    // 신고 목록 표시
+    reports.forEach(report => {
+      const row = document.createElement('tr');
+      row.style.cursor = 'pointer';
+      row.onclick = function() {
+        showReportDetail(report.id);
+      };
+
+      // 날짜 포맷팅
+      const createdAt = new Date(report.createdAt);
+      const formattedDate = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')}`;
+
+      // 상태 뱃지 스타일
+      let statusBadge;
+      if (report.status === 'PENDING') {
+        statusBadge = '<span class="badge bg-warning">미처리</span>';
+      } else if (report.status === 'PROCESSING') {
+        statusBadge = '<span class="badge bg-info">처리중</span>';
+      } else if (report.status === 'COMPLETED') {
+        statusBadge = '<span class="badge bg-success">처리완료</span>';
+      } else if (report.status === 'REJECTED') {
+        statusBadge = '<span class="badge bg-secondary">거부</span>';
+      }
+
+      row.innerHTML = `
+        <td>${report.id}</td>
+        <td>${report.category}</td>
+        <td>${report.targetId}</td>
+        <td>${report.reporter}</td>
+        <td>${formattedDate}</td>
+        <td>${statusBadge}</td>
+      `;
+
+      tableBody.appendChild(row);
+    });
+
+    // 페이지네이션 렌더링
+    renderReportsPagination(data.currentPage, data.totalPages);
+  }
+
+  // 신고 목록 페이지네이션 렌더링
+  function renderReportsPagination(currentPage, totalPages) {
+    const pagination = document.getElementById('reportsPagination');
+    pagination.innerHTML = '';
+
+    // 페이지가 하나밖에 없으면 페이지네이션 숨김
+    if (totalPages <= 1) {
+      return;
+    }
+
+    // 이전 버튼
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 0 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `
+      <a class="page-link" href="#" aria-label="Previous" onclick="changeReportPage(${currentPage - 1}); return false;">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    `;
+    pagination.appendChild(prevLi);
+
+    // 페이지 번호
+    for (let i = 0; i < totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#" onclick="changeReportPage(${i}); return false;">${i + 1}</a>`;
+      pagination.appendChild(li);
+    }
+
+    // 다음 버튼
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`;
+    nextLi.innerHTML = `
+      <a class="page-link" href="#" aria-label="Next" onclick="changeReportPage(${currentPage + 1}); return false;">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    `;
+    pagination.appendChild(nextLi);
+  }
+
+  // 신고 페이지 변경
+  function changeReportPage(page) {
+    if (page < 0) return;
+    currentReportPage = page;
+    loadReportsData();
+  }
+
+  // 신고 필터 적용
+  function filterReports(filter) {
+    currentReportFilter = filter;
+    currentReportPage = 0;
+    loadReportsData();
+
+    // 버튼 스타일 업데이트
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`.btn[onclick="filterReports('${filter}')"]`).classList.add('active');
+  }
+
+  // 신고 검색 기능
+  function searchReports() {
+    const searchInput = document.getElementById('reportSearchInput');
+    currentReportSearch = searchInput.value.trim();
+    currentReportPage = 0;
+    loadReportsData();
+  }
+
+  // 신고 상세 정보 로드
+  function loadReportDetail(id) {
+    fetch(`/api/v1/admin/reports/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                renderReportDetail(data);
+              }
+            })
+            .catch(error => {
+              console.error("신고 상세 정보 로딩 중 오류:", error);
+              alert("신고 상세 정보를 불러오는 중 오류가 발생했습니다.");
+            });
+  }
+
+  // 신고 상세 정보 렌더링
+  function renderReportDetail(report) {
+    // 신고 기본 정보 업데이트
+    document.getElementById('reportType').textContent = report.category;
+    document.getElementById('reporterName').textContent = report.reporter || '-';
+    document.getElementById('reportedTarget').textContent = report.targetId;
+    // 신고 상세 정보 렌더링 함수에서 추가할 부분
+    document.getElementById('reportLetterTitle').textContent = report.letterInfo.letterTitle || '-';
+
+
+    // 대상 유형 표시
+    document.getElementById('reportTargetType').textContent = report.targetType || '편지';
+
+    // 신고된 콘텐츠 표시
+    document.getElementById('reportedContent').innerHTML = report.letterInfo.letterContent || '신고된 콘텐츠를 불러오는 중 오류가 발생했습니다.';
+
+    // 날짜 포맷팅
+    const createdAt = new Date(report.createdAt);
+    document.getElementById('reportDate').textContent = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
+
+    // 상태 표시
+    const statusBadge = document.getElementById('reportStatusBadge');
+    if (report.status === 'PENDING') {
+      statusBadge.className = 'badge bg-warning';
+      statusBadge.textContent = '미처리';
+    } else if (report.status === 'PROCESSING') {
+      statusBadge.className = 'badge bg-info';
+      statusBadge.textContent = '처리중';
+    } else if (report.status === 'COMPLETED') {
+      statusBadge.className = 'badge bg-success';
+      statusBadge.textContent = '처리완료';
+    } else if (report.status === 'REJECTED') {
+      statusBadge.className = 'badge bg-secondary';
+      statusBadge.textContent = '거부';
+    }
+
+    // 처리 상태 선택 업데이트
+    document.getElementById('reportStatus').value = report.status;
+
+    // 처리 현황 영역 표시
+    const handlingSection = document.getElementById('reportHandlingSection');
+
+    if (report.process && report.process.length > 0) {
+      let processContent = '<div class="card mb-4"><div class="card-header"><i class="fas fa-history"></i> 처리 내역</div><div class="card-body">';
+
+      report.process.forEach(process => {
+        const processDate = new Date(process.timestamp);
+        const formattedProcessDate = `${processDate.getFullYear()}-${String(processDate.getMonth() + 1).padStart(2, '0')}-${String(processDate.getDate()).padStart(2, '0')} ${String(processDate.getHours()).padStart(2, '0')}:${String(processDate.getMinutes()).padStart(2, '0')}`;
+
+        processContent += `
+          <div class="d-flex mb-3 pb-3 border-bottom">
+            <div class="flex-shrink-0 me-3">
+              <div class="bg-light rounded-circle p-2">
+                <i class="fas fa-clipboard-check text-primary"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong>${process.status}</strong>
+                <small class="text-muted">${formattedProcessDate}</small>
+              </div>
+              <div>${process.note || '처리 내용이 없습니다.'}</div>
+              <small class="text-muted">처리자: ${process.handler}</small>
+            </div>
+          </div>
+        `;
+      });
+
+      processContent += '</div></div>';
+      handlingSection.innerHTML = processContent;
+    } else {
+      handlingSection.innerHTML = '';
+    }
+  }
+
+  // 신고 처리 상태 업데이트
+  function updateReportStatus() {
+    const status = document.getElementById('reportStatus').value;
+    const note = document.getElementById('reportProcessNote').value.trim();
+
+    if (!note) {
+      alert('처리 내용을 입력해주세요.');
+      return;
+    }
+
+    fetch(`/api/v1/admin/reports/${currentReportId}/process`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      },
+      body: JSON.stringify({
+        status: status,
+        note: note
+      })
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                alert('신고 처리가 성공적으로 등록되었습니다.');
+                // 신고 상세 정보 다시 로드
+                loadReportDetail(currentReportId);
+                // 신고 목록도 갱신
+                loadReportsData();
+              }
+            })
+            .catch(error => {
+              console.error("신고 처리 중 오류:", error);
+              alert("신고 처리에 실패했습니다.");
+            });
+  }
+
+  // --------------- 편지 관리 관련 함수 ---------------
+
+  // 편지 목록 페이지 표시
+  function showLettersList() {
+    document.getElementById('letters-list-page').style.display = 'block';
+    document.getElementById('letter-detail-page').style.display = 'none';
+  }
+
+  // 편지 상세 페이지 표시
+  function showLetterDetail(letterId) {
+    document.getElementById('letters-list-page').style.display = 'none';
+    document.getElementById('letter-detail-page').style.display = 'block';
+
+    currentLetterId = letterId;
+    loadLetterDetail(letterId);
+
+    // URL 상태 업데이트
+    history.pushState({ section: 'letters', letterId: letterId }, '', `?section=letters&id=${letterId}`);
+  }
+
+  // 편지 목록 데이터 로드
+  function loadLettersData() {
+    let url = `/api/v1/admin/letters?page=${currentLetterPage}&size=10`;
+
+    // 필터 및 검색어 적용
+    if (currentLetterFilter !== 'ALL') {
+      url += `&status=${currentLetterFilter}`;
+    }
+
+    if (currentLetterSearch) {
+      url += `&search=${encodeURIComponent(currentLetterSearch)}`;
+    }
+
+    // 로딩 메시지 표시
+    document.getElementById('letterTableBody').innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center py-4">
+          <i class="fas fa-circle-notch fa-spin me-2"></i> 데이터를 불러오는 중입니다...
+        </td>
+      </tr>
+    `;
+
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                lettersData = data;
+                renderLettersList(data);
+              }
+            })
+            .catch(error => {
+              console.error("편지 목록 로딩 중 오류:", error);
+              document.getElementById('letterTableBody').innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            <div class="alert alert-danger">데이터를 불러오는 중 오류가 발생했습니다.</div>
+          </td>
+        </tr>
+      `;
+            });
+  }
+
+  // 편지 목록 렌더링
+  function renderLettersList(data) {
+    const letters = data.letters;
+    const tableBody = document.getElementById('letterTableBody');
+    const pagination = document.getElementById('lettersPagination');
+
+    // 테이블 내용 초기화
+    tableBody.innerHTML = '';
+
+    // 데이터가 없는 경우
+    if (letters.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            편지 정보가 없습니다.
+          </td>
+        </tr>
+      `;
+      pagination.innerHTML = '';
+      return;
+    }
+
+    // 편지 목록 표시
+    letters.forEach(letter => {
+      const row = document.createElement('tr');
+      row.style.cursor = 'pointer';
+      row.onclick = function() {
+        showLetterDetail(letter.id);
+      };
+
+      // 날짜 포맷팅
+      const sentAt = new Date(letter.sentAt);
+      const formattedSentDate = `${sentAt.getFullYear()}-${String(sentAt.getMonth() + 1).padStart(2, '0')}-${String(sentAt.getDate()).padStart(2, '0')} ${String(sentAt.getHours()).padStart(2, '0')}:${String(sentAt.getMinutes()).padStart(2, '0')}`;
+
+      // 답장 시간 포맷팅
+      let formattedResponseDate = '-';
+      if (letter.responseAt) {
+        const responseAt = new Date(letter.responseAt);
+        formattedResponseDate = `${responseAt.getFullYear()}-${String(responseAt.getMonth() + 1).padStart(2, '0')}-${String(responseAt.getDate()).padStart(2, '0')} ${String(responseAt.getHours()).padStart(2, '0')}:${String(responseAt.getMinutes()).padStart(2, '0')}`;
+      }
+
+      // 답장 여부 뱃지 스타일
+      const responseBadge = letter.hasResponse
+              ? '<span class="badge bg-success">답장완료</span>'
+              : '<span class="badge bg-warning">미답장</span>';
+
+      // 저장 여부 뱃지 스타일
+            const savedBadge = letter.isSaved
+              ? '<span class="badge bg-info">저장됨</span>'
+              : '<span class="badge bg-secondary">미저장</span>';
+
+      row.innerHTML = `
+        <td>${letter.id}</td>
+        <td>${letter.title}</td>
+        <td>${letter.sender}</td>
+        <td>${letter.receiver}</td>
+        <td>${formattedSentDate}</td>
+        <td>${responseBadge}</td>
+        <td>${formattedResponseDate}</td>
+        <td>${savedBadge}</td>
+      `;
+
+      tableBody.appendChild(row);
+    });
+
+    // 페이지네이션 렌더링
+    renderLettersPagination(data.currentPage, data.totalPages);
+  }
+
+  // 편지 목록 페이지네이션 렌더링
+  function renderLettersPagination(currentPage, totalPages) {
+    const pagination = document.getElementById('lettersPagination');
+    pagination.innerHTML = '';
+
+    // 페이지가 하나밖에 없으면 페이지네이션 숨김
+    if (totalPages <= 1) {
+      return;
+    }
+
+    // 이전 버튼
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 0 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `
+      <a class="page-link" href="#" aria-label="Previous" onclick="changeLetterPage(${currentPage - 1}); return false;">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    `;
+    pagination.appendChild(prevLi);
+
+    // 페이지 번호
+    for (let i = 0; i < totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#" onclick="changeLetterPage(${i}); return false;">${i + 1}</a>`;
+      pagination.appendChild(li);
+    }
+
+    // 다음 버튼
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`;
+    nextLi.innerHTML = `
+      <a class="page-link" href="#" aria-label="Next" onclick="changeLetterPage(${currentPage + 1}); return false;">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    `;
+    pagination.appendChild(nextLi);
+  }
+
+  // 편지 페이지 변경
+  function changeLetterPage(page) {
+    if (page < 0) return;
+    currentLetterPage = page;
+    loadLettersData();
+  }
+
+  // 편지 필터 적용
+  function filterLetters(filter) {
+    currentLetterFilter = filter;
+    currentLetterPage = 0;
+    loadLettersData();
+
+    // 버튼 스타일 업데이트
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`.btn[onclick="filterLetters('${filter}')"]`).classList.add('active');
+  }
+
+  // 편지 검색 기능
+  function searchLetters() {
+    const searchInput = document.getElementById('letterSearchInput');
+    currentLetterSearch = searchInput.value.trim();
+    currentLetterPage = 0;
+    loadLettersData();
+  }
+
+  // 편지 상세 정보 로드
+  function loadLetterDetail(id) {
+    fetch(`/api/v1/admin/letters/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'access': accessToken
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                handleApiError(response);
+                return null;
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data) {
+                renderLetterDetail(data);
+              }
+            })
+            .catch(error => {
+              console.error("편지 상세 정보 로딩 중 오류:", error);
+              alert("편지 상세 정보를 불러오는 중 오류가 발생했습니다.");
+            });
+  }
+
+  // 편지 상세 정보 렌더링
+  function renderLetterDetail(letter) {
+    // 편지 기본 정보 업데이트
+    document.getElementById('letterId').textContent = letter.id;
+    document.getElementById('letterTitle').textContent = letter.title;
+    document.getElementById('letterSender').textContent = letter.sender;
+    document.getElementById('letterReceiver').textContent = letter.receiver;
+    document.getElementById('letterContent').textContent = letter.content;
+    document.getElementById('letterCategory').textContent = letter.category;
+    document.getElementById('letterDetailCategory').textContent = letter.category;
+    document.getElementById('letterViewCount').textContent = letter.viewCount || '0';
+    document.getElementById('letterThanks').textContent = letter.thanksCount ? `${letter.thanksCount}회` : '없음';
+
+    // 날짜 포맷팅
+    const sentAt = new Date(letter.sentAt);
+    const formattedSentDate = `${sentAt.getFullYear()}-${String(sentAt.getMonth() + 1).padStart(2, '0')}-${String(sentAt.getDate()).padStart(2, '0')} ${String(sentAt.getHours()).padStart(2, '0')}:${String(sentAt.getMinutes()).padStart(2, '0')}`;
+    document.getElementById('letterSentAt').textContent = formattedSentDate;
+
+    // 답장 내용 및 시간 표시
+    const responseSection = document.getElementById('letterResponseSection');
+    if (letter.hasResponse) {
+      // 답장 시간 포맷팅
+      const responseAt = new Date(letter.responseAt);
+      const formattedResponseDate = `${responseAt.getFullYear()}-${String(responseAt.getMonth() + 1).padStart(2, '0')}-${String(responseAt.getDate()).padStart(2, '0')} ${String(responseAt.getHours()).padStart(2, '0')}:${String(responseAt.getMinutes()).padStart(2, '0')}`;
+
+      // 답장 내용 표시
+      document.getElementById('letterResponseContent').textContent = letter.responseContent;
+      document.getElementById('letterResponseTime').textContent = formattedResponseDate;
+
+      // 답장 섹션 표시
+      responseSection.style.display = 'block';
+    } else {
+      // 답장 섹션 숨기기
+      responseSection.style.display = 'none';
+    }
+
+    // 답장 여부 뱃지 스타일
+    const responseBadge = document.getElementById('letterResponseBadge');
+    if (letter.hasResponse) {
+      responseBadge.className = 'badge bg-success';
+      responseBadge.textContent = '답장완료';
+    } else {
+      responseBadge.className = 'badge bg-warning';
+      responseBadge.textContent = '미답장';
+    }
+
+    // 저장 여부 뱃지 스타일
+    const savedBadge = document.getElementById('letterSavedBadge');
+    if (letter.isSaved) {
+      savedBadge.className = 'badge bg-info';
+      savedBadge.textContent = '저장됨';
+      savedBadge.style.display = 'inline-block';
+    } else {
+      savedBadge.style.display = 'none';
+    }
+  }
+
+  // API 에러 처리
+  function handleApiError(response) {
+    if (response.status === 401 || response.status === 403) {
+      alert("인증이 만료되었거나 권한이 없습니다. 다시 로그인해 주세요.");
+      window.location.href = '/admin/login';
+    } else {
+      alert(`API 응답 에러: ${response.status}`);
+    }
+  }
+</script>
+</body>
+</html>

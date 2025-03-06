@@ -5,12 +5,14 @@ import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -45,6 +47,16 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u SET u.category = :category WHERE u.userSeq = :userSeq")
   void updateCategoryByUserSeq(@Param("userSeq")Long userSeq, @Param("category")CategoryEntity category);
 
+  List<UserEntity> findAllByRole_RoleSeq(Long roleSeq);
+
+  /**
+   * 특정 역할을 가진 사용자 중 특정 기간에 가입한 사용자 목록 조회
+   * @param roleSeq 역할 시퀀스 번호
+   * @param startDateTime 조회 시작 일시
+   * @param endDateTime 조회 종료 일시
+   * @return 조건에 맞는 사용자 목록
+   */
+  List<UserEntity> findByRoleRoleSeqAndCreateAtBetween(Long roleSeq, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
   @Modifying
   @Transactional
@@ -68,4 +80,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Transactional
   @Query("UPDATE user u SET u.deleteAt = NULL WHERE u.userSeq = :userSeq")
   void cancelWithdrawal(Long userSeq);
+
 }
+
+
