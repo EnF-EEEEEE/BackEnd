@@ -22,11 +22,11 @@ public class BirdEntity {
 
   private String birdName;
 
-  private String explanation;
+  private String traits;
 
-  private String traits1;
+  private String myPageBirdy;
 
-  private String traits2;
+  private String testBirdy;
 
-  private String traits3;
+  private String letterBirdy;
 }
