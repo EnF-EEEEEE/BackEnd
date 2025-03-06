@@ -26,6 +26,9 @@ public enum SuccessResultType {
   SUCCESS_THANKS_TO_MENTOR(HttpStatus.OK, "고마움 표시하기 성공"),
   SUCCESS_GET_THROW_LETTER_CATEGORY(HttpStatus.OK, "카테고리별 넘긴 편지 개수 조회 성공"),
   SUCCESS_KAKAO_WITHDRAWAL(HttpStatus.OK, "회원탈퇴 성공"),
+  SUCCESS_GET_TEST_RESULT_BIRDY(HttpStatus.OK, "버디 테스트 새 유형 조회 성공"),
+  SUCCESS_GET_LETTER_BIRDY(HttpStatus.OK, "카테고리 새 유형 조회 성공"),
+  SUCCESS_GET_ALL_BIRDY(HttpStatus.OK, "모든 새 유형 조회 성공"),
   ;
 
   private final HttpStatus status;
