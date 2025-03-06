@@ -31,10 +31,11 @@ public class AuthController {
    */
   @GetMapping("/kakao")
   public ResponseEntity<ResultResponse> oAuthForKakao(
+      HttpServletRequest request,
       HttpServletResponse response,
       @RequestParam("code") String code) {
 
-    ResultResponse resultResponse = authService.oAuthForKakao(response, code);
+    ResultResponse resultResponse = authService.oAuthForKakao(request,response, code);
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 
