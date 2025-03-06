@@ -10,6 +10,7 @@ import com.enf.model.type.SuccessResultType;
 import com.enf.repository.RoleRepository;
 import com.enf.repository.UserRepository;
 import com.enf.service.impl.AuthServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +46,9 @@ public class AuthServiceImplTest {
 
     @Mock
     private HttpServletResponse response;
+
+    @Mock
+    private HttpServletRequest request;
 
 
     @InjectMocks    //실제 서비스 불러옴 -> 실제 서비스를 실행한다.
@@ -103,17 +107,17 @@ public class AuthServiceImplTest {
     public void testOAuthForKakao_signup() {
         // given
         // when 사전세팅 -> thenReturn 로직을 실제 실행하는것이아닌 정상 동작여부를 확인한다!?
-        when(kakaoAuthHandler.getAccessToken(CODE)).thenReturn(KAKAO_TOKEN);
+//        when(kakaoAuthHandler.getAccessToken(CODE)).thenReturn(KAKAO_TOKEN);
         when(kakaoAuthHandler.getUserDetails(KAKAO_TOKEN)).thenReturn(kakaoUserDetails);
         when(userRepository.existsByProviderId(KAKAO_PROVIDER_ID)).thenReturn(false);
-        when(roleRepository.findByRoleName(USER_ROLE)).thenReturn(Optional.of(roleEntity));
+        when(roleRepository.findByRoleName(USER_ROLE)).thenReturn(roleEntity);
 
         when(userRepository.save(any(UserEntity.class))).thenReturn(saveUser);
 
         when(tokenProvider.generateAccessToken(USERSEQ, USER_ROLE)).thenReturn(ACCESS_TOKEN);
 
         // when
-        ResultResponse resultResponse = authServiceImpl.oAuthForKakao(response, CODE);
+        ResultResponse resultResponse = authServiceImpl.oAuthForKakao(request,response, CODE);
 
         // then
         assertEquals(SuccessResultType.SUCCESS_KAKAO_SIGNUP.getStatus(), resultResponse.getStatus());
@@ -124,7 +128,7 @@ public class AuthServiceImplTest {
     @DisplayName("Kakao 로그인 성공")
     public void testOAuthForKakao_login() {
         // given
-        when(kakaoAuthHandler.getAccessToken(CODE)).thenReturn(KAKAO_TOKEN);
+//        when(kakaoAuthHandler.getAccessToken(CODE)).thenReturn(KAKAO_TOKEN);
         when(kakaoAuthHandler.getUserDetails(KAKAO_TOKEN)).thenReturn(kakaoUserDetails);
         when(userRepository.existsByProviderId(KAKAO_PROVIDER_ID)).thenReturn(true);
         when(userRepository.findByProviderId(KAKAO_PROVIDER_ID)).thenReturn(Optional.of(saveUser));
@@ -133,7 +137,7 @@ public class AuthServiceImplTest {
         when(tokenProvider.generateRefreshToken(USERSEQ, USER_ROLE)).thenReturn(REFRESH_TOKEN);
 
         // when
-        ResultResponse resultResponse = authServiceImpl.oAuthForKakao(response, CODE);
+        ResultResponse resultResponse = authServiceImpl.oAuthForKakao(request, response, CODE);
 
         // then
         assertEquals(SuccessResultType.SUCCESS_KAKAO_LOGIN.getStatus(), resultResponse.getStatus());
