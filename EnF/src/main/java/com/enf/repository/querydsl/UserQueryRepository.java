@@ -29,6 +29,7 @@ import java.time.temporal.TemporalAdjusters;
 public class UserQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
+
   QUserEntity user = QUserEntity.userEntity;
   QQuotaEntity quota = QQuotaEntity.quotaEntity;
   QThrowLetterEntity throwLetter = QThrowLetterEntity.throwLetterEntity;

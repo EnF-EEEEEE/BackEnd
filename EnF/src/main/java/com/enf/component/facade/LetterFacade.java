@@ -1,6 +1,11 @@
 package com.enf.component.facade;
 
-import com.enf.entity.*;
+import com.enf.entity.LetterEntity;
+import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.NotificationEntity;
+import com.enf.entity.ThrowLetterCategoryEntity;
+import com.enf.entity.ThrowLetterEntity;
+import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.response.PageResponse;
@@ -9,12 +14,16 @@ import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
-import com.enf.repository.*;
+import com.enf.repository.LetterRepository;
+import com.enf.repository.LetterStatusRepository;
+import com.enf.repository.NotificationRepository;
+import com.enf.repository.ThrowLetterCategoryRepository;
+import com.enf.repository.ThrowLetterRepository;
 import com.enf.repository.querydsl.LetterQueryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -66,20 +75,21 @@ public class LetterFacade {
    * @return 저장된 LetterStatusEntity 객체
    */
   public LetterStatusEntity saveMenteeLetter(LetterEntity letter, UserEntity mentee, UserEntity mentor) {
-    userFacade.reduceQuota(mentee);
-    return letterStatusRepository.save(LetterStatusEntity.of(letterRepository.save(letter), mentee, mentor));
+    letterRepository.save(letter);
+    return letterStatusRepository.save(LetterStatusEntity.of(letter, mentee, mentor));
   }
 
   /**
    * 멘토가 답장을 보낼 때 편지 저장 및 상태 업데이트
    *
-   * @param letterStatus 저장할 멘토의 답장 편지 엔티티
    * @param replyLetter 멘티가 보낸 원본 편지 엔티티
    */
-  public void saveMentorLetter(LetterStatusEntity letterStatus, ReplyLetterDTO replyLetter) {
-    userFacade.reduceQuota(letterStatus.getMentor());
-    LetterEntity mentorLetter = letterRepository.save(ReplyLetterDTO.of(replyLetter, letterStatus.getMenteeLetter().getCategoryName()));
-    letterStatusRepository.updateLetterStatus(letterStatus.getLetterStatusSeq(), mentorLetter);
+  public LetterStatusEntity saveMentorLetter(ReplyLetterDTO replyLetter) {
+    LetterStatusEntity letterStatus = getLetterStatus(replyLetter.getLetterStatusSeq());
+    LetterEntity mentorLetter = letterRepository.save(ReplyLetterDTO.of(replyLetter));
+    letterStatusRepository.saveMentorLetter(letterStatus.getLetterStatusSeq(), mentorLetter);
+
+    return letterStatus;
   }
 
   /**
@@ -100,11 +110,11 @@ public class LetterFacade {
    * @param user 현재 로그인한 사용자 (멘티 또는 멘토)
    * @param letterStatusSeq 저장할 편지의 고유 식별자 (ID)
    */
-  public void saveLetter(UserEntity user, Long letterStatusSeq) {
+  public void archiveLetter(UserEntity user, Long letterStatusSeq) {
     if (user.getRole().getRoleName().equals("MENTEE")) {
-      letterStatusRepository.saveLetterForMentee(letterStatusSeq);
+      letterStatusRepository.archiveLetterForMentee(letterStatusSeq);
     } else {
-      letterStatusRepository.saveLetterForMentor(letterStatusSeq);
+      letterStatusRepository.archiveLetterForMentor(letterStatusSeq);
     }
   }
 
@@ -152,9 +162,8 @@ public class LetterFacade {
             .throwUser(letterStatus.getMentor())
             .build());
 
-    letterQueryRepository.incrementCategory(
-        getThrowLetterCategory().getThrowLetterCategorySeq(),
-        letterStatus.getMenteeLetter().getCategoryName());
+    ThrowLetterCategoryEntity throwLetterCategory = getThrowLetterCategory();
+    letterQueryRepository.incrementCategory(letterStatus, throwLetterCategory);
   }
 
   /**
@@ -163,8 +172,8 @@ public class LetterFacade {
    * @param letterStatus 현재 편지의 상태 정보
    * @param newMentor 새로운 멘토 정보
    */
-  public void updateMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
-    letterStatusRepository.updateMentor(letterStatus.getLetterStatusSeq(), newMentor);
+  public void changeMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
+    letterStatusRepository.changeMentor(letterStatus.getLetterStatusSeq(), newMentor);
   }
 
   /**
@@ -174,7 +183,7 @@ public class LetterFacade {
    */
   public LetterStatusEntity thanksToMentor(Long letterSeq) {
     LetterStatusEntity letterStatus = letterStatusRepository.getLetterStatusByMentorLetterLetterSeq(letterSeq);
-    letterStatusRepository.updateIsThankToMentor(letterStatus.getLetterStatusSeq());
+    letterStatusRepository.thankToMentor(letterStatus.getLetterStatusSeq());
     return letterStatus;
   }
 

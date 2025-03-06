@@ -23,4 +23,6 @@ public interface QuotaRepository extends JpaRepository<QuotaEntity, Long> {
       + "SET q.quota = CASE WHEN q.quota > 0 THEN q.quota - 1 ELSE q.quota END "
       + "WHERE q.user = :user")
   void reduceQuota(@Param("user") UserEntity user);
+
+  QuotaEntity findByUser(UserEntity user);
 }

@@ -1,15 +1,13 @@
 package com.enf.service.impl;
 
 import com.enf.component.facade.UserFacade;
-import com.enf.entity.BirdEntity;
-import com.enf.entity.CategoryEntity;
-import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.user.UserInfoDTO;
+import com.enf.model.dto.response.user.UserProfileDTO;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
 import com.enf.service.UserService;
@@ -48,18 +46,14 @@ public class UserServiceImpl implements UserService {
    * @return 추가 정보 저장 결과 응답 객체
    */
   @Override
-  public ResultResponse additionalInfo(HttpServletRequest request, HttpServletResponse response, AdditionalInfoDTO additionalInfoDTO) {
+  public ResultResponse additionalInfo(HttpServletRequest request,
+      HttpServletResponse response, AdditionalInfoDTO additionalInfoDTO) {
+
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    BirdEntity bird = userFacade.findBirdByBirdName(additionalInfoDTO.getBirdName());
-    RoleEntity role = userFacade.findRoleByRoleName(additionalInfoDTO.getUserRole());
-    CategoryEntity category = userFacade.saveCategory(role, additionalInfoDTO.getUserCategory());
-    UserEntity saveUser = AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO);
+    UserEntity saveUser = userFacade.saveAdditionalInfo(user, additionalInfoDTO);
 
-    userFacade.saveUser(saveUser);
-    userFacade.saveQuota(saveUser);
-    userFacade.generateAndSetToken(user, response);
-
-    return ResultResponse.of(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO);
+    userFacade.generateAndSetToken(saveUser, response);
+    return new ResultResponse(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO, UserInfoDTO.of(additionalInfoDTO));
   }
 
   /**
@@ -71,7 +65,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public ResultResponse userInfo(HttpServletRequest request) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, UserInfoDTO.of(user));
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, UserProfileDTO.of(user));
   }
 
   /**
@@ -84,8 +78,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public ResultResponse updateNickname(HttpServletRequest request, UpdateNicknameDTO nickname) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    userFacade.updateNicknameByUserSeq(user.getUserSeq(), nickname.getNickname());
 
+    userFacade.updateNicknameByUserSeq(user.getUserSeq(), nickname.getNickname());
     return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_NICKNAME);
   }
 
@@ -99,8 +93,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public ResultResponse updateCategory(HttpServletRequest request, UserCategoryDTO userCategory) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    userFacade.updateCategory(user.getUserSeq(), UserCategoryDTO.of(userCategory));
 
+    userFacade.updateCategory(user.getUserSeq(), UserCategoryDTO.of(userCategory));
     return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_CATEGORY);
   }
 }

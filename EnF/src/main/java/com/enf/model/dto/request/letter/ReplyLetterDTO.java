@@ -12,6 +12,9 @@ public class ReplyLetterDTO {
   @JsonProperty("letterStatusSeq")
   private Long letterStatusSeq;
 
+  @JsonProperty("categoryName")
+  private String categoryName;
+
   @JsonProperty("title")
   private String title;
 
@@ -19,16 +22,17 @@ public class ReplyLetterDTO {
   private String letter;
 
   @JsonCreator
-  public ReplyLetterDTO(Long letterStatusSeq, String title, String letter) {
+  public ReplyLetterDTO(Long letterStatusSeq, String categoryName, String title, String letter) {
     this.letterStatusSeq = letterStatusSeq;
+    this.categoryName = categoryName;
     this.title = title;
     this.letter = letter;
   }
 
-  public static LetterEntity of(ReplyLetterDTO replyLetter, String categoryName) {
+  public static LetterEntity of(ReplyLetterDTO replyLetter) {
 
     return LetterEntity.builder()
-        .categoryName(categoryName)
+        .categoryName(replyLetter.getCategoryName())
         .letterTitle(replyLetter.getTitle())
         .letter(replyLetter.getLetter())
         .createAt(LocalDateTime.now())

@@ -5,7 +5,10 @@ import com.enf.component.token.TokenProvider;
 import com.enf.entity.*;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
+import com.enf.model.dto.request.letter.SendLetterDTO;
+import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
+import com.enf.model.dto.response.user.UserInfoDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
 import com.enf.repository.*;
@@ -89,6 +92,25 @@ public class UserFacade {
   }
 
   /**
+   * 추가 정보 저장
+   *
+   * @param user 기존 사용자 정보
+   * @param additionalInfoDTO 추가 정보 DTO
+   * @return 저장된 UserEntity
+   */
+  public UserEntity saveAdditionalInfo(UserEntity user, AdditionalInfoDTO additionalInfoDTO) {
+    BirdEntity bird = findBirdByBirdName(additionalInfoDTO.getBirdName());
+    RoleEntity role = findRoleByRoleName(additionalInfoDTO.getUserRole());
+    CategoryEntity category = saveCategory(role, additionalInfoDTO.getUserCategory());
+
+    UserEntity saveUser = AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO);
+    saveUser(saveUser);
+    saveQuota(user);
+
+    return saveUser;
+  }
+
+  /**
    * 사용자의 닉네임을 변경
    *
    * @param userSeq 사용자 일련번호
@@ -118,10 +140,12 @@ public class UserFacade {
   /**
    * 새 이름, 카테고리 정보와 일치하는 UserEntity 조회
    *
-   * @param birdName 작성한 사용자의 새이름
-   * @param categoryName 작성한 편지의 카테고리
+   * @param sendLetter 작성한 사용자의 편지 정보
    */
-  public UserEntity getMentorByBirdAndCategory(String birdName, String categoryName) {
+  public UserEntity getMentorByBirdAndCategory(SendLetterDTO sendLetter) {
+    String birdName = sendLetter.getBirdName();
+    String categoryName = sendLetter.getCategoryName();
+
     return userQueryRepository.getMentor(birdName, categoryName, null);
   }
 
@@ -134,11 +158,9 @@ public class UserFacade {
   public UserEntity getNewMentor(LetterStatusEntity letterStatus) {
     String birdName = letterStatus.getMenteeLetter().getBirdName();
     String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+    Long letterStatusSeq = letterStatus.getLetterStatusSeq();
 
-    log.info("birdName : {}", birdName);
-    log.info("categoryName : {}", categoryName);
-
-    return userQueryRepository.getMentor(birdName, categoryName, letterStatus.getLetterStatusSeq());
+    return userQueryRepository.getMentor(birdName, categoryName, letterStatusSeq);
   }
 
   /**
@@ -148,6 +170,37 @@ public class UserFacade {
    */
   public void pendingWithdrawal(UserEntity user) {
     userRepository.pendingWithdrawal(user.getUserSeq());
+  }
+
+
+  /**
+   * 회원 탈퇴 보류 중인 사용자 목록 조회
+   *
+   * @return 탈퇴 보류 중인 사용자 리스트
+   */
+  public List<UserEntity> getWithdrawalPendingUsers() {
+    return userRepository.getWithdrawalPendingUsers();
+  }
+
+  /**
+   * 회원 탈퇴 처리
+   *
+   * @param user 탈퇴할 사용자 정보
+   */
+  public void withdrawal(UserEntity user) {
+    RoleEntity role = roleRepository.findByRoleName("WITHDRAWAL");
+    String nickname = "떠나간 새";
+
+    userRepository.withdrawal(user.getUserSeq(), role, nickname);
+  }
+
+  /**
+   * **회원 탈퇴 취소**
+   *
+   * @param user 탈퇴 취소할 사용자 정보
+   */
+  public void cancelWithdrawal(UserEntity user) {
+    userRepository.cancelWithdrawal(user.getUserSeq());
   }
 
 
@@ -193,6 +246,12 @@ public class UserFacade {
 
   // ============================= Token 관련 메서드 =============================
 
+  /**
+   * 사용자에게 Access Token과 Refresh Token을 발급하고, 응답 헤더와 쿠키에 추가
+   *
+   * @param user 사용자 정보
+   * @param response HTTP 응답 객체
+   */
   public void generateAndSetToken(UserEntity user, HttpServletResponse response) {
     AuthTokenDTO tokens = tokenProvider.generateAuthToken(user.getUserSeq(), user.getRole().getRoleName());
     ResponseCookie responseCookie = HttpCookieUtil.addCookieToResponse(tokens.getRefreshToken());
@@ -201,10 +260,23 @@ public class UserFacade {
     response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
   }
 
+  /**
+   * 토큰 유효성 검사
+   *
+   * @param token 검증할 토큰
+   * @return 유효 여부 (true: 유효, false: 만료 또는 잘못된 토큰)
+   */
   public boolean validateToken(String token) {
     return tokenProvider.validateToken(token);
   }
 
+
+  /**
+   * 토큰을 이용하여 사용자 조회
+   *
+   * @param token 조회할 토큰
+   * @return 조회된 사용자 정보
+   */
   public UserEntity getUserByToken(String token) {
     Long userSeq = tokenProvider.getUserSeqFromToken(token);
     return findByUserSeq(userSeq);
@@ -212,6 +284,11 @@ public class UserFacade {
 
   // ============================= Quota 관련 메서드 =============================
 
+  /**
+   * 사용자 할당량 저장
+   *
+   * @param user 사용자 정보
+   */
   public void saveQuota(UserEntity user) {
     quotaRepository.save(
         QuotaEntity.builder()
@@ -221,30 +298,37 @@ public class UserFacade {
     );
   }
 
+  /**
+   * 사용자의 할당량 감소
+   *
+   * @param user 사용자 정보
+   */
   public void reduceQuota(UserEntity user) {
     quotaRepository.reduceQuota(user);
   }
 
+  /**
+   * 전체 사용자 할당량 조회
+   *
+   * @return 모든 사용자 할당량 리스트
+   */
   public List<QuotaEntity> getQuotas() {
     return quotaRepository.findAll();
   }
 
+
+  /**
+   * 사용자의 할당량을 지정된 값으로 초기화
+   *
+   * @param user 사용자 정보
+   * @param quota 초기화할 할당량 값
+   */
   public void resetQuota(UserEntity user, int quota) {
     quotaRepository.updateQuota(user, quota);
   }
 
-  public List<UserEntity> getWithdrawalPendingUsers() {
-    return userRepository.getWithdrawalPendingUsers();
-  }
-
-  public void withdrawal(UserEntity user) {
-    RoleEntity role = roleRepository.findByRoleName("WITHDRAWAL");
-    String nickname = "떠나간 새";
-
-    userRepository.withdrawal(user.getUserSeq(), role, nickname);
-  }
-
-  public void cancelWithdrawal(UserEntity user) {
-    userRepository.cancelWithdrawal(user.getUserSeq());
+  public UserInfoDTO getUserInfo(UserEntity user) {
+    QuotaEntity quota = quotaRepository.findByUser(user);
+    return UserInfoDTO.of(user, quota.getQuota());
   }
 }
