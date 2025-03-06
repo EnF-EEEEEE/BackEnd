@@ -46,6 +46,9 @@ public class SecurityConstants {
         "/api/v1/letter/details",
         "/api/v1/notification/subscribe",
         "/api/v1/letter/save",
+        "/api/v1/birdy/test/birdy",
+        "/api/v1/birdy/letter/birdy",
+        "/api/v1/birdy/mypage/birdy",
     };
 
     public static final String[] menteeUrls = {
