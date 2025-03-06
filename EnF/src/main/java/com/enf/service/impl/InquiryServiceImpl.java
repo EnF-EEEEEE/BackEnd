@@ -98,13 +98,14 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     @Transactional
-    public ResponseEntity<Map<String, Object>> createResponse(HttpServletRequest request, Long adminSeq, String content) {
+    public ResponseEntity<Map<String, Object>> createResponse(HttpServletRequest request, Long inquiryId, String content) {
 
         UserEntity adminAccount = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
         if (!adminAccount.getRole().getRoleName().equals("ADMIN")) {
             return ResponseEntity.badRequest().build();
         }
-        Long inquirySeq = adminAccount.getUserSeq();
+        Long inquirySeq = inquiryId;
+        Long adminSeq = adminAccount.getRole().getRoleSeq();
 
         InquiryEntity inquiry = inquiryRepository.findById(inquirySeq)
                 .orElseThrow(() -> new EntityNotFoundException("문의를 찾을 수 없습니다: " + inquirySeq));
