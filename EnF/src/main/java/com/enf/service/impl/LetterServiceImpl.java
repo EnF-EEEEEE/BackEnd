@@ -12,21 +12,21 @@ import com.enf.model.dto.request.notification.NotificationDTO;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.letter.LetterDetailResponseDto;
-import com.enf.model.dto.response.letter.LetterResponseDto;
-import com.enf.model.type.SuccessResultType;
-import com.enf.model.type.TokenType;
-import com.enf.repository.LetterRepository;
-import com.enf.repository.LetterStatusRepository;
-import com.enf.repository.querydsl.UserQueryRepository;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
+import com.enf.model.dto.response.letter.LetterResponseDto;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
+import com.enf.repository.LetterStatusRepository;
 import com.enf.service.LetterService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,10 +36,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -58,11 +54,13 @@ public class LetterServiceImpl implements LetterService {
   @Override
   public ResultResponse sendLetter(HttpServletRequest request, SendLetterDTO sendLetter) {
     UserEntity mentee = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserEntity mentor = userFacade.getMentorByBirdAndCategory(sendLetter.getBirdName(), sendLetter.getCategoryName());
+    UserEntity mentor = userFacade.getMentorByBirdAndCategory(sendLetter);
 
-    LetterStatusEntity letterStatus = letterFacade.saveMenteeLetter(SendLetterDTO.of(sendLetter), mentee, mentor);
+    LetterEntity letter = SendLetterDTO.of(sendLetter);
+    LetterStatusEntity letterStatus = letterFacade.saveMenteeLetter(letter, mentee, mentor);
+
+    userFacade.reduceQuota(mentee);
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, mentor));
-
     return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
 
@@ -71,8 +69,9 @@ public class LetterServiceImpl implements LetterService {
    */
   @Override
   public ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter) {
-    LetterStatusEntity letterStatus = letterFacade.getLetterStatus(replyLetter.getLetterStatusSeq());
-    letterFacade.saveMentorLetter(letterStatus, replyLetter);
+    LetterStatusEntity letterStatus = letterFacade.saveMentorLetter(replyLetter);
+
+    userFacade.reduceQuota(letterStatus.getMentor());
     redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(letterStatus));
 
     return ResultResponse.of(SuccessResultType.SUCCESS_RECEIVE_LETTER);
@@ -104,9 +103,9 @@ public class LetterServiceImpl implements LetterService {
    * 사용자가 저장한 편지 목록을 조회하는 기능 (페이징 지원)
    */
   @Override
-  public ResultResponse getSaveLetterList(HttpServletRequest request, int pageNumber) {
+  public ResultResponse getArchiveLetterList(HttpServletRequest request, int pageNumber) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    PageResponse<ReceiveLetterDTO> letters = letterFacade.getLetterList(user, pageNumber, LetterListType.SAVE);
+    PageResponse<ReceiveLetterDTO> letters = letterFacade.getLetterList(user, pageNumber, LetterListType.ARCHIVE);
 
     return new ResultResponse(SuccessResultType.SUCCESS_GET_SAVE_LETTER, letters);
   }
@@ -115,9 +114,9 @@ public class LetterServiceImpl implements LetterService {
    * 사용자가 특정 편지를 저장하는 기능
    */
   @Override
-  public ResultResponse saveLetter(HttpServletRequest request, Long letterStatusSeq) {
+  public ResultResponse archiveLetter(HttpServletRequest request, Long letterStatusSeq) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    letterFacade.saveLetter(user, letterStatusSeq);
+    letterFacade.archiveLetter(user, letterStatusSeq);
 
     return ResultResponse.of(SuccessResultType.SUCCESS_SAVE_LETTER);
   }
@@ -139,19 +138,13 @@ public class LetterServiceImpl implements LetterService {
    */
   @Override
   public ResultResponse throwLetter(HttpServletRequest request, Long letterStatusSeq) {
-    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-
-    if (user.getRole().getRoleName().equals("MENTEE")) {
-      throw new GlobalException(FailedResultType.MENTEE_PERMISSION_DENIED);
-    }
-
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
-    letterFacade.throwLetter(letterStatus);
     UserEntity newMentor = userFacade.getNewMentor(letterStatus);
 
-    letterFacade.updateMentor(letterStatus, newMentor);
-    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, newMentor));
+    letterFacade.throwLetter(letterStatus);
+    letterFacade.changeMentor(letterStatus, newMentor);
 
+    redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, newMentor));
     return ResultResponse.of(SuccessResultType.SUCCESS_THROW_LETTER);
   }
 
@@ -160,15 +153,9 @@ public class LetterServiceImpl implements LetterService {
    */
   @Override
   public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq) {
-    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-
-    if (user.getRole().getRoleName().equals("MENTOR")) {
-      throw new GlobalException(FailedResultType.MENTOR_PERMISSION_DENIED);
-    }
-
     LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq);
-    redisTemplate.convertAndSend("notifications", NotificationDTO.thanksToMentor(letterStatus));
 
+    redisTemplate.convertAndSend("notifications", NotificationDTO.thanksToMentor(letterStatus));
     return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
   }
 

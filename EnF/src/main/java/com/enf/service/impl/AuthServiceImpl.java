@@ -8,6 +8,7 @@ import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.UserDetailsDTO;
 import com.enf.model.dto.request.auth.KakaoUserDetailsDTO;
 import com.enf.model.dto.response.ResultResponse;
+import com.enf.model.dto.response.user.UserInfoDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
@@ -54,7 +55,8 @@ public class AuthServiceImpl implements AuthService {
           log.info("Kakao 로그인 진행");
           userFacade.updateLastLoginAt(user.getUserSeq());
           userFacade.generateAndSetToken(user, response);
-          return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_LOGIN);
+          UserInfoDTO userInfo = userFacade.getUserInfo(user);
+          return new ResultResponse(SuccessResultType.SUCCESS_KAKAO_LOGIN, userInfo);
         })
         .orElseGet(() -> {
           log.info("Kakao 회원가입 진행");
