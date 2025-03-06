@@ -8,6 +8,11 @@ spring:
       host: ${PROD.REDIS.HOST}
       timeout: ${PROD.REDIS.TIMEOUT}
 
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
   jpa:
     hibernate:
       # 필요에 따라서 수정 필요
