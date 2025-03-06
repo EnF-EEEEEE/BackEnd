@@ -147,7 +147,8 @@ public class AdminController {
      * 편지 상세 조회 API
      */
     @GetMapping("/letters/{id}")
-    public ResponseEntity<LetterDetailResponseDto> getLetterDetail(HttpServletRequest request, @PathVariable Long id) {
+    public ResponseEntity<LetterDetailResponseDto> getLetterDetail(
+            HttpServletRequest request, @PathVariable Long id) {
 
         return letterService.getLetterContent(request, id);
     }
