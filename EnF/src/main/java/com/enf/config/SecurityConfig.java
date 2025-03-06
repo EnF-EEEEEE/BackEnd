@@ -5,6 +5,7 @@ import com.enf.component.token.TokenProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,12 +38,13 @@ public class SecurityConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(                         // 경로별 인가 설정
                 authorizeRequests -> authorizeRequests
-                                .requestMatchers(SecurityConstants.allowedUrls).permitAll()  // 허용 URL 설정
-                                .requestMatchers(SecurityConstants.adminUrls).hasAnyAuthority("ADMIN","DEVELOPER") // 관리자만 접근 가능
-                                .requestMatchers(SecurityConstants.userUrls).hasAnyAuthority("UNKNOWN","MENTEE","MENTOR","ADMIN","DEVELOPER") // 사용자 접근 가능
-                                .requestMatchers(SecurityConstants.menteeUrls).hasAnyAuthority("MENTEE", "ADMIN","DEVELOPER")
-                                .requestMatchers(SecurityConstants.mentorUrls).hasAnyAuthority("MENTOR", "ADMIN","DEVELOPER")
-                                .anyRequest().authenticated()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(SecurityConstants.allowedUrls).permitAll()  // 허용 URL 설정
+                    .requestMatchers(SecurityConstants.adminUrls).hasAnyAuthority("ADMIN","DEVELOPER") // 관리자만 접근 가능
+                    .requestMatchers(SecurityConstants.userUrls).hasAnyAuthority("UNKNOWN","MENTEE","MENTOR","ADMIN","DEVELOPER") // 사용자 접근 가능
+                    .requestMatchers(SecurityConstants.menteeUrls).hasAnyAuthority("MENTEE", "ADMIN","DEVELOPER")
+                    .requestMatchers(SecurityConstants.mentorUrls).hasAnyAuthority("MENTOR", "ADMIN","DEVELOPER")
+                    .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenFilter(tokenProvider,jwtUtil), UsernamePasswordAuthenticationFilter.class);
 

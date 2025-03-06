@@ -33,7 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // options 확인
-        if(request.getMethod().equals(HttpMethod.OPTIONS.name())) {
+        if(HttpMethod.OPTIONS.matches(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
