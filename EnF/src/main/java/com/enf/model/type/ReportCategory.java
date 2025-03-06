@@ -1,8 +1,11 @@
 package com.enf.model.type;
 
+import lombok.Getter;
+
 /**
  * 신고 카테고리 Enum
  */
+@Getter
 public enum ReportCategory {
     EMERGENCY("위급한 상황이라고 판단"),
     IRRELEVANT("주제와 맞지 않는 내용"),
@@ -16,10 +19,6 @@ public enum ReportCategory {
 
     ReportCategory(String description) {
         this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     /**
