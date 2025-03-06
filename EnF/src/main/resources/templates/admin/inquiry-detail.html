@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 상세 정보</title>
+    <!-- Bootstrap 5.1 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome - 아이콘 라이브러리 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            padding-top: 30px;
+            color: #333;
+        }
+
+        .admin-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header-subtitle {
+            text-align: center;
+            color: #ddd;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            border: none;
+        }
+
+        .card-header {
+            background-color: #3498db;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0 !important;
+            border-bottom: none;
+        }
+
+        .inquiry-meta {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .inquiry-content {
+            padding: 25px;
+            min-height: 150px;
+            white-space: pre-line;
+        }
+
+        .response-card {
+            border-left: 4px solid #3498db;
+        }
+
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #7f8c8d;
+            border-color: #7f8c8d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6c7a7a;
+            border-color: #6c7a7a;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+    </style>
+    <script th:inline="javascript">
+        // 전역 변수
+        let inquiryId;
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL 파라미터에서 토큰 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenParam = urlParams.get('token');
+
+            // URL에서 토큰을 가져왔으면 세션 스토리지에 저장
+            if (tokenParam) {
+                sessionStorage.setItem('accessToken', tokenParam);
+            }
+
+            // 서버에서 전달한 access값을 페이지에서 JavaScript로 전달받아 세션 스토리지에 저장
+            var accessToken = /*[[${access}]]*/ "";  // 서버에서 전달된 access 값을 사용
+
+            if (accessToken) {
+                sessionStorage.setItem('accessToken', accessToken);  // 세션 스토리지에 accessToken 저장
+            }
+
+            // 세션 스토리지에서 토큰 체크
+            var storedToken = sessionStorage.getItem('accessToken');
+
+            if (!storedToken) {
+                console.error("Access token is missing in sessionStorage.");
+                alert("인증 토큰이 없습니다. 다시 로그인해 주세요.");
+                window.location.href = '/admin/login'; // 로그인 페이지로 리다이렉트
+                return;
+            }
+
+            // 목록으로 돌아가기 링크에 토큰 추가
+            document.getElementById('backToListLink').onclick = function(e) {
+                e.preventDefault();
+                window.location.href = `/admin/inquiries?token=${encodeURIComponent(storedToken)}`;
+            };
+
+            // URL에서 문의 ID 추출
+            const pathParts = window.location.pathname.split('/');
+            inquiryId = pathParts[pathParts.length - 1];
+
+            loadInquiryDetail(inquiryId);
+        });
+
+        // 문의 상세 정보 불러오기
+        function loadInquiryDetail(id) {
+            const accessToken = sessionStorage.getItem('accessToken');
+
+            if (!accessToken) {
+                console.error("Access token is missing in sessionStorage.");
+                alert("인증 토큰이 없습니다. 다시 로그인해 주세요.");
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            fetch(`/api/v1/admin/inquiries/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'access': accessToken // 헤더 이름을 'access'로 유지
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401 || response.status === 403) {
+                            alert("인증이 만료되었거나 권한이 없습니다. 다시 로그인해 주세요.");
+                            window.location.href = '/admin/login';
+                            return;
+                        }
+                        throw new Error(`API 응답 에러: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderInquiryDetail(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('문의 상세 정보를 불러오는 데 실패했습니다.');
+                });
+        }
+
+        // 문의 상세 정보 렌더링
+        function renderInquiryDetail(inquiry) {
+            // 문의 기본 정보 업데이트
+            document.getElementById('inquiryTitle').textContent = inquiry.title;
+            document.getElementById('inquiryAuthor').textContent = inquiry.author;
+            document.getElementById('inquiryCategory').textContent = inquiry.category;
+            document.getElementById('inquiryContent').textContent = inquiry.content;
+
+            // 날짜 포맷팅
+            const createdAt = new Date(inquiry.createdAt);
+            const formattedDate = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('inquiryDate').textContent = formattedDate;
+
+            // 상태 표시
+            const statusBadge = document.getElementById('inquiryStatusBadge');
+            if (inquiry.status === 'PENDING') {
+                statusBadge.className = 'badge bg-warning';
+                statusBadge.textContent = '미답변';
+            } else {
+                statusBadge.className = 'badge bg-success';
+                statusBadge.textContent = '답변완료';
+            }
+
+            // 답변 영역 처리
+            const responseSection = document.getElementById('responseSection');
+            const responseFormSection = document.getElementById('responseFormSection');
+
+            if (inquiry.response) {
+                // 이미 답변이 있는 경우
+                const responseDate = new Date(inquiry.response.createdAt);
+                const formattedResponseDate = `${responseDate.getFullYear()}-${String(responseDate.getMonth() + 1).padStart(2, '0')}-${String(responseDate.getDate()).padStart(2, '0')} ${String(responseDate.getHours()).padStart(2, '0')}:${String(responseDate.getMinutes()).padStart(2, '0')}`;
+
+                responseSection.innerHTML = `
+          <div class="card mb-4 response-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span><i class="fas fa-reply"></i> 답변 내용</span>
+            </div>
+            <div class="inquiry-meta">
+              <div class="row">
+                <div class="col-md-6">
+                  <p class="mb-1"><strong>답변자:</strong> ${inquiry.response.respondent}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                  <p class="mb-1"><strong>답변일:</strong> ${formattedResponseDate}</p>
+                </div>
+              </div>
+            </div>
+            <div class="inquiry-content">
+              <p>${inquiry.response.content}</p>
+            </div>
+          </div>
+        `;
+
+                // 이미 답변이 있으면 답변 폼 숨김
+                responseFormSection.style.display = 'none';
+            } else {
+                // 답변이 없는 경우
+                responseSection.innerHTML = '';
+                responseFormSection.style.display = 'block';
+            }
+        }
+
+        // 답변 제출
+        function submitResponse() {
+            const responseContent = document.getElementById('responseContent').value.trim();
+
+            if (!responseContent) {
+                alert('답변 내용을 입력해주세요.');
+                return;
+            }
+
+            const accessToken = sessionStorage.getItem('accessToken');
+
+            if (!accessToken) {
+                console.error("Access token is missing in sessionStorage.");
+                alert("인증 토큰이 없습니다. 다시 로그인해 주세요.");
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            fetch(`/api/v1/admin/inquiries/${inquiryId}/responses`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'access': accessToken // 헤더 이름을 'access'로 유지
+                },
+                body: JSON.stringify({
+                    content: responseContent
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401 || response.status === 403) {
+                            alert("인증이 만료되었거나 권한이 없습니다. 다시 로그인해 주세요.");
+                            window.location.href = '/admin/login';
+                            return;
+                        }
+                        throw new Error(`API 응답 에러: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('답변이 성공적으로 등록되었습니다.');
+                    // 페이지 새로고침하여 업데이트된 정보 표시
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('답변 등록에 실패했습니다.');
+                });
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="admin-header">
+        <h2><i class="fas fa-clipboard-list"></i> 문의 상세 정보</h2>
+        <p class="header-subtitle">문의 내역 확인 및 답변</p>
+    </div>
+
+    <!-- 문의 상세 정보 -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span id="inquiryTitle">문의 제목</span>
+            <span id="inquiryStatusBadge" class="badge bg-warning">상태</span>
+        </div>
+        <div class="inquiry-meta">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>작성자:</strong> <span id="inquiryAuthor">-</span></p>
+                    <p class="mb-1"><strong>카테고리:</strong> <span id="inquiryCategory">-</span></p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-1"><strong>작성일:</strong> <span id="inquiryDate">-</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="inquiry-content">
+            <p id="inquiryContent">문의 내용이 여기에 표시됩니다.</p>
+        </div>
+    </div>
+
+    <!-- 답변 영역 -->
+    <div id="responseSection">
+        <!-- 기존 답변이 여기에 표시됨 -->
+    </div>
+
+    <!-- 답변 작성 폼 -->
+    <div id="responseFormSection" class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-reply"></i> 답변 작성
+        </div>
+        <div class="card-body">
+            <form id="responseForm">
+                <div class="mb-3">
+                    <textarea class="form-control" id="responseContent" rows="6" placeholder="답변 내용을 작성해주세요"></textarea>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary btn-custom" onclick="submitResponse()">
+                        <i class="fas fa-paper-plane"></i> 답변 등록
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <div class="d-flex justify-content-between mb-5">
+        <a href="/admin/inquiries" class="btn btn-secondary btn-custom" id="backToListLink">
+            <i class="fas fa-arrow-left"></i> 목록으로 돌아가기
+        </a>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
