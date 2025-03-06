@@ -2,6 +2,7 @@ package com.enf.controller;
 
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.BirdyService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class BirdyController {
     return new ResponseEntity<>(response, response.getStatus());
   }
 
-  @GetMapping("/mypage/birdy")
+  @GetMapping("/myPage/birdy")
   public ResponseEntity<ResultResponse> getMyPageBirdy() {
 
     ResultResponse response = birdyService.getMyPageBirdy();
