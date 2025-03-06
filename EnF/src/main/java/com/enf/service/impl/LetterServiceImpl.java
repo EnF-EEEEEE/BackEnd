@@ -63,14 +63,6 @@ public class LetterServiceImpl implements LetterService {
     LetterStatusEntity letterStatus = letterFacade.saveMenteeLetter(SendLetterDTO.of(sendLetter), mentee, mentor);
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, mentor));
 
-    LetterEntity letter = LetterEntity.builder()
-        .categoryName(sendLetter.getCategoryName())
-        .letterTitle(sendLetter.getTitle())
-        .letter(sendLetter.getLetter())
-        .createAt(LocalDateTime.now())
-        .build();
-
-    letterRepository.save(letter);
     return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
 

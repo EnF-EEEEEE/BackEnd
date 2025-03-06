@@ -165,7 +165,7 @@ public class UserQueryRepository {
     return startDateTime != null && endDateTime != null ?
             user.lastLoginAt.between(startDateTime, endDateTime) : null;
   }
-}
+  /*
    * 멘토 조회 조건을 생성하는 메서드
    *
    * @param birdName 새 유형
