@@ -14,4 +14,6 @@ public interface AuthService {
   UserDetails loadUserById(Long userSeq) throws UsernameNotFoundException;
 
   ResultResponse reissueToken(HttpServletRequest request, HttpServletResponse response);
+
+  ResultResponse withdrawal(HttpServletRequest request);
 }

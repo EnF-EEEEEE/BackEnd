@@ -18,15 +18,16 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ThrowLetterEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long throwLetterSeq;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long throwLetterSeq;
 
-    @ManyToOne
-    @JoinColumn(name = "throw_user_seq")
-    private UserEntity throwUser;
+  @ManyToOne
+  @JoinColumn(name = "throw_user_seq")
+  private UserEntity throwUser;
 
-    @ManyToOne
-    @JoinColumn(name = "letter_status_seq")
-    private LetterStatusEntity letterStatus;
+  @ManyToOne
+  @JoinColumn(name = "letter_status_seq")
+  private LetterStatusEntity letterStatus;
 }
+

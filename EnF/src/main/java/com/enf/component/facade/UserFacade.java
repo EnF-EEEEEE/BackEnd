@@ -2,20 +2,17 @@ package com.enf.component.facade;
 
 import com.enf.component.token.HttpCookieUtil;
 import com.enf.component.token.TokenProvider;
-import com.enf.entity.BirdEntity;
-import com.enf.entity.CategoryEntity;
-import com.enf.entity.RoleEntity;
-import com.enf.entity.UserEntity;
+import com.enf.entity.*;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
-import com.enf.repository.BirdRepository;
-import com.enf.repository.CategoryRepository;
-import com.enf.repository.RoleRepository;
-import com.enf.repository.UserRepository;
+import com.enf.repository.*;
+import com.enf.repository.querydsl.UserQueryRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +31,8 @@ public class UserFacade {
   private final BirdRepository birdRepository;
   private final CategoryRepository categoryRepository;
   private final TokenProvider tokenProvider;
+  private final QuotaRepository quotaRepository;
+  private final UserQueryRepository userQueryRepository;
 
   // ============================= User 관련 메서드 =============================
 
@@ -109,7 +108,6 @@ public class UserFacade {
     userRepository.updateCategoryByUserSeq(userSeq, category);
   }
 
-
   /**
    * 전체 사용자 수 조회
    */
@@ -117,6 +115,40 @@ public class UserFacade {
     return userRepository.count();
   }
 
+  /**
+   * 새 이름, 카테고리 정보와 일치하는 UserEntity 조회
+   *
+   * @param birdName 작성한 사용자의 새이름
+   * @param categoryName 작성한 편지의 카테고리
+   */
+  public UserEntity getMentorByBirdAndCategory(String birdName, String categoryName) {
+    return userQueryRepository.getMentor(birdName, categoryName, null);
+  }
+
+  /**
+   * 새로운 멘토 조회 (편지를 넘긴 사용자 제외)
+   *
+   * @param letterStatus 현재 편지의 상태 정보
+   * @return 새로운 멘토 사용자 엔티티
+   */
+  public UserEntity getNewMentor(LetterStatusEntity letterStatus) {
+    String birdName = letterStatus.getMenteeLetter().getBirdName();
+    String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+
+    log.info("birdName : {}", birdName);
+    log.info("categoryName : {}", categoryName);
+
+    return userQueryRepository.getMentor(birdName, categoryName, letterStatus.getLetterStatusSeq());
+  }
+
+  /**
+   * 회원 탈퇴 보류 처리
+   *
+   * @param user UserEntity
+   */
+  public void pendingWithdrawal(UserEntity user) {
+    userRepository.pendingWithdrawal(user.getUserSeq());
+  }
 
 
   // ============================= Role 관련 메서드 =============================
@@ -161,43 +193,58 @@ public class UserFacade {
 
   // ============================= Token 관련 메서드 =============================
 
-  /**
-   * Response 헤더에 AccessToken과 RefreshToken 추가
-   *
-   * @param user UserEntity
-   * @param response HTTP 응답 객체
-   */
   public void generateAndSetToken(UserEntity user, HttpServletResponse response) {
     AuthTokenDTO tokens = tokenProvider.generateAuthToken(user.getUserSeq(), user.getRole().getRoleName());
-
-    // 쿠키에 RefreshToken 설정
     ResponseCookie responseCookie = HttpCookieUtil.addCookieToResponse(tokens.getRefreshToken());
-    // RefreshToken을 DB에 저장
     userRepository.updateRefreshToken(user.getUserSeq(), tokens.getRefreshToken());
-
-    // 헤더에 AccessToken & Cookie 추가
     response.addHeader(TokenType.ACCESS.getValue(), "Bearer " + tokens.getAccessToken());
     response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
   }
 
-  /**
-   * 토큰 유효성 검증
-   *
-   * @param token 검증할 토큰
-   * @return 유효성 검증 결과 (true: 유효함, false: 유효하지 않음)
-   */
   public boolean validateToken(String token) {
     return tokenProvider.validateToken(token);
   }
 
-  /**
-   * 토큰값으로 userSeq 값 추출 후 UserEntity 반환
-   *
-   * @param token 검증할 토큰
-   * @return 조회된 UserEntity
-   */
   public UserEntity getUserByToken(String token) {
     Long userSeq = tokenProvider.getUserSeqFromToken(token);
     return findByUserSeq(userSeq);
+  }
+
+  // ============================= Quota 관련 메서드 =============================
+
+  public void saveQuota(UserEntity user) {
+    quotaRepository.save(
+        QuotaEntity.builder()
+            .user(user)
+            .quota(user.getRole().getRoleName().equals("MENTEE") ? 4 : 7)
+            .build()
+    );
+  }
+
+  public void reduceQuota(UserEntity user) {
+    quotaRepository.reduceQuota(user);
+  }
+
+  public List<QuotaEntity> getQuotas() {
+    return quotaRepository.findAll();
+  }
+
+  public void resetQuota(UserEntity user, int quota) {
+    quotaRepository.updateQuota(user, quota);
+  }
+
+  public List<UserEntity> getWithdrawalPendingUsers() {
+    return userRepository.getWithdrawalPendingUsers();
+  }
+
+  public void withdrawal(UserEntity user) {
+    RoleEntity role = roleRepository.findByRoleName("WITHDRAWAL");
+    String nickname = "떠나간 새";
+
+    userRepository.withdrawal(user.getUserSeq(), role, nickname);
+  }
+
+  public void cancelWithdrawal(UserEntity user) {
+    userRepository.cancelWithdrawal(user.getUserSeq());
   }
 }

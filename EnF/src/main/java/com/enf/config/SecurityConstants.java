@@ -16,7 +16,6 @@ public class SecurityConstants {
             "/api/v1/admin/login",
             "/admin/login",
             "/favicon.ico",
-
     };
 
     public static final String[] adminUrls = {
@@ -36,10 +35,28 @@ public class SecurityConstants {
     };
 
     public static final String[] userUrls = {
-            "/api/v1/user/check-nickname",
-            "/api/v1/user/additional-info",
-            "/api/v1/letter/send",
-            "/api/v1/reports"
+        "/api/v1/reports",
+        "/api/v1/user/check-nickname",
+        "/api/v1/user/additional-info",
+        "/api/v1/user/info",
+        "/api/v1/user/update/nickname",
+        "/api/v1/letter/list/save",
+        "/api/v1/letter/list/pending",
+        "/api/v1/letter/list/all",
+        "/api/v1/letter/details",
+        "/api/v1/notification/subscribe",
+        "/api/v1/letter/save",
+    };
+
+    public static final String[] menteeUrls = {
+        "/api/v1/letter/send",
+        "/api/v1/letter/thanks",
+    };
+
+    public static final String[] mentorUrls = {
+        "/api/v1/user/update/category",
+        "/api/v1/letter/reply",
+        "/api/v1/letter/throw",
     };
 
     // 허용 Urls
