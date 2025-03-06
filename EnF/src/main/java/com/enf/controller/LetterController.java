@@ -92,11 +92,11 @@ public class LetterController {
    * @param pageNumber 조회할 페이지 번호
    * @return 저장된 편지 목록 응답 (페이징된 데이터 포함)
    */
-  @GetMapping("/list/save")
+  @GetMapping("/list/archive")
   public ResponseEntity<ResultResponse> getSaveLetterList(HttpServletRequest request,
       @RequestParam(name = "pageNumber") int pageNumber) {
 
-    ResultResponse response = letterService.getSaveLetterList(request, pageNumber);
+    ResultResponse response = letterService.getArchiveLetterList(request, pageNumber);
     return new ResponseEntity<>(response, response.getStatus());
   }
 
@@ -107,11 +107,11 @@ public class LetterController {
    * @param letterStatusSeq 저장할 편지의 고유 식별자 (ID)
    * @return 저장 결과 응답 (성공/실패 여부 포함)
    */
-  @GetMapping("/save")
-  public ResponseEntity<ResultResponse> saveLetter(HttpServletRequest request,
+  @GetMapping("/archive")
+  public ResponseEntity<ResultResponse> archiveLetter(HttpServletRequest request,
       @RequestParam(name = "letterStatusSeq") Long letterStatusSeq) {
 
-    ResultResponse response = letterService.saveLetter(request, letterStatusSeq);
+    ResultResponse response = letterService.archiveLetter(request, letterStatusSeq);
     return new ResponseEntity<>(response, response.getStatus());
   }
 

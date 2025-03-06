@@ -23,7 +23,7 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Query("UPDATE letter_status ls "
       + "SET ls.mentorLetter = :mentorLetter, ls.createAt = CURRENT_TIMESTAMP "
       + "WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void updateLetterStatus(
+  void saveMentorLetter(
       @Param("letterStatusSeq") Long letterStatusSeq,
       @Param("mentorLetter") LetterEntity mentorLetter
   );
@@ -33,14 +33,14 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Query("UPDATE letter_status ls "
       + "SET ls.isMenteeSaved = CASE WHEN ls.isMenteeSaved = true THEN false ELSE true END "
       + "WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void saveLetterForMentee(@Param("letterStatusSeq") Long letterStatusSeq);
+  void archiveLetterForMentee(@Param("letterStatusSeq") Long letterStatusSeq);
 
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
       + "SET ls.isMentorSaved = CASE WHEN ls.isMentorSaved = true THEN false ELSE true END "
       + "WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void saveLetterForMentor(@Param("letterStatusSeq") Long letterStatusSeq);
+  void archiveLetterForMentor(@Param("letterStatusSeq") Long letterStatusSeq);
 
   Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterStatusSeq);
 
@@ -60,13 +60,13 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Transactional
   @Query("UPDATE letter_status ls "
       + "SET ls.mentor = :newMentor, ls.isMentorRead = false WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void updateMentor(@Param("letterStatusSeq") Long letterStatusSeq,
+  void changeMentor(@Param("letterStatusSeq") Long letterStatusSeq,
       @Param("newMentor") UserEntity newMentor);
 
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls SET ls.isThanksToMentor = true WHERE ls.letterStatusSeq =:letterStatusSeq")
-  void updateIsThankToMentor(Long letterStatusSeq);
+  void thankToMentor(Long letterStatusSeq);
 
   LetterStatusEntity getLetterStatusByMentorLetterLetterSeq(Long letterSeq);
   

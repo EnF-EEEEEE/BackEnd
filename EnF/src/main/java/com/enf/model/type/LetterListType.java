@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum LetterListType {
-  ALL("all"), PENDING("pending"), SAVE("save");
+  ALL("all"), PENDING("pending"), ARCHIVE("archive");
 
   private final String value;
 

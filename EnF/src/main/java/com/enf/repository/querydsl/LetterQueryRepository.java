@@ -210,7 +210,7 @@ public class LetterQueryRepository {
       case "pending" :
         builder.and(letterStatus.mentorLetter.isNull()); // 멘토가 아직 답장하지 않은 편지 조회
         break;
-      case "save" :
+      case "archive" :
         builder.and(isMentee ? letterStatus.isMenteeSaved.isTrue() : letterStatus.isMentorSaved.isTrue()); // 저장된 편지 조회
         break;
     }
@@ -232,7 +232,10 @@ public class LetterQueryRepository {
   }
 
   @Transactional
-  public void incrementCategory(Long letterCategorySeq, String categoryName) {
+  public void incrementCategory(LetterStatusEntity letterStatus, ThrowLetterCategoryEntity throwLetterCategory) {
+    String categoryName = letterStatus.getMenteeLetter().getCategoryName();
+    Long letterCategorySeq = throwLetterCategory.getThrowLetterCategorySeq();
+
     NumberPath<Long> categoryField = getCategoryField(categoryName);
 
     jpaQueryFactory
