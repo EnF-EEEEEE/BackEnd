@@ -1,6 +1,7 @@
 package com.enf.service;
 
 import com.enf.model.dto.response.ResultResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface BirdyService {
 
@@ -9,4 +10,6 @@ public interface BirdyService {
   ResultResponse getLetterBirdy();
 
   ResultResponse getMyPageBirdy();
+
+  ResultResponse getBirdyTip(HttpServletRequest request);
 }
