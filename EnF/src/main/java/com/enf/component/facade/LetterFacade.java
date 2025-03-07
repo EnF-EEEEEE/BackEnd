@@ -36,7 +36,6 @@ public class LetterFacade {
   private final LetterQueryRepository letterQueryRepository;
   private final ThrowLetterRepository throwLetterRepository;
   private final ThrowLetterCategoryRepository throwLetterCategoryRepository;
-  private final UserFacade userFacade;
 
   /**
    * 특정 사용자의 모든 알림 조회
