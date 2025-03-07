@@ -154,9 +154,9 @@ public class LetterController {
    */
   @GetMapping("/thanks")
   public ResponseEntity<ResultResponse> thanksToMentor(HttpServletRequest request,
-      @RequestParam(name = "letterSeq") Long letterSeq) {
+      @RequestParam(name = "letterSeq") Long letterSeq, String type) {
 
-    ResultResponse response = letterService.thanksToMentor(request, letterSeq);
+    ResultResponse response = letterService.thanksToMentor(request, letterSeq, type);
     return new ResponseEntity<>(response, response.getStatus());
   }
 
