@@ -8,7 +8,8 @@ public enum ReportStatus {
     PENDING("대기중"),
     PROCESSING("처리중"),
     COMPLETED("완료됨"),
-    REJECTED("거부됨");
+    REJECTED("거부됨"),
+    PENALTY("제재");
 
     private final String description;
 
