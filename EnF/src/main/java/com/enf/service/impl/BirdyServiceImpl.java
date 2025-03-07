@@ -7,7 +7,7 @@ import com.enf.entity.UserEntity;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.bird.BirdExplanationDTO;
 import com.enf.model.dto.response.bird.BirdyListDTO;
-import com.enf.model.dto.response.bird.BirdyTips;
+import com.enf.model.dto.response.bird.BirdyTipsDTO;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
 import com.enf.repository.BirdRepository;
@@ -15,7 +15,6 @@ import com.enf.repository.TipsRepository;
 import com.enf.service.BirdyService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +61,7 @@ public class BirdyServiceImpl implements BirdyService {
     BirdEntity bird = birdRepository.findByBirdSeq(birdSeq);
     List<TipsEntity> tips = tipsRepository.findAllByType(type);
 
-    BirdyTips birdyTips = BirdyTips.of(bird.getBirdName(), tips.get((int) (Math.random() * tips.size())));
+    BirdyTipsDTO birdyTips = BirdyTipsDTO.of(bird.getBirdName(), tips.get((int) (Math.random() * tips.size())));
     return new ResultResponse(SuccessResultType.SUCCESS_GET_BIRDY_TIPS, birdyTips);
   }
 }
