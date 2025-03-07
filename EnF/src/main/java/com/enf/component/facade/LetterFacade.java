@@ -14,6 +14,7 @@ import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
+import com.enf.model.type.ThanksType;
 import com.enf.repository.LetterRepository;
 import com.enf.repository.LetterStatusRepository;
 import com.enf.repository.NotificationRepository;
@@ -181,9 +182,10 @@ public class LetterFacade {
    *
    * @param letterSeq 고마움을 전달할 멘토 편지의 고유 식별자
    */
-  public LetterStatusEntity thanksToMentor(Long letterSeq) {
+  public LetterStatusEntity thanksToMentor(Long letterSeq, String tyoe) {
+    ThanksType thanksType = ThanksType.valueOf(tyoe);
     LetterStatusEntity letterStatus = letterStatusRepository.getLetterStatusByMentorLetterLetterSeq(letterSeq);
-    letterStatusRepository.thankToMentor(letterStatus.getLetterStatusSeq());
+    letterStatusRepository.thankToMentor(letterStatus.getLetterStatusSeq(), thanksType);
     return letterStatus;
   }
 
