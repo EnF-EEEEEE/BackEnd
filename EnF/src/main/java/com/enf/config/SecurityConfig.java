@@ -33,20 +33,61 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, TokenProvider tokenProvider) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable)              // csrf disable
-                .formLogin(AbstractHttpConfigurer::disable)     // form 로그인 방식 disable
-                .httpBasic(AbstractHttpConfigurer::disable)     // http basic 인증 방식 disable
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(                         // 경로별 인가 설정
+            .formLogin(AbstractHttpConfigurer::disable)     // form 로그인 방식 disable
+            .httpBasic(AbstractHttpConfigurer::disable)     // http basic 인증 방식 disable
+            .sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(                         // 경로별 인가 설정
                 authorizeRequests -> authorizeRequests
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers(SecurityConstants.allowedUrls).permitAll()  // 허용 URL 설정
-                    .requestMatchers(SecurityConstants.adminUrls).hasAnyAuthority("ADMIN","DEVELOPER") // 관리자만 접근 가능
-                    .requestMatchers(SecurityConstants.userUrls).hasAnyAuthority("UNKNOWN","MENTEE","MENTOR","ADMIN","DEVELOPER") // 사용자 접근 가능
-                    .requestMatchers(SecurityConstants.menteeUrls).hasAnyAuthority("MENTEE", "ADMIN","DEVELOPER")
-                    .requestMatchers(SecurityConstants.mentorUrls).hasAnyAuthority("MENTOR", "ADMIN","DEVELOPER")
+                    .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**"
+                    ).permitAll()
+
+                    .requestMatchers(
+                        "/api/v1/auth/callback",    // kakao sns login redirect url
+                        "/api/v1/auth/kakao",
+                        "/api/v1/auth/reissue-token",
+                        "/api/v1/user/check-nickname",
+                        "/api/v1/admin/login",
+                        "/api/v1/admin/callback",
+                        "/api/v1/admin/login",
+                        "/admin/login",
+                        "/favicon.ico"
+                    ).permitAll()
+
+                    .requestMatchers(
+                        "/api/v1/admin/dashboard",
+                        "/api/v1/admin/stats",
+                        "/api/v1/admin/dashboard-data",
+                        "/api/v1/admin/inquiries",
+                        "/api/v1/admin/inquiries/**",
+                        "/admin/dashboard",
+                        "/admin/inquiries",
+                        "/admin/inquiries/**",
+                        "/api/v1/admin/letters",
+                        "/api/v1/admin/letters/**",
+                        "/api/v1/admin/reports",
+                        "/api/v1/admin/reports/**"
+                        ).hasAnyRole("ADMIN", "DEVELOPER")
+
+                    .requestMatchers(
+                        "/api/v1/letter/send",
+                        "/api/v1/letter/thanks"
+                    ).hasAnyRole("MENTEE", "ADMIN", "DEVELOPER")
+
+                    .requestMatchers(
+                        "/api/v1/user/update/category",
+                        "/api/v1/letter/reply",
+                        "/api/v1/letter/throw"
+                    ).hasAnyRole("MENTOR", "ADMIN", "DEVELOPER" )
                     .anyRequest().authenticated()
-                )
-                .addFilterBefore(new JwtTokenFilter(tokenProvider,jwtUtil), UsernamePasswordAuthenticationFilter.class);
+            )
+            .addFilterBefore(new JwtTokenFilter(tokenProvider, jwtUtil),
+                UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

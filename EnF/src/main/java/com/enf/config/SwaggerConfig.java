@@ -16,7 +16,7 @@ public class SwaggerConfig {
   @Bean
   public OpenAPI customOpenAPI() {
     return new OpenAPI()
-        .addServersItem(new Server().url("https://dearbirdy.xyz").description("운영 서버 환경"))
+        .addServersItem(new Server().url("https://api.dearbirdy.xyz").description("운영 서버 환경"))
         .addServersItem(new Server().url("https://dev.dearbirdy.xyz").description("개발 서버 환경"))
         .addServersItem(new Server().url("http://localhost:8080/").description("로컬 환경"))
         .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
