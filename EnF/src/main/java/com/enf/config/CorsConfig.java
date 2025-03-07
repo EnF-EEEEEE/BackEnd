@@ -19,6 +19,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
         .allowedOriginPatterns(
             UrlType.FRONT_LOCAL_URL.getUrl(),
+            UrlType.PROD_SERVER_URL.getUrl(),
             UrlType.DEV_SERVER_URL.getUrl(),
             UrlType.BACK_LOCAL_URL.getUrl()
         )
