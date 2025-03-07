@@ -17,7 +17,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
     registry.addMapping("/**") // CORS 설정을 모든 URL에 적용
 
-        .allowedOrigins(
+        .allowedOriginPatterns(
             UrlType.FRONT_LOCAL_URL.getUrl(),
             UrlType.DEV_SERVER_URL.getUrl(),
             UrlType.BACK_LOCAL_URL.getUrl()

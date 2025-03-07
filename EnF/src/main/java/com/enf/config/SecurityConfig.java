@@ -72,18 +72,18 @@ public class SecurityConfig {
                         "/api/v1/admin/letters/**",
                         "/api/v1/admin/reports",
                         "/api/v1/admin/reports/**"
-                        ).hasAnyRole("ADMIN", "DEVELOPER")
+                        ).hasAnyAuthority("ADMIN", "DEVELOPER")
 
                     .requestMatchers(
                         "/api/v1/letter/send",
                         "/api/v1/letter/thanks"
-                    ).hasAnyRole("MENTEE", "ADMIN", "DEVELOPER")
+                    ).hasAnyAuthority("MENTEE", "ADMIN", "DEVELOPER")
 
                     .requestMatchers(
                         "/api/v1/user/update/category",
                         "/api/v1/letter/reply",
                         "/api/v1/letter/throw"
-                    ).hasAnyRole("MENTOR", "ADMIN", "DEVELOPER" )
+                    ).hasAnyAuthority("MENTOR", "ADMIN", "DEVELOPER")
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtTokenFilter(tokenProvider, jwtUtil),
