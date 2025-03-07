@@ -1,18 +1,18 @@
 package com.enf.service.impl;
 
-import com.enf.entity.LetterEntity;
-import com.enf.entity.ReportEntity;
-import com.enf.entity.ReportProcessEntity;
-import com.enf.entity.UserEntity;
+import com.enf.component.facade.UserFacade;
+import com.enf.entity.*;
+import com.enf.exception.GlobalException;
+import com.enf.exception.GlobalExceptionHandler;
 import com.enf.model.dto.request.report.ReportDto;
+import com.enf.model.type.FailedResultType;
+import com.enf.model.type.PenaltyType;
 import com.enf.model.type.ReportCategory;
 import com.enf.model.type.ReportStatus;
-import com.enf.repository.LetterRepository;
-import com.enf.repository.ReportProcessRepository;
-import com.enf.repository.ReportRepository;
-import com.enf.repository.UserRepository;
+import com.enf.repository.*;
 import com.enf.service.ReportService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
@@ -32,6 +33,8 @@ public class ReportServiceImpl implements ReportService {
     private final ReportProcessRepository reportProcessRepository;
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
+    private final PenaltyRepository penaltyRepository;
+    private final LetterStatusRepository letterStatusRepository;
 
     @Override
     @Transactional
@@ -147,7 +150,6 @@ public class ReportServiceImpl implements ReportService {
                         .note(process.getNote())
                         .handler(process.getHandler().getNickname())
                         .timestamp(process.getCreateAt())
-                        .action(process.getAction())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -179,14 +181,13 @@ public class ReportServiceImpl implements ReportService {
             } catch (IllegalArgumentException e) {
                 newStatus = ReportStatus.PROCESSING;
             }
-
+            log.info("newStatus : {}", newStatus);
             // 신고 처리 이력 생성
             ReportProcessEntity process = ReportProcessEntity.builder()
                     .report(report)
                     .status(newStatus)
                     .note(request.getNote())
                     .handler(handler)
-                    .action(request.getAction())
                     .createAt(LocalDateTime.now())
                     .build();
 
@@ -200,6 +201,55 @@ public class ReportServiceImpl implements ReportService {
                     .createAt(report.getCreateAt())
                     .build();
 
+//            // 저장
+//            reportRepository.save(report);
+//            reportProcessRepository.save(process);
+
+            // 패널티 처리 로직
+            if (newStatus == ReportStatus.PENALTY) {
+                //패널티 받을 편지 번호
+                Long penaltyLetterSeq = report.getLetter().getLetterSeq();
+                //패널티 받을 편지 번호
+                LetterStatusEntity penaltyLetterStatus = letterStatusRepository.findByLetterStatusSeq(penaltyLetterSeq);
+
+                // 제재 대상이 해당 편지의 멘토인지 멘티인지 확인
+                UserEntity penaltyUser;
+                if (penaltyLetterStatus.getMentor().equals(report.getReporter())) {
+                    penaltyUser = penaltyLetterStatus.getMentee();
+                } else {
+                    penaltyUser = penaltyLetterStatus.getMentor();
+                }
+
+                PenaltyType penaltyType = PenaltyType.FIRST;
+                Optional<PenaltyEntity> latestPenalty = penaltyRepository.findTopByUserOrderByPenaltyAtDesc(penaltyUser);
+
+                if (latestPenalty.isPresent()) {
+                    // 제재가 있을경우
+                    int penaltyCount = latestPenalty.get().getPenaltyType().getPenaltyCount();
+                    log.info("penaltyCount : {}", penaltyCount);
+                    switch (penaltyCount) {
+                        case 1:
+                            penaltyType = PenaltyType.SECOND;
+                            break;
+                        case 2:
+                            penaltyType = PenaltyType.THIRD;
+                            break;
+                        case 3:
+                            penaltyType = PenaltyType.FOURTH;
+                            break;
+                        case 4:
+                            throw new GlobalException(FailedResultType.ALREADY_PENALTY);
+                    }
+                }
+
+                PenaltyEntity penalty = PenaltyEntity.builder()
+                        .user(penaltyUser)
+                        .penaltyType(penaltyType)
+                        .penaltyAt(LocalDateTime.now())
+                        .build();
+
+                penaltyRepository.save(penalty);
+            }
             // 저장
             reportRepository.save(report);
             reportProcessRepository.save(process);
