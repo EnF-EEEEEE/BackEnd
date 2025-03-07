@@ -1,20 +1,10 @@
 package com.enf.repository.querydsl;
 
-import com.enf.entity.*;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static com.enf.entity.QThrowLetterCategoryEntity.throwLetterCategoryEntity;
 
+import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.QLetterEntity;
 import com.enf.entity.QLetterStatusEntity;
 import com.enf.entity.QThrowLetterCategoryEntity;
 import com.enf.entity.ThrowLetterCategoryEntity;
@@ -25,9 +15,15 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 
@@ -247,14 +243,14 @@ public class LetterQueryRepository {
 
   private NumberPath<Long> getCategoryField(String categoryName) {
     return switch (categoryName) {
-      case "career" -> throwLetterCategoryEntity.career;
-      case "mental" -> throwLetterCategoryEntity.mental;
-      case "relationship" -> throwLetterCategoryEntity.relationship;
-      case "love" -> throwLetterCategoryEntity.love;
-      case "life" -> throwLetterCategoryEntity.life;
-      case "finance" -> throwLetterCategoryEntity.finance;
-      case "housing" -> throwLetterCategoryEntity.housing;
-      case "other" -> throwLetterCategoryEntity.other;
+      case "커리어" -> throwLetterCategoryEntity.career;
+      case "마음건강" -> throwLetterCategoryEntity.mental;
+      case "대인관계" -> throwLetterCategoryEntity.relationship;
+      case "사랑" -> throwLetterCategoryEntity.love;
+      case "삶의방향/가치관" -> throwLetterCategoryEntity.life;
+      case "자산관리" -> throwLetterCategoryEntity.finance;
+      case "주거/독립" -> throwLetterCategoryEntity.housing;
+      case "기타" -> throwLetterCategoryEntity.other;
       default -> throw new IllegalArgumentException("Invalid category name: " + categoryName);
     };
   }

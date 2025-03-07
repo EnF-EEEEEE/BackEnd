@@ -83,7 +83,7 @@ public class SecurityConfig {
                         "/api/v1/user/update/category",
                         "/api/v1/letter/reply",
                         "/api/v1/letter/throw"
-                    ).hasAnyAuthority("MENTOR", "ADMIN", "DEVELOPER" )
+                    ).hasAnyAuthority("MENTOR", "ADMIN", "DEVELOPER")
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtTokenFilter(tokenProvider, jwtUtil),

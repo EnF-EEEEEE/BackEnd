@@ -1,8 +1,10 @@
 package com.enf.entity;
 
-import jakarta.persistence.*;
+import com.enf.model.type.ThanksType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,8 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+
 
 @Entity(name = "letter_status")
 @AllArgsConstructor
@@ -58,22 +60,24 @@ public class LetterStatusEntity {
     @Column(name = "is_mentor_saved")
     private boolean isMentorSaved = false;  // 기본값 설정
 
-    @Column(name = "is_thanks_to_mentor")
-    private boolean isThanksToMentor;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "thanks_type")
+    private ThanksType thanksType;
+
 
     private LocalDateTime createAt;
 
     public static LetterStatusEntity of(LetterEntity menteeLetter, UserEntity mentee, UserEntity mentor) {
-        return LetterStatusEntity.builder()
-                .mentee(mentee)
-                .mentor(mentor)
-                .menteeLetter(menteeLetter)
-                .isMenteeRead(false)
-                .isMentorRead(false)
-                .isMenteeSaved(false)
-                .isMentorSaved(false)
-                .isThanksToMentor(false)
-                .createAt(LocalDateTime.now())
-                .build();
+      return LetterStatusEntity.builder()
+          .mentee(mentee)
+          .mentor(mentor)
+          .menteeLetter(menteeLetter)
+          .isMenteeRead(false)
+          .isMentorRead(false)
+          .isMenteeSaved(false)
+          .isMentorSaved(false)
+          .thanksType(null)
+          .createAt(LocalDateTime.now())
+          .build();
     }
 }

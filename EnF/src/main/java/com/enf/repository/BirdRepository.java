@@ -9,4 +9,5 @@ public interface BirdRepository extends JpaRepository<BirdEntity, Long> {
 
   BirdEntity findByBirdName(String birdName);
 
+  BirdEntity findByBirdSeq(Long birdSeq);
 }

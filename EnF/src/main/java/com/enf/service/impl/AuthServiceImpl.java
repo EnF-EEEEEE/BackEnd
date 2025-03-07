@@ -16,13 +16,12 @@ import com.enf.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 
 
 @Slf4j
@@ -55,6 +54,9 @@ public class AuthServiceImpl implements AuthService {
           log.info("Kakao 로그인 진행");
           userFacade.updateLastLoginAt(user.getUserSeq());
           userFacade.generateAndSetToken(user, response);
+          if (user.getRole().getRoleName().equals("UNKNOWN")) {
+            return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_LOGIN);
+          }
           UserInfoDTO userInfo = userFacade.getUserInfo(user);
           return new ResultResponse(SuccessResultType.SUCCESS_KAKAO_LOGIN, userInfo);
         })

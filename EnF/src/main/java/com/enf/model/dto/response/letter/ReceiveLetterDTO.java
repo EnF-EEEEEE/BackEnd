@@ -23,6 +23,7 @@ public class ReceiveLetterDTO {
 
   private boolean saved;
 
+  private boolean thanksToMentor;
 
   public static List<ReceiveLetterDTO> ofMentee(List<LetterStatusEntity> list) {
     return list.stream()
@@ -36,7 +37,8 @@ public class ReceiveLetterDTO {
                   ? letterStatus.getMenteeLetter().getLetterTitle()
                   : letterStatus.getMentorLetter().getLetterTitle(),
               letterStatus.isMenteeRead(),
-              letterStatus.isMenteeSaved()
+              letterStatus.isMenteeSaved(),
+              letterStatus.getThanksType() != null
           );
         })
         .toList();
@@ -51,7 +53,8 @@ public class ReceiveLetterDTO {
                 letterStatus.getMentee().getNickname(),
                 letterStatus.getMenteeLetter().getLetterTitle(),
                 letterStatus.isMentorRead(),
-                letterStatus.isMentorSaved()
+                letterStatus.isMentorSaved(),
+                letterStatus.getThanksType() != null
             )
         )
         .toList();

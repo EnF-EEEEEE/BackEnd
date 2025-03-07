@@ -3,6 +3,7 @@ package com.enf.repository;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.UserEntity;
+import com.enf.model.type.ThanksType;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,8 +66,8 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
 
   @Modifying
   @Transactional
-  @Query("UPDATE letter_status ls SET ls.isThanksToMentor = true WHERE ls.letterStatusSeq =:letterStatusSeq")
-  void thankToMentor(Long letterStatusSeq);
+  @Query("UPDATE letter_status ls SET ls.thanksType = :thanksType WHERE ls.letterStatusSeq =:letterStatusSeq")
+  void thankToMentor(Long letterStatusSeq, ThanksType thanksType);
 
   LetterStatusEntity getLetterStatusByMentorLetterLetterSeq(Long letterSeq);
   

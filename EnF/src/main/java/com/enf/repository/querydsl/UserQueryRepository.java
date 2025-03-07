@@ -9,15 +9,15 @@ import com.enf.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 
 /**
  * QueryDSL을 활용한 사용자 조회 Repository
@@ -51,6 +51,7 @@ public class UserQueryRepository {
    * @return 조건에 맞는 사용자 엔티티 (멘토) 또는 null
    */
   public UserEntity getMentor(String birdName, String categoryName, Long letterStatusSeq) {
+    log.info("birdName: {} categoryName: {}", birdName, categoryName);
     return fetchUser(buildConditions(birdName, categoryName, letterStatusSeq))
         .orElseGet(() -> fetchUser(buildConditions(null, categoryName, letterStatusSeq))
             .orElseGet(() -> fetchUser(buildConditions(birdName, null, letterStatusSeq))
@@ -98,14 +99,14 @@ public class UserQueryRepository {
   private BooleanExpression getCategoryPredicate(QUserEntity user, String categoryName) {
     if (categoryName == null || categoryName.isEmpty()) return null;
     return switch (categoryName) {
-      case "career" -> user.category.career.eq(true);
-      case "mental" -> user.category.mental.eq(true);
-      case "relationship" -> user.category.relationship.eq(true);
-      case "love" -> user.category.love.eq(true);
-      case "life" -> user.category.life.eq(true);
-      case "finance" -> user.category.finance.eq(true);
-      case "housing" -> user.category.housing.eq(true);
-      case "other" -> user.category.other.eq(true);
+      case "커리어" -> user.category.career.eq(true);
+      case "마음건강" -> user.category.mental.eq(true);
+      case "대인관계" -> user.category.relationship.eq(true);
+      case "사랑" -> user.category.love.eq(true);
+      case "삶의방향/가치관" -> user.category.life.eq(true);
+      case "자산관리" -> user.category.finance.eq(true);
+      case "주거/독립" -> user.category.housing.eq(true);
+      case "기타" -> user.category.other.eq(true);
       default -> null;
     };
   }

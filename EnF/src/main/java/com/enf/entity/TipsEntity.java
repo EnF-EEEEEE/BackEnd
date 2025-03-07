@@ -4,30 +4,23 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "letter")
+@Entity(name = "tips")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
-public class LetterEntity {
+public class TipsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long letterSeq;
+  private Long tipSeq;
 
-  private String birdName;
+  private String type;
 
-  private String categoryName;
-
-  private String letterTitle;
-
-  private String letter;
-
-  private LocalDateTime createAt;
+  private String tip;
 }

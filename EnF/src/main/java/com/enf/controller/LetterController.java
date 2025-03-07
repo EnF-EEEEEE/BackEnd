@@ -6,7 +6,6 @@ import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.LetterService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -154,9 +153,9 @@ public class LetterController {
    */
   @GetMapping("/thanks")
   public ResponseEntity<ResultResponse> thanksToMentor(HttpServletRequest request,
-      @RequestParam(name = "letterSeq") Long letterSeq) {
+      @RequestParam(name = "letterSeq") Long letterSeq, @RequestParam(name = "type") String type) {
 
-    ResultResponse response = letterService.thanksToMentor(request, letterSeq);
+    ResultResponse response = letterService.thanksToMentor(request, letterSeq, type);
     return new ResponseEntity<>(response, response.getStatus());
   }
 

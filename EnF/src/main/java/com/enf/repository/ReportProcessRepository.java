@@ -2,10 +2,9 @@ package com.enf.repository;
 
 import com.enf.entity.ReportEntity;
 import com.enf.entity.ReportProcessEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * 신고 처리에 대한 내용
