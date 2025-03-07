@@ -80,6 +80,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u SET u.deleteAt = NULL WHERE u.userSeq = :userSeq")
   void cancelWithdrawal(Long userSeq);
 
+  // UT 테스트를 위한 메서드(삭제 예정)
+  UserEntity findByNickname(String nickname);
 }
 
 
