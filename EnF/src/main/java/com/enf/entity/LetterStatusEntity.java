@@ -10,11 +10,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
 
 @Entity(name = "letter_status")
 @AllArgsConstructor
@@ -59,6 +63,7 @@ public class LetterStatusEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "thanks_type")
     private ThanksType thanksType;
+
 
     private LocalDateTime createAt;
 

@@ -46,6 +46,4 @@ public class ReportProcessEntity {
 
     private LocalDateTime createAt; // 처리 시간
 
-    // 처리 결과에 따른 액션 (선택적)
-    private String action; // 예: DELETE_LETTER(편지 삭제), WARN_USER(사용자 경고) 등
 }
