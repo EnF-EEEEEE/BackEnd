@@ -37,4 +37,11 @@ public class BirdyController {
     ResultResponse response = birdyService.getMyPageBirdy();
     return new ResponseEntity<>(response, response.getStatus());
   }
+
+  @GetMapping("/tip")
+  public ResponseEntity<ResultResponse> getBirdyTip(HttpServletRequest request) {
+
+    ResultResponse response = birdyService.getBirdyTip(request);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
 }
