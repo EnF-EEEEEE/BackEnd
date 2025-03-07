@@ -247,14 +247,14 @@ public class LetterQueryRepository {
 
   private NumberPath<Long> getCategoryField(String categoryName) {
     return switch (categoryName) {
-      case "career" -> throwLetterCategoryEntity.career;
-      case "mental" -> throwLetterCategoryEntity.mental;
-      case "relationship" -> throwLetterCategoryEntity.relationship;
-      case "love" -> throwLetterCategoryEntity.love;
-      case "life" -> throwLetterCategoryEntity.life;
-      case "finance" -> throwLetterCategoryEntity.finance;
-      case "housing" -> throwLetterCategoryEntity.housing;
-      case "other" -> throwLetterCategoryEntity.other;
+      case "커리어" -> throwLetterCategoryEntity.career;
+      case "마음건강" -> throwLetterCategoryEntity.mental;
+      case "대인관계" -> throwLetterCategoryEntity.relationship;
+      case "사랑" -> throwLetterCategoryEntity.love;
+      case "삶의방향/가치관" -> throwLetterCategoryEntity.life;
+      case "자산관리" -> throwLetterCategoryEntity.finance;
+      case "주거/독립" -> throwLetterCategoryEntity.housing;
+      case "기타" -> throwLetterCategoryEntity.other;
       default -> throw new IllegalArgumentException("Invalid category name: " + categoryName);
     };
   }
