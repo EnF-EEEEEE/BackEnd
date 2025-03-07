@@ -56,7 +56,8 @@ public class SecurityConfig {
                         "/api/v1/admin/callback",
                         "/api/v1/admin/login",
                         "/admin/login",
-                        "/favicon.ico"
+                        "/favicon.ico",
+                        "/ut/test/send"
                     ).permitAll()
 
                     .requestMatchers(
