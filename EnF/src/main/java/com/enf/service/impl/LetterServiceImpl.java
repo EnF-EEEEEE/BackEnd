@@ -5,7 +5,6 @@ import com.enf.component.facade.UserFacade;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.UserEntity;
-import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.notification.NotificationDTO;
@@ -16,7 +15,6 @@ import com.enf.model.dto.response.letter.LetterDetailsDTO;
 import com.enf.model.dto.response.letter.LetterResponseDto;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
-import com.enf.model.type.FailedResultType;
 import com.enf.model.type.LetterListType;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
@@ -152,8 +150,8 @@ public class LetterServiceImpl implements LetterService {
    * 고마움 전달 로직을 수행하는 메서드
    */
   @Override
-  public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq) {
-    LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq);
+  public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq, String tyoe) {
+    LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq, tyoe);
 
     redisTemplate.convertAndSend("notifications", NotificationDTO.thanksToMentor(letterStatus));
     return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
