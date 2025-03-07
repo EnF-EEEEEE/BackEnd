@@ -182,8 +182,8 @@ public class LetterFacade {
    *
    * @param letterSeq 고마움을 전달할 멘토 편지의 고유 식별자
    */
-  public LetterStatusEntity thanksToMentor(Long letterSeq, String tyoe) {
-    ThanksType thanksType = ThanksType.valueOf(tyoe);
+  public LetterStatusEntity thanksToMentor(Long letterSeq, String type) {
+    ThanksType thanksType = ThanksType.valueOf(type);
     LetterStatusEntity letterStatus = letterStatusRepository.getLetterStatusByMentorLetterLetterSeq(letterSeq);
     letterStatusRepository.thankToMentor(letterStatus.getLetterStatusSeq(), thanksType);
     return letterStatus;

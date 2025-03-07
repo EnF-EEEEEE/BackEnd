@@ -150,8 +150,8 @@ public class LetterServiceImpl implements LetterService {
    * 고마움 전달 로직을 수행하는 메서드
    */
   @Override
-  public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq, String tyoe) {
-    LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq, tyoe);
+  public ResultResponse thanksToMentor(HttpServletRequest request, Long letterSeq, String type) {
+    LetterStatusEntity letterStatus = letterFacade.thanksToMentor(letterSeq, type);
 
     redisTemplate.convertAndSend("notifications", NotificationDTO.thanksToMentor(letterStatus));
     return ResultResponse.of(SuccessResultType.SUCCESS_THANKS_TO_MENTOR);
