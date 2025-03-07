@@ -79,10 +79,10 @@ public class ReportController {
     /**
      * 신고 상세 조회 API (관리자용)
      */
-    @GetMapping("/api/v1/admin/reports/{id}")
-    public ResponseEntity<Map<String, Object>> getReportDetail(@PathVariable Long id) {
+    @GetMapping("/api/v1/admin/reports/{reportId}")
+    public ResponseEntity<Map<String, Object>> getReportDetail(@PathVariable Long reportId) {
         // 신고 상세 정보 조회
-        ReportDto.DetailResponse reportDetail = reportService.getReportDetail(id);
+        ReportDto.DetailResponse reportDetail = reportService.getReportDetail(reportId);
 
         // 응답 데이터 생성
         Map<String, Object> response = new HashMap<>();
@@ -101,10 +101,10 @@ public class ReportController {
     /**
      * 신고 처리 상태 업데이트 API (관리자용)
      */
-    @PostMapping("/api/v1/admin/reports/{id}/process")
+    @PostMapping("/api/v1/admin/reports/{reportId}/process")
     public ResponseEntity<Map<String, Object>> updateReportProcess(
             HttpServletRequest request,
-            @PathVariable Long id,
+            @PathVariable Long reportId,
             @RequestBody ReportDto.ProcessRequest dtoRequest) {
 
 
@@ -113,7 +113,7 @@ public class ReportController {
 
 
         // 신고 처리 상태 업데이트
-        ReportDto.ApiResponse result = reportService.updateReportProcess(id, dtoRequest, userSeq);
+        ReportDto.ApiResponse result = reportService.updateReportProcess(reportId, dtoRequest, userSeq);
 
         // 응답 데이터 생성
         Map<String, Object> response = new HashMap<>();
