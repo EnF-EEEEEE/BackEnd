@@ -2,7 +2,12 @@ package com.enf.component.facade;
 
 import com.enf.component.token.HttpCookieUtil;
 import com.enf.component.token.TokenProvider;
-import com.enf.entity.*;
+import com.enf.entity.BirdEntity;
+import com.enf.entity.CategoryEntity;
+import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.QuotaEntity;
+import com.enf.entity.RoleEntity;
+import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
@@ -11,7 +16,11 @@ import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.user.UserInfoDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
-import com.enf.repository.*;
+import com.enf.repository.BirdRepository;
+import com.enf.repository.CategoryRepository;
+import com.enf.repository.QuotaRepository;
+import com.enf.repository.RoleRepository;
+import com.enf.repository.UserRepository;
 import com.enf.repository.querydsl.UserQueryRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -21,8 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Slf4j
 @Component

@@ -8,12 +8,14 @@ import com.enf.repository.querydsl.UserQueryRepository;
 import com.enf.service.AdminService;
 import com.enf.service.ChurnAnalysisService;
 import com.enf.service.UserConversionService;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Slf4j
 @Service

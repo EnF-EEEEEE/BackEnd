@@ -1,20 +1,10 @@
 package com.enf.repository.querydsl;
 
-import com.enf.entity.*;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static com.enf.entity.QThrowLetterCategoryEntity.throwLetterCategoryEntity;
 
+import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.QLetterEntity;
 import com.enf.entity.QLetterStatusEntity;
 import com.enf.entity.QThrowLetterCategoryEntity;
 import com.enf.entity.ThrowLetterCategoryEntity;
@@ -25,9 +15,15 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 

@@ -3,11 +3,10 @@ package com.enf.service;
 import com.enf.entity.InquiryEntity;
 import com.enf.entity.InquiryResponseEntity;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Map;
 
 public interface InquiryService {
 

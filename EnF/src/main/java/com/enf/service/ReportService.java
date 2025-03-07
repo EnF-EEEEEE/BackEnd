@@ -2,12 +2,11 @@ package com.enf.service;
 
 import com.enf.model.dto.request.report.ReportDto;
 import com.enf.model.type.ReportCategory;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface ReportService {
 
