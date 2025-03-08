@@ -20,6 +20,7 @@ public class NotificationDTO {
 
   private Long userSeq;           // 알림을 받을 사용자 ID
   private Long letterStatusSeq;   // 보낸 편지의 일련번호
+  private String birdName;
   private String nickname;
   private String message;         // 알림 메시지
   private boolean isRead;
@@ -33,6 +34,7 @@ public class NotificationDTO {
     return new NotificationDTO(
         letterStatus.getMentor().getUserSeq(),
         letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentee().getBird().getBirdName(),
         letterStatus.getMentee().getNickname(),
         "님으로부터 나의 답장에 대한 고마움 표시가 도착했어요.",
         false
@@ -47,6 +49,7 @@ public class NotificationDTO {
     return new NotificationDTO(
         mentor.getUserSeq(),
         letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentee().getBird().getBirdName(),
         letterStatus.getMentee().getNickname(),
         "님으로부터 날아온 답장을 확인해보세요",
         false
@@ -60,6 +63,7 @@ public class NotificationDTO {
     return new NotificationDTO(
         letterStatus.getMentee().getUserSeq(),
         letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentor().getBird().getBirdName(),
         letterStatus.getMentor().getNickname(),
         "님으로부터 날아온 답장을 확인해보세요",
         false
@@ -73,6 +77,7 @@ public class NotificationDTO {
     return new NotificationDTO(
         userSeq,
         notification.getLetterStatusSeq(),
+        notification.getBirdName(),
         notification.getNickname(),
         notification.getMessage(),
         false
@@ -86,6 +91,7 @@ public class NotificationDTO {
     return NotificationEntity.builder()
         .userSeq(notification.getUserSeq())
         .letterStatusSeq(notification.getLetterStatusSeq())
+        .birdName(notification.getBirdName())
         .nickname(notification.getNickname())
         .message(notification.getMessage())
         .isRead(notification.isRead())

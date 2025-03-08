@@ -25,6 +25,8 @@ public class NotificationEntity {
 
   private Long letterStatusSeq;
 
+  private String birdName;
+
   private String nickname;
 
   private String message;
