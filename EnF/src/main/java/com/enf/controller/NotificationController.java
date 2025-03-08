@@ -1,9 +1,11 @@
 package com.enf.controller;
 
+import com.enf.model.dto.response.ResultResponse;
 import com.enf.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +27,13 @@ public class NotificationController {
   @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter subscribe(HttpServletRequest request) {
     return notificationService.createEmitter(request);
+  }
+
+  @GetMapping("/list")
+  public ResponseEntity<ResultResponse> notificationList(HttpServletRequest request) {
+
+    ResultResponse response = notificationService.notificationList(request);
+    return new ResponseEntity<>(response, response.getStatus());
   }
 
 }

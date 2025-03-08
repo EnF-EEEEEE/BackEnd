@@ -9,8 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
 
-  List<NotificationEntity> findAllByUserSeq(Long userSeq);
-
-  @Transactional
-  void deleteAllByUserSeq(Long userSeq);
+  List<NotificationEntity> findAllByUserSeqOrderByCreatedAtDesc(Long userSeq);
 }
