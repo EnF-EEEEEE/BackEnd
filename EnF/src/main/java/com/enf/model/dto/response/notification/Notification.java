@@ -15,6 +15,8 @@ public class Notification {
 
   private Long letterStatusSeq;
 
+  private String nickname;
+
   private String message;
 
   private boolean read;
@@ -27,6 +29,7 @@ public class Notification {
     for (NotificationEntity notification : list) {
       notifications.add(new Notification(
           notification.getLetterStatusSeq(),
+          notification.getNickname(),
           notification.getMessage(),
           notification.isRead(),
           notification.getCreatedAt()
