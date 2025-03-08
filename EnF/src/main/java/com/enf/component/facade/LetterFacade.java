@@ -210,4 +210,8 @@ public class LetterFacade {
         .userSeq(userSeq)
         .build());
   }
+
+  public void updateNotificationIsRead(LetterStatusEntity letterStatus) {
+   notificationRepository.updateNotificationIsRead(letterStatus.getLetterStatusSeq());
+  }
 }

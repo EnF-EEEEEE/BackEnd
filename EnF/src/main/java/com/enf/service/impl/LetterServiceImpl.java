@@ -127,6 +127,7 @@ public class LetterServiceImpl implements LetterService {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
     LetterDetailsDTO letterDetails = letterFacade.getLetterDetails(user, letterStatus);
+    letterFacade.updateNotificationIsRead(letterStatus);
 
     return new ResultResponse(SuccessResultType.SUCCESS_GET_LETTER_DETAILS, letterDetails);
   }
