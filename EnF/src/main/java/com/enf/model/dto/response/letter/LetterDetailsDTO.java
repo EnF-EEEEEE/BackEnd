@@ -49,7 +49,7 @@ public class LetterDetailsDTO {
     );
 
     if (letterStatus.getMentorLetter() == null) {
-      return new LetterDetailsDTO(replyLetter, null, letterStatus.isMentorSaved(), letterStatus.getThanksType().getText());
+      return new LetterDetailsDTO(replyLetter, null, letterStatus.isMentorSaved(), null);
     }
 
     LetterDTO sendLetter = LetterDTO.of(
