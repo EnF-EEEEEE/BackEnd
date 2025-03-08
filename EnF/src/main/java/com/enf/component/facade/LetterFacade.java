@@ -3,6 +3,7 @@ package com.enf.component.facade;
 import com.enf.entity.LetterEntity;
 import com.enf.entity.LetterStatusEntity;
 import com.enf.entity.NotificationEntity;
+import com.enf.entity.NotificationStatusEntity;
 import com.enf.entity.ThrowLetterCategoryEntity;
 import com.enf.entity.ThrowLetterEntity;
 import com.enf.entity.UserEntity;
@@ -18,6 +19,7 @@ import com.enf.model.type.ThanksType;
 import com.enf.repository.LetterRepository;
 import com.enf.repository.LetterStatusRepository;
 import com.enf.repository.NotificationRepository;
+import com.enf.repository.NotificationStatusRepository;
 import com.enf.repository.ThrowLetterCategoryRepository;
 import com.enf.repository.ThrowLetterRepository;
 import com.enf.repository.querydsl.LetterQueryRepository;
@@ -37,6 +39,7 @@ public class LetterFacade {
   private final LetterQueryRepository letterQueryRepository;
   private final ThrowLetterRepository throwLetterRepository;
   private final ThrowLetterCategoryRepository throwLetterCategoryRepository;
+  private final NotificationStatusRepository notificationStatusRepository;
 
   /**
    * 특정 사용자의 모든 알림 조회
@@ -44,8 +47,12 @@ public class LetterFacade {
    * @param userSeq 사용자 ID
    * @return 사용자의 모든 알림 리스트
    */
-  public List<NotificationEntity> findAllByUserSeq(Long userSeq) {
-    return notificationRepository.findAllByUserSeq(userSeq);
+  public List<NotificationEntity> getNotificationList(Long userSeq) {
+    return notificationRepository.findAllByUserSeqOrderByCreatedAtDesc(userSeq);
+  }
+
+  public List<NotificationStatusEntity> getNotificationStatusList(Long userSeq) {
+    return notificationStatusRepository.findAllByUserSeq(userSeq);
   }
 
   /**
@@ -53,8 +60,8 @@ public class LetterFacade {
    *
    * @param userSeq 사용자 ID
    */
-  public void deleteAllByUserSeq(Long userSeq) {
-    notificationRepository.deleteAllByUserSeq(userSeq);
+  public void deleteNotificationStatus(Long userSeq) {
+    notificationStatusRepository.deleteAllByUserSeq(userSeq);
   }
 
   /**
@@ -196,5 +203,11 @@ public class LetterFacade {
   public ThrowLetterCategoryEntity getThrowLetterCategory() {
     return throwLetterCategoryRepository.findByThrowLetterCategorySeq(1L)
         .orElseGet(() -> throwLetterCategoryRepository.save(ThrowLetterCategoryDTO.create()));
+  }
+
+  public void saveNotificationStatus(Long userSeq) {
+    notificationStatusRepository.save(NotificationStatusEntity.builder()
+        .userSeq(userSeq)
+        .build());
   }
 }

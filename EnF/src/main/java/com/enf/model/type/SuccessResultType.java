@@ -30,6 +30,7 @@ public enum SuccessResultType {
   SUCCESS_GET_LETTER_BIRDY(HttpStatus.OK, "카테고리 새 유형 조회 성공"),
   SUCCESS_GET_ALL_BIRDY(HttpStatus.OK, "모든 새 유형 조회 성공"),
   SUCCESS_GET_BIRDY_TIPS(HttpStatus.OK, "버디 팁 조회 성공"),
+  SUCCESS_GET_NOTIFICATION(HttpStatus.OK, "알림 조회 성공"),
   ;
 
   private final HttpStatus status;

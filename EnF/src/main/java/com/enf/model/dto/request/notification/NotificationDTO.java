@@ -20,8 +20,8 @@ public class NotificationDTO {
 
   private Long userSeq;           // 알림을 받을 사용자 ID
   private Long letterStatusSeq;   // 보낸 편지의 일련번호
-  private String sendUser;        // 알림을 보낸 사용자 (없을 수도 있음)
   private String message;         // 알림 메시지
+  private boolean isRead;
 
 
 
@@ -32,8 +32,8 @@ public class NotificationDTO {
     return new NotificationDTO(
         letterStatus.getMentor().getUserSeq(),
         letterStatus.getLetterStatusSeq(),
-        letterStatus.getMentee().getNickname(),
-        letterStatus.getMentee().getNickname() + "님으로부터 나의 답장에 대한 고마움 표시가 도착했어요."
+        letterStatus.getMentee().getNickname() + "님으로부터 나의 답장에 대한 고마움 표시가 도착했어요.",
+        false
 
     );
   }
@@ -46,8 +46,8 @@ public class NotificationDTO {
     return new NotificationDTO(
         mentor.getUserSeq(),
         letterStatus.getLetterStatusSeq(),
-        letterStatus.getMentee().getNickname(),
-        letterStatus.getMentee().getNickname() + "님으로부터 날아온 답장을 확인해보세요"
+        letterStatus.getMentee().getNickname() + "님으로부터 날아온 답장을 확인해보세요",
+        false
     );
   }
 
@@ -58,8 +58,8 @@ public class NotificationDTO {
     return new NotificationDTO(
         letterStatus.getMentee().getUserSeq(),
         letterStatus.getLetterStatusSeq(),
-        letterStatus.getMentor().getNickname(),
-        letterStatus.getMentor().getNickname() + "님으로부터 날아온 답장을 확인해보세요"
+        letterStatus.getMentor().getNickname() + "님으로부터 날아온 답장을 확인해보세요",
+        false
     );
   }
 
@@ -70,8 +70,8 @@ public class NotificationDTO {
     return new NotificationDTO(
         userSeq,
         notification.getLetterStatusSeq(),
-        notification.getSendUser(),
-        notification.getMessage()
+        notification.getMessage(),
+        false
     );
   }
 
@@ -82,8 +82,8 @@ public class NotificationDTO {
     return NotificationEntity.builder()
         .userSeq(notification.getUserSeq())
         .letterStatusSeq(notification.getLetterStatusSeq())
-        .sendUser(notification.getSendUser())
         .message(notification.getMessage())
+        .isRead(notification.isRead())
         .createdAt(LocalDateTime.now())
         .build();
   }
