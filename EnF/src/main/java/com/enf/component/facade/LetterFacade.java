@@ -93,7 +93,7 @@ public class LetterFacade {
    */
   public LetterStatusEntity saveMentorLetter(ReplyLetterDTO replyLetter) {
     LetterStatusEntity letterStatus = getLetterStatus(replyLetter.getLetterStatusSeq());
-    LetterEntity mentorLetter = letterRepository.save(ReplyLetterDTO.of(replyLetter));
+    LetterEntity mentorLetter = letterRepository.save(ReplyLetterDTO.of(replyLetter, letterStatus));
     letterStatusRepository.saveMentorLetter(letterStatus.getLetterStatusSeq(), mentorLetter);
 
     return letterStatus;

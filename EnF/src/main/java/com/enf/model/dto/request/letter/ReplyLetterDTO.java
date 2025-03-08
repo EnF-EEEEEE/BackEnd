@@ -1,6 +1,8 @@
 package com.enf.model.dto.request.letter;
 
 import com.enf.entity.LetterEntity;
+import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
@@ -29,9 +31,10 @@ public class ReplyLetterDTO {
     this.letter = letter;
   }
 
-  public static LetterEntity of(ReplyLetterDTO replyLetter) {
+  public static LetterEntity of(ReplyLetterDTO replyLetter, LetterStatusEntity letterStatus) {
 
     return LetterEntity.builder()
+        .birdName(letterStatus.getMentor().getBird().getBirdName())
         .categoryName(replyLetter.getCategoryName())
         .letterTitle(replyLetter.getTitle())
         .letter(replyLetter.getLetter())
