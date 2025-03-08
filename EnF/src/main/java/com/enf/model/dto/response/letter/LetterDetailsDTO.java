@@ -18,13 +18,16 @@ public class LetterDetailsDTO {
 
   private String thanksToMentor;
 
+  private Long letterStatusSeq;
+
   public static LetterDetailsDTO ofMentee(LetterStatusEntity letterStatus) {
     LetterDTO replyLetter;
     LetterDTO sendLetter;
 
     if (letterStatus.getMentorLetter() == null) {
       sendLetter = LetterDTO.of(null, letterStatus.getMentee(), letterStatus.getMenteeLetter());
-      return new LetterDetailsDTO(null, sendLetter, letterStatus.isMenteeSaved(),null);
+      return new LetterDetailsDTO(null, sendLetter, letterStatus.isMenteeSaved(),
+          null, letterStatus.getLetterStatusSeq());
     }
 
     replyLetter = LetterDTO.of(
@@ -38,7 +41,8 @@ public class LetterDetailsDTO {
         letterStatus.getMenteeLetter());
 
     return new LetterDetailsDTO(replyLetter, sendLetter, letterStatus.isMenteeSaved(),
-        letterStatus.getThanksType() == null ? null : letterStatus.getThanksType().getText());
+        letterStatus.getThanksType() == null ? null : letterStatus.getThanksType().getText(),
+        letterStatus.getLetterStatusSeq());
   }
 
   public static LetterDetailsDTO ofMentor(LetterStatusEntity letterStatus) {
@@ -50,7 +54,8 @@ public class LetterDetailsDTO {
     );
 
     if (letterStatus.getMentorLetter() == null) {
-      return new LetterDetailsDTO(replyLetter, null, letterStatus.isMentorSaved(), null);
+      return new LetterDetailsDTO(replyLetter, null, letterStatus.isMentorSaved(), null,
+          letterStatus.getLetterStatusSeq());
     }
 
     LetterDTO sendLetter = LetterDTO.of(
@@ -60,6 +65,7 @@ public class LetterDetailsDTO {
     );
 
     return new LetterDetailsDTO(replyLetter, sendLetter, letterStatus.isMentorSaved(),
-        letterStatus.getThanksType() == null ? null : letterStatus.getThanksType().getText());
+        letterStatus.getThanksType() == null ? null : letterStatus.getThanksType().getText(),
+        letterStatus.getLetterStatusSeq());
   }
 }
