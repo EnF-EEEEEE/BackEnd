@@ -24,7 +24,7 @@ public class LetterDetailsDTO {
 
     if (letterStatus.getMentorLetter() == null) {
       sendLetter = LetterDTO.of(null, letterStatus.getMentee(), letterStatus.getMenteeLetter());
-      return new LetterDetailsDTO(null, sendLetter, letterStatus.isMenteeSaved(), letterStatus.getThanksType().getText());
+      return new LetterDetailsDTO(null, sendLetter, letterStatus.isMenteeSaved(),null);
     }
 
     replyLetter = LetterDTO.of(
