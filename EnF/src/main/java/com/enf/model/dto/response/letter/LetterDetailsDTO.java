@@ -37,7 +37,8 @@ public class LetterDetailsDTO {
         letterStatus.getMentee(),
         letterStatus.getMenteeLetter());
 
-    return new LetterDetailsDTO(replyLetter, sendLetter, letterStatus.isMenteeSaved(), letterStatus.getThanksType().getText());
+    return new LetterDetailsDTO(replyLetter, sendLetter, letterStatus.isMenteeSaved(),
+        letterStatus.getThanksType() == null ? null : letterStatus.getThanksType().getText());
   }
 
   public static LetterDetailsDTO ofMentor(LetterStatusEntity letterStatus) {
@@ -58,6 +59,7 @@ public class LetterDetailsDTO {
         letterStatus.getMentorLetter()
     );
 
-    return new LetterDetailsDTO(replyLetter, sendLetter, letterStatus.isMentorSaved(), letterStatus.getThanksType().getText());
+    return new LetterDetailsDTO(replyLetter, sendLetter, letterStatus.isMentorSaved(),
+        letterStatus.getThanksType() == null ? null : letterStatus.getThanksType().getText());
   }
 }
