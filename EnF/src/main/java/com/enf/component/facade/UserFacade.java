@@ -18,6 +18,7 @@ import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
 import com.enf.repository.BirdRepository;
 import com.enf.repository.CategoryRepository;
+import com.enf.repository.LetterStatusRepository;
 import com.enf.repository.QuotaRepository;
 import com.enf.repository.RoleRepository;
 import com.enf.repository.UserRepository;
@@ -43,6 +44,7 @@ public class UserFacade {
   private final TokenProvider tokenProvider;
   private final QuotaRepository quotaRepository;
   private final UserQueryRepository userQueryRepository;
+  private final LetterStatusRepository letterStatusRepository;
 
   // ============================= User 관련 메서드 =============================
 
@@ -336,6 +338,15 @@ public class UserFacade {
 
   public UserInfoDTO getUserInfo(UserEntity user) {
     QuotaEntity quota = quotaRepository.findByUser(user);
-    return UserInfoDTO.of(user, quota.getQuota());
+
+    boolean isRead = switch (user.getRole().getRoleName()) {
+      case "MENTEE" -> letterStatusRepository
+          .existsMenteeRead(user.getUserSeq());
+      case "MENTOR" -> letterStatusRepository
+          .existsMentorRead(user.getUserSeq());
+      default -> false;
+    };
+
+    return UserInfoDTO.of(user, quota.getQuota(), isRead);
   }
 }

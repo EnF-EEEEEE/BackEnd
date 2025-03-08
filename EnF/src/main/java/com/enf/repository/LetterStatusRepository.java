@@ -96,4 +96,14 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
 
 
     LetterStatusEntity findByLetterStatusSeq(Long letterStatusSeq);
+
+  @Query("SELECT CASE WHEN COUNT(lst) > 0 THEN true ELSE false END " +
+      "FROM letter_status lst " +
+      "WHERE lst.mentee.userSeq = :userSeq AND lst.isMenteeRead = false")
+  Boolean existsMenteeRead(@Param("userSeq") Long userSeq);
+
+  @Query("SELECT CASE WHEN COUNT(lst) > 0 THEN true ELSE false END " +
+      "FROM letter_status lst " +
+      "WHERE lst.mentor.userSeq = :userSeq AND lst.isMentorRead = false")
+  Boolean existsMentorRead(@Param("userSeq") Long userSeq);
 }

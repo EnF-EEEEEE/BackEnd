@@ -19,22 +19,26 @@ public class UserInfoDTO {
 
   private int quota;
 
+  private boolean isRead;
+
 
   public static UserInfoDTO of(AdditionalInfoDTO additionalInfo) {
     return new UserInfoDTO(
         additionalInfo.getUserRole(),
         additionalInfo.getBirdName(),
         additionalInfo.getNickname(),
-        additionalInfo.getUserRole().equals("MENTEE") ? 4 : 7
+        additionalInfo.getUserRole().equals("MENTEE") ? 4 : 7,
+        false
     );
   }
 
-  public static UserInfoDTO of(UserEntity user, int quota) {
+  public static UserInfoDTO of(UserEntity user, int quota, boolean isRead) {
     return new UserInfoDTO(
         user.getRole().getRoleName(),
         user.getBird().getBirdName(),
         user.getNickname(),
-        quota
+        quota,
+        isRead
     );
   }
 
