@@ -92,6 +92,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
     log.info("사용자 {} : 미확인 알림 : {}", user.getNickname(), notificationStatus.size());
     sendNotification(user.getUserSeq());
+    letterFacade.deleteNotificationStatus(user.getUserSeq());
   }
 
   /**
