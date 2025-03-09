@@ -39,7 +39,7 @@ public class KakaoAuthHandler {
   @Value("${spring.security.oauth2.kakao.admin-key}")
   private String adminKey;
 
-  private String adminRedirectUri = "http://localhost:8080/api/v1/admin/callback";
+  private String adminRedirectUri = "https://api.dearbirdy.xyz/api/v1/admin/callback";;
 
   //토큰 조회를 위한 메서드
   public String getAccessToken(HttpServletRequest request, String code) {

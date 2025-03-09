@@ -62,6 +62,7 @@ public class SecurityConfig {
                         "/api/v1/user/check-nickname",
                         "/api/v1/admin/login",
                         "/api/v1/admin/callback",
+                        "/api/v1/admin/callback/**",
                         "/api/v1/admin/login",
                         "/admin/login",
                         "/favicon.ico",
