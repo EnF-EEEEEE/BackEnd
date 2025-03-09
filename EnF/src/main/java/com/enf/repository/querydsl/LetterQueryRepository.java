@@ -247,10 +247,10 @@ public class LetterQueryRepository {
       case "마음건강" -> throwLetterCategoryEntity.mental;
       case "대인관계" -> throwLetterCategoryEntity.relationship;
       case "사랑" -> throwLetterCategoryEntity.love;
-      case "삶의방향/가치관" -> throwLetterCategoryEntity.life;
+      case "삶의 방향" -> throwLetterCategoryEntity.life;
       case "자산관리" -> throwLetterCategoryEntity.finance;
-      case "주거/독립" -> throwLetterCategoryEntity.housing;
-      case "기타" -> throwLetterCategoryEntity.other;
+      case "독립" -> throwLetterCategoryEntity.housing;
+      case "그 외 기타" -> throwLetterCategoryEntity.other;
       default -> throw new IllegalArgumentException("Invalid category name: " + categoryName);
     };
   }

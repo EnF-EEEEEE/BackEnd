@@ -103,10 +103,10 @@ public class UserQueryRepository {
       case "마음건강" -> user.category.mental.eq(true);
       case "대인관계" -> user.category.relationship.eq(true);
       case "사랑" -> user.category.love.eq(true);
-      case "삶의방향/가치관" -> user.category.life.eq(true);
+      case "삶의 방향" -> user.category.life.eq(true);
       case "자산관리" -> user.category.finance.eq(true);
-      case "주거/독립" -> user.category.housing.eq(true);
-      case "기타" -> user.category.other.eq(true);
+      case "독립" -> user.category.housing.eq(true);
+      case "그 외 기타" -> user.category.other.eq(true);
       default -> null;
     };
   }
