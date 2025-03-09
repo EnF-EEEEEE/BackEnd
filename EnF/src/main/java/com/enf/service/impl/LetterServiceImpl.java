@@ -20,6 +20,7 @@ import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
 import com.enf.repository.LetterStatusRepository;
 import com.enf.service.LetterService;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class LetterServiceImpl implements LetterService {
   private final LetterFacade letterFacade;
   private final RedisTemplate<String, Object> redisTemplate;
   private final LetterStatusRepository letterStatusRepository;
+  private final MeterRegistry meterRegistry;
 
   /**
    * 사용자가 새로운 편지를 작성하여 상대방에게 전송하는 기능
@@ -59,6 +61,9 @@ public class LetterServiceImpl implements LetterService {
 
     userFacade.reduceQuota(mentee);
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, mentor));
+
+    // 메트릭 추가
+    meterRegistry.counter("letter.sent").increment();
     return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
 

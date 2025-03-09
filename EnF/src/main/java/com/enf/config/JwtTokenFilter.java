@@ -107,6 +107,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             || requestURI.matches("/v3/api-docs")
             || requestURI.matches("/swagger-ui/.*")
             || requestURI.equals("/swagger-ui.html")
+            || requestURI.matches("/actuator/.*")
+            || requestURI.equals("/actuator/prometheus")
+            || requestURI.equals("/actuator/health")
+            || requestURI.equals("/actuator/info")
             || requestURI.matches("/swagger-resources/.*");
     }
 }

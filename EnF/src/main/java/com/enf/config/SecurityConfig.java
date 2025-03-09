@@ -47,6 +47,14 @@ public class SecurityConfig {
                         "/swagger-resources/**"
                     ).permitAll()
 
+                    // Actuator 엔드포인트 허용 (이 부분이 추가됨)
+                    .requestMatchers(
+                            "/actuator/**",
+                            "/actuator/prometheus",
+                            "/actuator/health",
+                            "/actuator/info"
+                    ).permitAll()
+
                     .requestMatchers(
                         "/api/v1/auth/callback",    // kakao sns login redirect url
                         "/api/v1/auth/kakao",
