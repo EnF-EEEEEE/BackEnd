@@ -49,8 +49,8 @@ public class AdminController {
                                 @RequestParam("code") String code, Model model) {
         authService.oAuthForKakao(request,response, code);
         model.addAttribute("access", response.getHeader("access"));
-        // 로그인 후 대시보드로 이동
-        return "/admin/dashboard";  // 페이지 이동
+        // 수정된 부분: 슬래시 없이 템플릿 이름만 지정
+        return "admin/dashboard";  // 페이지 이동
     }
 
     /**
