@@ -106,4 +106,8 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
       "FROM letter_status lst " +
       "WHERE lst.mentor.userSeq = :userSeq AND lst.isMentorRead = false")
   Boolean existsMentorRead(@Param("userSeq") Long userSeq);
+
+  List<LetterStatusEntity> findAllByMentee(UserEntity user);
+
+  List<LetterStatusEntity> findAllByMentor(UserEntity user);
 }

@@ -11,6 +11,7 @@ import com.enf.exception.GlobalException;
 import com.enf.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
+import com.enf.model.dto.response.letter.LetterHistoryDTO;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
 import com.enf.model.type.FailedResultType;
@@ -213,5 +214,26 @@ public class LetterFacade {
 
   public void updateNotificationIsRead(LetterStatusEntity letterStatus) {
    notificationRepository.updateNotificationIsRead(letterStatus.getLetterStatusSeq());
+  }
+
+  public LetterHistoryDTO getLetterHistory(UserEntity user) {
+    boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
+    List<LetterStatusEntity> letterStatus = isMentee
+        ? letterStatusRepository.findAllByMentee(user)
+        : letterStatusRepository.findAllByMentor(user);
+
+    int sendletter = 0;
+    int replyletter = 0;
+
+    for (LetterStatusEntity status : letterStatus) {
+      if (isMentee) {
+        if (status.getMenteeLetter() != null) sendletter++;
+        if (status.getMentorLetter() != null) replyletter++;
+      } else {
+        if (status.getMentorLetter() != null) sendletter++;
+        if (status.getMenteeLetter() != null) replyletter++;
+      }
+    }
+    return new LetterHistoryDTO(sendletter, replyletter);
   }
 }

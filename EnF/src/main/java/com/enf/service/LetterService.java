@@ -34,4 +34,5 @@ public interface LetterService {
 
   ResultResponse getThrowLetterCategory(HttpServletRequest request);
 
+  ResultResponse getLetterHistory(HttpServletRequest request);
 }
