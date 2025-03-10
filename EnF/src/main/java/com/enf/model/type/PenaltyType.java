@@ -1,6 +1,5 @@
 package com.enf.model.type;
 
-import jakarta.persistence.EnumType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

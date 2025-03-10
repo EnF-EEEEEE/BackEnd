@@ -2,10 +2,9 @@ package com.enf.repository;
 
 import com.enf.entity.PenaltyEntity;
 import com.enf.entity.UserEntity;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public interface PenaltyRepository extends JpaRepository<PenaltyEntity, Long> {

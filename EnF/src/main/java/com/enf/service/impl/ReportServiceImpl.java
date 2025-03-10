@@ -1,28 +1,36 @@
 package com.enf.service.impl;
 
-import com.enf.component.facade.UserFacade;
-import com.enf.entity.*;
+import com.enf.entity.LetterEntity;
+import com.enf.entity.LetterStatusEntity;
+import com.enf.entity.PenaltyEntity;
+import com.enf.entity.ReportEntity;
+import com.enf.entity.ReportProcessEntity;
+import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
-import com.enf.exception.GlobalExceptionHandler;
 import com.enf.model.dto.request.report.ReportDto;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.PenaltyType;
 import com.enf.model.type.ReportCategory;
 import com.enf.model.type.ReportStatus;
-import com.enf.repository.*;
+import com.enf.repository.LetterRepository;
+import com.enf.repository.LetterStatusRepository;
+import com.enf.repository.PenaltyRepository;
+import com.enf.repository.ReportProcessRepository;
+import com.enf.repository.ReportRepository;
+import com.enf.repository.UserRepository;
 import com.enf.service.ReportService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
