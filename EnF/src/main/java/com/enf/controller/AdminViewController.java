@@ -18,7 +18,8 @@ public class AdminViewController {
     @Value("${DEV.AUTH.OAUTH.REGISTRATION.KAKAO.client-id}")
     private String kakaoClientId;
 
-    private String adminRedirectUri ="http://localhost:8080/api/v1/admin/callback";
+//    private String adminRedirectUri ="http://localhost:8080/api/v1/admin/callback";
+    private String adminRedirectUri ="https://api.dearbirdy.xyz/api/v1/admin/callback";
 
     // 로그인 페이지로 이동
     @GetMapping("/login")
