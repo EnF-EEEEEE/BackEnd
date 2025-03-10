@@ -12,6 +12,7 @@ import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.letter.LetterDetailResponseDto;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
+import com.enf.model.dto.response.letter.LetterHistoryDTO;
 import com.enf.model.dto.response.letter.LetterResponseDto;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
@@ -171,6 +172,14 @@ public class LetterServiceImpl implements LetterService {
     ThrowLetterCategoryDTO throwLetterCategory = ThrowLetterCategoryDTO.of(letterFacade.getThrowLetterCategory());
 
     return new ResultResponse(SuccessResultType.SUCCESS_GET_THROW_LETTER_CATEGORY, throwLetterCategory);
+  }
+
+  @Override
+  public ResultResponse getLetterHistory(HttpServletRequest request) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    LetterHistoryDTO letterHistory = letterFacade.getLetterHistory(user);
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_LETTER_HISTORY, letterHistory);
   }
 
 
