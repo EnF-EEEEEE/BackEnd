@@ -114,7 +114,7 @@ public class UserFacade {
 
     UserEntity saveUser = AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO);
     saveUser(saveUser);
-    saveQuota(user);
+    saveQuota(saveUser);
 
     return saveUser;
   }
