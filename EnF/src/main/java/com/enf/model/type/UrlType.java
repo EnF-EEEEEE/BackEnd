@@ -12,6 +12,7 @@ public enum UrlType {
   PROD_SERVER_URL("https://api.dearbirdy.xyz"),
   DEV_SERVER_URL("https://dev.dearbirdy.xyz"),
   BACK_LOCAL_URL("http://localhost:8080"),
+  DEAR_BIRDY_URL("https://www.dear.birdy.xyz"),
   ;
 
   private final String url;
