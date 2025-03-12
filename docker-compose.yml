@@ -104,7 +104,8 @@ services:
     container_name: elasticsearch
     environment:
       - "discovery.type=single-node"
-      - "_JAVA_OPTIONS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # 우분투(리눅스 계열에서는) _JAVA_OPTIONS 대신 이것을 사용
+    #      - "_JAVA_OPTIONS=-XX:UseSVE=0"     # M4 mac에서 사용할때 설정 넣어야함
     ports:
       - "9200:9200"
     volumes:
