@@ -325,6 +325,10 @@ public class UserFacade {
     return quotaRepository.findAll();
   }
 
+  public int getQuotaByUserSeq(UserEntity user) {
+    return quotaRepository.findByUser(user).getQuota();
+  }
+
 
   /**
    * 사용자의 할당량을 지정된 값으로 초기화
