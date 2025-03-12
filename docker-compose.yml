@@ -98,11 +98,58 @@ services:
       - prometheus
     networks:
       - enf-network
+  # Elasticsearch 서비스 추가
+  elasticsearch:
+    image: elasticsearch:7.17.16
+    container_name: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+      - "_JAVA_OPTIONS=-XX:UseSVE=0"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - enf-network
+    restart: always
+
+  # Logstash 서비스 추가
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.16
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      - "5001:5001/tcp"  # 5000→5001로 변경
+      - "5001:5001/udp"  # 5000→5001로 변경
+      - "9600:9600"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    networks:
+      - enf-network
+    depends_on:
+      - elasticsearch
+    restart: always
+
+  # Kibana 서비스 추가
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.16
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - enf-network
+    depends_on:
+      - elasticsearch
+    restart: always
 
 volumes:
   enf_data:
   prometheus_data: # 추가
   grafana_data:    # 추가
+  elasticsearch_data: # 새 볼륨 추가
 
 networks:
   enf-network:
