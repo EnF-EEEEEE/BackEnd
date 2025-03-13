@@ -6,7 +6,6 @@ import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
-import com.enf.model.dto.response.user.UserInfoDTO;
 import com.enf.model.dto.response.user.UserProfileDTO;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
     UserEntity saveUser = userFacade.saveAdditionalInfo(user, additionalInfoDTO);
 
     userFacade.generateAndSetToken(saveUser, response);
-    return new ResultResponse(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO, UserInfoDTO.of(additionalInfoDTO));
+    return ResultResponse.of(SuccessResultType.SUCCESS_ADDITIONAL_USER_INFO);
   }
 
   /**
@@ -65,7 +64,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public ResultResponse userInfo(HttpServletRequest request) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, UserProfileDTO.of(user));
+    UserProfileDTO userProfile = userFacade.getUserInfo(user);
+    return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, userProfile);
   }
 
   /**
