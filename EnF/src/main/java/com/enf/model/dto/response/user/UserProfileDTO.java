@@ -19,16 +19,21 @@ public class UserProfileDTO {
 
   private UserCategoryDTO userCategory;
 
+  private int quota;
 
-  public static UserProfileDTO of(UserEntity user) {
+  private boolean isRead;
+
+  public static UserProfileDTO of(UserEntity user, int quota, boolean isRead) {
     return new UserProfileDTO(
         user.getBird().getBirdName(),
         user.getNickname(),
         user.getRole().getRoleName(),
         user.getRole().getRoleName().equals("MENTOR")
             ? UserCategoryDTO.of(user.getCategory())
-            : null);
+            : null,
+        quota,
+        isRead
+    );
 
   }
-
 }
