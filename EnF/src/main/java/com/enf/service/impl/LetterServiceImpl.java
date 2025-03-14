@@ -177,14 +177,6 @@ public class LetterServiceImpl implements LetterService {
     return new ResultResponse(SuccessResultType.SUCCESS_GET_THROW_LETTER_CATEGORY, throwLetterCategory);
   }
 
-  @Override
-  public ResultResponse getLetterHistory(HttpServletRequest request) {
-    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-
-    LetterHistoryDTO letterHistory = letterFacade.getLetterHistory(user);
-    return new ResultResponse(SuccessResultType.SUCCESS_GET_LETTER_HISTORY, letterHistory);
-  }
-
 
   @Transactional(readOnly = true)
   public ResponseEntity<Map<String, Object>> getAllMenteeLetters(HttpServletRequest request, int page, int size) {
