@@ -53,6 +53,9 @@ public class AuthServiceImpl implements AuthService {
           log.info("Kakao 로그인 진행");
           userFacade.updateLastLoginAt(user.getUserSeq());
           userFacade.generateAndSetToken(user, response);
+          if(user.getRole().getRoleName().equals("UNKNOWN")) {
+            return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_SIGNUP);
+          }
           return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_LOGIN);
         })
         .orElseGet(() -> {
