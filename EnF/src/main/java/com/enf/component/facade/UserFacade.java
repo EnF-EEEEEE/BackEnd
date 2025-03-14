@@ -10,6 +10,7 @@ import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
 import com.enf.model.dto.auth.AuthTokenDTO;
+import com.enf.model.dto.request.auth.KakaoUserDetailsDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
@@ -78,8 +79,12 @@ public class UserFacade {
    * @param providerId 외부 OAuth 제공자의 ID
    * @return Optional<UserEntity>
    */
-  public Optional<UserEntity> findByProviderId(String providerId) {
-    return userRepository.findByProviderId(providerId);
+  public UserEntity findByProviderId(KakaoUserDetailsDTO kakaoUserDetails) {
+    return userRepository.findByProviderId(kakaoUserDetails.getProviderId())
+        .orElseGet(() -> {
+          RoleEntity userRole = findRoleByRoleName("UNKNOWN");
+          return saveUser(KakaoUserDetailsDTO.of(kakaoUserDetails, userRole));
+        });
   }
 
   /**
