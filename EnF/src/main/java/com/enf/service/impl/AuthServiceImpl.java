@@ -45,26 +45,21 @@ public class AuthServiceImpl implements AuthService {
     // 카카오 사용자 정보 요청
     KakaoUserDetailsDTO kakaoUserDetails = kakaoAuthHandler.getUserDetails(kakaoAccessToken);
 
-    return userFacade.findByProviderId(kakaoUserDetails.getProviderId())
-        .map(user -> {
-          if (user.getDeleteAt() != null) {
-            userFacade.cancelWithdrawal(user);
-          }
-          log.info("Kakao 로그인 진행");
-          userFacade.updateLastLoginAt(user.getUserSeq());
-          userFacade.generateAndSetToken(user, response);
-          if(user.getRole().getRoleName().equals("UNKNOWN")) {
-            return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_SIGNUP);
-          }
-          return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_LOGIN);
-        })
-        .orElseGet(() -> {
-          log.info("Kakao 회원가입 진행");
-          RoleEntity userRole = userFacade.findRoleByRoleName("UNKNOWN");
-          UserEntity saveUser = userFacade.saveUser(KakaoUserDetailsDTO.of(kakaoUserDetails, userRole));
-          userFacade.generateAndSetToken(saveUser, response);
-          return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_SIGNUP);
-        });
+    UserEntity user =  userFacade.findByProviderId(kakaoUserDetails);
+
+    userFacade.updateLastLoginAt(user.getUserSeq());
+    userFacade.generateAndSetToken(user, response);
+
+    if (user.getRole().getRoleName().equals("UNKNOWN")) {
+      log.info("Kakao 회원가입 진행");
+      return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_SIGNUP);
+    }
+
+    log.info("Kakao 로그인 진행");
+    if (user.getDeleteAt() != null) {
+      userFacade.cancelWithdrawal(user);
+    }
+    return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_LOGIN);
   }
 
   /**

@@ -159,13 +159,6 @@ public class LetterController {
     return new ResponseEntity<>(response, response.getStatus());
   }
 
-  @GetMapping("/letter/history")
-  public ResponseEntity<ResultResponse> getLetterHistory(HttpServletRequest request) {
-
-    ResultResponse response = letterService.getLetterHistory(request);
-    return new ResponseEntity<>(response, response.getStatus());
-  }
-
   @GetMapping("/throws/category")
   public ResponseEntity<ResultResponse> getThrowLetterCategory(HttpServletRequest request) {
 
