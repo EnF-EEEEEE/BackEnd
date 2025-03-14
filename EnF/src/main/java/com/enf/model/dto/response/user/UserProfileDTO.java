@@ -2,6 +2,7 @@ package com.enf.model.dto.response.user;
 
 import com.enf.entity.UserEntity;
 import com.enf.model.dto.request.user.UserCategoryDTO;
+import com.enf.model.dto.response.letter.LetterHistoryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,11 @@ public class UserProfileDTO {
 
   private boolean isRead;
 
-  public static UserProfileDTO of(UserEntity user, int quota, boolean isRead) {
+  private int sendLetter;
+
+  private int replyLetter;
+
+  public static UserProfileDTO of(UserEntity user, int quota, boolean isRead, LetterHistoryDTO letterHistory) {
     return new UserProfileDTO(
         user.getBird().getBirdName(),
         user.getNickname(),
@@ -32,7 +37,9 @@ public class UserProfileDTO {
             ? UserCategoryDTO.of(user.getCategory())
             : null,
         quota,
-        isRead
+        isRead,
+        letterHistory.getSendLetter(),
+        letterHistory.getReplyLetter()
     );
 
   }

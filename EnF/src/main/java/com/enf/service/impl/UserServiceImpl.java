@@ -1,11 +1,13 @@
 package com.enf.service.impl;
 
+import com.enf.component.facade.LetterFacade;
 import com.enf.component.facade.UserFacade;
 import com.enf.entity.UserEntity;
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
 import com.enf.model.dto.response.ResultResponse;
+import com.enf.model.dto.response.letter.LetterHistoryDTO;
 import com.enf.model.dto.response.user.UserProfileDTO;
 import com.enf.model.type.SuccessResultType;
 import com.enf.model.type.TokenType;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   private final UserFacade userFacade;
+  private final LetterFacade letterFacade;
 
   /**
    * 닉네임 중복 확인
@@ -64,7 +67,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public ResultResponse userInfo(HttpServletRequest request) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    UserProfileDTO userProfile = userFacade.getUserInfo(user);
+    LetterHistoryDTO letterHistory = letterFacade.getLetterHistory(user);
+    UserProfileDTO userProfile = userFacade.getUserInfo(user, letterHistory);
     return new ResultResponse(SuccessResultType.SUCCESS_GET_USER_INFO, userProfile);
   }
 

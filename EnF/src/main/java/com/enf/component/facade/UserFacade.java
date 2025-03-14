@@ -13,6 +13,7 @@ import com.enf.model.dto.auth.AuthTokenDTO;
 import com.enf.model.dto.request.letter.SendLetterDTO;
 import com.enf.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.model.dto.request.user.UserCategoryDTO;
+import com.enf.model.dto.response.letter.LetterHistoryDTO;
 import com.enf.model.dto.response.user.UserProfileDTO;
 import com.enf.model.type.FailedResultType;
 import com.enf.model.type.TokenType;
@@ -340,7 +341,7 @@ public class UserFacade {
     quotaRepository.updateQuota(user, quota);
   }
 
-  public UserProfileDTO getUserInfo(UserEntity user) {
+  public UserProfileDTO getUserInfo(UserEntity user, LetterHistoryDTO letterHistory) {
     QuotaEntity quota = quotaRepository.findByUser(user);
 
     boolean isRead = switch (user.getRole().getRoleName()) {
@@ -351,6 +352,6 @@ public class UserFacade {
       default -> false;
     };
 
-    return UserProfileDTO.of(user, quota.getQuota(), isRead);
+    return UserProfileDTO.of(user, quota.getQuota(), isRead, letterHistory);
   }
 }
