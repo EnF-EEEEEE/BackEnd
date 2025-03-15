@@ -51,7 +51,7 @@ public class NotificationDTO {
         letterStatus.getLetterStatusSeq(),
         letterStatus.getMentee().getBird().getBirdName(),
         letterStatus.getMentee().getNickname(),
-        "님으로부터 날아온 답장을 확인해보세요",
+        "님으로부터 날아온 편지를 확인해보세요",
         false
     );
   }
@@ -65,7 +65,7 @@ public class NotificationDTO {
         letterStatus.getLetterStatusSeq(),
         letterStatus.getMentor().getBird().getBirdName(),
         letterStatus.getMentor().getNickname(),
-        "님으로부터 날아온 답장을 확인해보세요",
+        "님으로부터 날아온 편지를 확인해보세요",
         false
     );
   }
