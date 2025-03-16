@@ -318,8 +318,13 @@ public class UserFacade {
    *
    * @param user 사용자 정보
    */
-  public void reduceQuota(UserEntity user) {
-    quotaRepository.reduceQuota(user);
+  public int reduceQuota(UserEntity user) {
+    QuotaEntity quota = quotaRepository.findByUser(user);
+    if (quota.getQuota() == 0) {
+      throw new GlobalException(FailedResultType.QUOTA_IS_EMPTY);
+    }
+    quotaRepository.reduceQuota(quota.getQuotaSeq());
+    return quota.getQuota() - 1;
   }
 
   /**
@@ -329,10 +334,6 @@ public class UserFacade {
    */
   public List<QuotaEntity> getQuotas() {
     return quotaRepository.findAll();
-  }
-
-  public int getQuotaByUserSeq(UserEntity user) {
-    return quotaRepository.findByUser(user).getQuota();
   }
 
 

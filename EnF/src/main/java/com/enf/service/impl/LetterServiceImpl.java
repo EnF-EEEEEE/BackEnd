@@ -60,8 +60,7 @@ public class LetterServiceImpl implements LetterService {
     LetterEntity letter = SendLetterDTO.of(sendLetter);
     LetterStatusEntity letterStatus = letterFacade.saveMenteeLetter(letter, mentee, mentor);
 
-    userFacade.reduceQuota(mentee);
-    int quota = userFacade.getQuotaByUserSeq(mentee);
+    int quota = userFacade.reduceQuota(mentee);
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, mentor));
 
     // 메트릭 추가
@@ -74,11 +73,9 @@ public class LetterServiceImpl implements LetterService {
    */
   @Override
   public ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter) {
-    UserEntity mentor = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
     LetterStatusEntity letterStatus = letterFacade.saveMentorLetter(replyLetter);
 
-    userFacade.reduceQuota(letterStatus.getMentor());
-    int quota = userFacade.getQuotaByUserSeq(mentor);
+    int quota = userFacade.reduceQuota(letterStatus.getMentor());
     redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(letterStatus));
 
     return new ResultResponse(SuccessResultType.SUCCESS_RECEIVE_LETTER, quota);
