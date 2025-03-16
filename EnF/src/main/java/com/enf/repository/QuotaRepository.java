@@ -21,8 +21,8 @@ public interface QuotaRepository extends JpaRepository<QuotaEntity, Long> {
   @Transactional
   @Query("UPDATE quota q "
       + "SET q.quota = CASE WHEN q.quota > 0 THEN q.quota - 1 ELSE q.quota END "
-      + "WHERE q.user = :user")
-  void reduceQuota(@Param("user") UserEntity user);
+      + "WHERE q.quotaSeq = :quotaSeq")
+  void reduceQuota(@Param("quotaSeq") Long quotaSeq);
 
   QuotaEntity findByUser(UserEntity user);
 }
