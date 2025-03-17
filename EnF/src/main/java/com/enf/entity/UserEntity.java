@@ -49,6 +49,9 @@ public class UserEntity {
   private String providerId;
 
   @Column(nullable = false)
+  private int quota;
+
+  @Column(nullable = false)
   private LocalDateTime createAt;
 
   private LocalDateTime lastLoginAt;

@@ -2,7 +2,6 @@ package com.enf.config;
 
 import com.enf.component.KakaoAuthHandler;
 import com.enf.component.facade.UserFacade;
-import com.enf.entity.QuotaEntity;
 import com.enf.entity.UserEntity;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +22,15 @@ public class SchedulerConfiguration {
   public void updateLetterQuota() {
     log.info("사용자 편지 할당량 초기화 작업 시작");
 
-    List<QuotaEntity> quotas = userFacade.getQuotas();
-    if (quotas == null || quotas.isEmpty()) {
+    List<UserEntity> users = userFacade.getAllUsers();
+    if (users == null || users.isEmpty()) {
       log.info("초기화할 사용자 할당량이 없음");
       return;
     }
 
-    for (QuotaEntity quota : quotas) {
-      boolean isMentee = quota.getUser().getRole().getRoleName().equals("MENTEE");
-      userFacade.resetQuota(quota.getUser(), isMentee ? 4 : 7);
+    for (UserEntity user : users) {
+      boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
+      userFacade.resetQuota(user, isMentee ? 4 : 7);
     }
 
     log.info("사용자 편지 할당량 초기화 작업 완료");

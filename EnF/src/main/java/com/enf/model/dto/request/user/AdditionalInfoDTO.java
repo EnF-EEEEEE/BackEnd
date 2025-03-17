@@ -46,6 +46,7 @@ public class AdditionalInfoDTO {
         .nickname(additionalInfoDTO.getNickname())
         .provider(user.getProvider())
         .providerId(user.getProviderId())
+        .quota(role.getRoleName().equals("MENTEE") ? 4 : 7)
         .createAt(user.getCreateAt())
         .lastLoginAt(user.getLastLoginAt())
         .build();

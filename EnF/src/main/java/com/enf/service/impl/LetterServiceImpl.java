@@ -12,7 +12,6 @@ import com.enf.model.dto.response.PageResponse;
 import com.enf.model.dto.response.ResultResponse;
 import com.enf.model.dto.response.letter.LetterDetailResponseDto;
 import com.enf.model.dto.response.letter.LetterDetailsDTO;
-import com.enf.model.dto.response.letter.LetterHistoryDTO;
 import com.enf.model.dto.response.letter.LetterResponseDto;
 import com.enf.model.dto.response.letter.ReceiveLetterDTO;
 import com.enf.model.dto.response.letter.ThrowLetterCategoryDTO;
@@ -60,12 +59,12 @@ public class LetterServiceImpl implements LetterService {
     LetterEntity letter = SendLetterDTO.of(sendLetter);
     LetterStatusEntity letterStatus = letterFacade.saveMenteeLetter(letter, mentee, mentor);
 
-    int quota = userFacade.reduceQuota(mentee);
+    userFacade.reduceQuota(mentee);
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, mentor));
 
     // 메트릭 추가
     meterRegistry.counter("letter.sent").increment();
-    return new ResultResponse(SuccessResultType.SUCCESS_SEND_LETTER, quota);
+    return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
 
   /**
@@ -75,10 +74,10 @@ public class LetterServiceImpl implements LetterService {
   public ResultResponse replyLetter(HttpServletRequest request, ReplyLetterDTO replyLetter) {
     LetterStatusEntity letterStatus = letterFacade.saveMentorLetter(replyLetter);
 
-    int quota = userFacade.reduceQuota(letterStatus.getMentor());
+    userFacade.reduceQuota(letterStatus.getMentor());
     redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(letterStatus));
 
-    return new ResultResponse(SuccessResultType.SUCCESS_RECEIVE_LETTER, quota);
+    return ResultResponse.of(SuccessResultType.SUCCESS_RECEIVE_LETTER);
   }
 
   /**

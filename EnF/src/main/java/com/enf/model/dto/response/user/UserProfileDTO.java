@@ -28,7 +28,7 @@ public class UserProfileDTO {
 
   private int replyLetter;
 
-  public static UserProfileDTO of(UserEntity user, int quota, boolean isRead, LetterHistoryDTO letterHistory) {
+  public static UserProfileDTO of(UserEntity user, boolean isRead, LetterHistoryDTO letterHistory) {
     return new UserProfileDTO(
         user.getBird().getBirdName(),
         user.getNickname(),
@@ -36,7 +36,7 @@ public class UserProfileDTO {
         user.getRole().getRoleName().equals("MENTOR")
             ? UserCategoryDTO.of(user.getCategory())
             : null,
-        quota,
+        user.getQuota(),
         isRead,
         letterHistory.getSendLetter(),
         letterHistory.getReplyLetter()
