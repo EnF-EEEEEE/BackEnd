@@ -55,7 +55,8 @@ public class UserQueryRepository {
     return fetchUser(buildConditions(birdName, categoryName, letterStatusSeq))
         .orElseGet(() -> fetchUser(buildConditions(null, categoryName, letterStatusSeq))
             .orElseGet(() -> fetchUser(buildConditions(birdName, null, letterStatusSeq))
-                .orElseGet(() -> randomUser(buildConditions(null, null, letterStatusSeq)))));
+                .orElseGet(() -> randomUser(buildConditions(null, null, letterStatusSeq))
+                    .orElseGet(this::getAdminUser))));
   }
 
   /**
@@ -80,13 +81,13 @@ public class UserQueryRepository {
    * @param builder QueryDSL의 BooleanBuilder (검색 조건)
    * @return 조건에 맞는 랜덤 멘토 (첫 번째 결과 반환)
    */
-  private UserEntity randomUser(BooleanBuilder builder) {
-    return jpaQueryFactory
+  private Optional<UserEntity> randomUser(BooleanBuilder builder) {
+    return ofNullable(jpaQueryFactory
         .selectFrom(user)
         .join(quota).on(user.userSeq.eq(quota.user.userSeq))
         .where(builder)
         .orderBy(quota.quota.desc())
-        .fetchFirst();
+        .fetchFirst());
   }
 
   /**
@@ -208,5 +209,12 @@ public class UserQueryRepository {
         .from(throwLetter)
         .where(throwLetter.letterStatus.letterStatusSeq.eq(letterId))
         .fetch();
+  }
+
+  public UserEntity getAdminUser() {
+    return jpaQueryFactory
+        .selectFrom(user)
+        .where(user.nickname.eq("지미니짱짱"))
+        .fetchOne();
   }
 }
