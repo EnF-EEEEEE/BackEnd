@@ -30,38 +30,38 @@ public class LetterStatusEntity {
     private Long letterStatusSeq;
 
     @ManyToOne
-    @JoinColumn(name = "mentee_seq")
+    @JoinColumn(name = "mentee_seq", nullable = false)
     private UserEntity mentee;
 
     @ManyToOne
-    @JoinColumn(name = "mentor_seq")
+    @JoinColumn(name = "mentor_seq", nullable = false)
     private UserEntity mentor;
 
     @ManyToOne
-    @JoinColumn(name = "mentee_letter_seq")
+    @JoinColumn(name = "mentee_letter_seq", nullable = false)
     private LetterEntity menteeLetter;
 
     @ManyToOne
     @JoinColumn(name = "mentor_letter_seq")
     private LetterEntity mentorLetter;
 
-    @Column(name = "is_mentee_read")
+    @Column(nullable = false)
     private boolean isMenteeRead = false;  // 기본값 설정
 
-    @Column(name = "is_mentor_read")
+    @Column(nullable = false)
     private boolean isMentorRead = false;  // 기본값 설정
 
-    @Column(name = "is_mentee_saved")
+    @Column(nullable = false)
     private boolean isMenteeSaved = false;  // 기본값 설정
 
-    @Column(name = "is_mentor_saved")
+    @Column(nullable = false)
     private boolean isMentorSaved = false;  // 기본값 설정
 
     @Enumerated(EnumType.STRING)
     @Column(name = "thanks_type")
     private ThanksType thanksType;
 
-
+    @Column(nullable = false)
     private LocalDateTime createAt;
 
     public static LetterStatusEntity of(LetterEntity menteeLetter, UserEntity mentee, UserEntity mentor) {
@@ -69,10 +69,6 @@ public class LetterStatusEntity {
           .mentee(mentee)
           .mentor(mentor)
           .menteeLetter(menteeLetter)
-          .isMenteeRead(false)
-          .isMentorRead(false)
-          .isMenteeSaved(false)
-          .isMentorSaved(false)
           .thanksType(null)
           .createAt(LocalDateTime.now())
           .build();

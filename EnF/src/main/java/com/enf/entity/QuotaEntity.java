@@ -1,5 +1,6 @@
 package com.enf.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,9 +25,10 @@ public class QuotaEntity {
   private Long quotaSeq;
 
   @OneToOne
-  @JoinColumn(name = "user_seq")
+  @JoinColumn(name = "user_seq", nullable = false)
   private UserEntity user;
 
+  @Column(nullable = false)
   private int quota;
 
 }
