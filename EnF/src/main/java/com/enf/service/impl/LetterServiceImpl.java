@@ -144,9 +144,9 @@ public class LetterServiceImpl implements LetterService {
   @Override
   public ResultResponse throwLetter(HttpServletRequest request, Long letterStatusSeq) {
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
-    UserEntity newMentor = userFacade.getNewMentor(letterStatus);
-
     letterFacade.throwLetter(letterStatus);
+
+    UserEntity newMentor = userFacade.getNewMentor(letterStatus);
     letterFacade.changeMentor(letterStatus, newMentor);
 
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, newMentor));
