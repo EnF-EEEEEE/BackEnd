@@ -31,7 +31,7 @@ public class LetterEntity {
   @Column(nullable = false)
   private String letterTitle;
 
-  @Column(nullable = false)
+  @Column(length = 1000, nullable = false)
   private String letter;
 
   @Column(nullable = false)
