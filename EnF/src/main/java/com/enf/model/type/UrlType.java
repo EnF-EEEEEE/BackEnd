@@ -11,7 +11,6 @@ public enum UrlType {
   FRONT_LOCAL_URL("http://localhost:3000"),
   PROD_SERVER_URL("https://api.dearbirdy.xyz"),
   DEV_SERVER_URL("https://dev.dearbirdy.xyz"),
-  BACK_LOCAL_URL("http://localhost:8080"),
   DEAR_BIRDY_URL("https://www.dearbirdy.xyz"),
   ;
 
