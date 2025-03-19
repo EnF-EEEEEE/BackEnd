@@ -2,8 +2,8 @@ package com.enf.config;
 
 import com.enf.component.token.JwtUtil;
 import com.enf.component.token.TokenProvider;
-import com.enf.model.type.ConstantsType;
 import com.enf.model.type.TokenType;
+import com.enf.model.type.UrlType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -77,7 +77,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
 
         // CORS 헤더 추가
-        response.setHeader("Access-Control-Allow-Origin", ConstantsType.WEB_URL);
+
+        // 운영 서버
+        response.setHeader("Access-Control-Allow-Origin", UrlType.DEAR_BIRDY_URL.getUrl());
+        // 개발서버
+//        response.setHeader("Access-Control-Allow-Origin", UrlType.FRONT_LOCAL_URL.getUrl());
+        // 로컬 서버
+//        response.setHeader("Access-Control-Allow-Origin", UrlType.BACK_LOCAL_URL.getUrl());
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,POST,DELETE,TRACE,OPTIONS,PATCH,PUT");
         response.setHeader("Access-Control-Allow-Headers", "*");
