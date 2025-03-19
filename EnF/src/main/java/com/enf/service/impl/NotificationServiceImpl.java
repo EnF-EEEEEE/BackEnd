@@ -46,11 +46,23 @@ public class NotificationServiceImpl implements NotificationService {
    */
   public SseEmitter createEmitter(HttpServletRequest request) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+
+    SseEmitter oldEmitter = emitters.get(user.getUserSeq());
+    if (oldEmitter != null) {
+      oldEmitter.complete();
+      emitters.remove(user.getUserSeq());
+      log.info("사용자 {} 기존 SSE 연결 종료", user.getNickname());
+    }
+
     SseEmitter emitter = new SseEmitter(TIME_OUT);
 
     emitters.put(user.getUserSeq(), emitter);
     emitter.onCompletion(() -> emitters.remove(user.getUserSeq()));
     emitter.onTimeout(() -> emitters.remove(user.getUserSeq()));
+    emitter.onError((e) -> {
+      emitters.remove(user.getUserSeq());
+      log.error("사용자 {} SSE 오류 발생: {}", user.getNickname(), e.getMessage());
+    });
 
     log.info("사용자 {} SSE 구독 시작", user.getNickname());
 

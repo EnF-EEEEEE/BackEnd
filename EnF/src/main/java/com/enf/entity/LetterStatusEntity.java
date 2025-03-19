@@ -45,17 +45,17 @@ public class LetterStatusEntity {
     @JoinColumn(name = "mentor_letter_seq")
     private LetterEntity mentorLetter;
 
-    @Column(nullable = false)
-    private boolean isMenteeRead = false;  // 기본값 설정
+    @Column(name = "is_mentee_read")
+    private boolean isMenteeRead;
 
-    @Column(nullable = false)
-    private boolean isMentorRead = false;  // 기본값 설정
+    @Column(name = "is_mentor_read")
+    private boolean isMentorRead;
 
-    @Column(nullable = false)
-    private boolean isMenteeSaved = false;  // 기본값 설정
+    @Column(name = "is_mentee_saved")
+    private boolean isMenteeSaved;
 
-    @Column(nullable = false)
-    private boolean isMentorSaved = false;  // 기본값 설정
+    @Column(name = "is_mentor_saved")
+    private boolean isMentorSaved;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "thanks_type")
@@ -69,6 +69,10 @@ public class LetterStatusEntity {
           .mentee(mentee)
           .mentor(mentor)
           .menteeLetter(menteeLetter)
+          .isMenteeRead(true)
+          .isMentorRead(false)
+          .isMenteeSaved(false)
+          .isMentorSaved(false)
           .thanksType(null)
           .createAt(LocalDateTime.now())
           .build();
