@@ -2,7 +2,6 @@ package com.enf.repository.querydsl;
 
 import static java.util.Optional.ofNullable;
 
-import com.enf.entity.QQuotaEntity;
 import com.enf.entity.QThrowLetterEntity;
 import com.enf.entity.QUserEntity;
 import com.enf.entity.UserEntity;
@@ -31,7 +30,6 @@ public class UserQueryRepository {
   private final JPAQueryFactory jpaQueryFactory;
 
   QUserEntity user = QUserEntity.userEntity;
-  QQuotaEntity quota = QQuotaEntity.quotaEntity;
   QThrowLetterEntity throwLetter = QThrowLetterEntity.throwLetterEntity;
 
   /**
@@ -70,7 +68,7 @@ public class UserQueryRepository {
     return ofNullable(jpaQueryFactory
         .selectFrom(user)
         .where(builder)
-        .orderBy(quota.quota.desc())
+        .orderBy(user.quota.desc())
         .fetchFirst());
   }
 
@@ -84,7 +82,7 @@ public class UserQueryRepository {
     return ofNullable(jpaQueryFactory
         .selectFrom(user)
         .where(builder)
-        .orderBy(quota.quota.desc())
+        .orderBy(user.quota.desc())
         .fetchFirst());
   }
 
