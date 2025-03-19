@@ -326,13 +326,7 @@ public class UserFacade {
 
   public UserProfileDTO getUserInfo(UserEntity user, LetterHistoryDTO letterHistory) {
 
-    boolean isRead = switch (user.getRole().getRoleName()) {
-      case "MENTEE" -> letterStatusRepository
-          .existsMenteeRead(user.getUserSeq());
-      case "MENTOR" -> letterStatusRepository
-          .existsMentorRead(user.getUserSeq());
-      default -> false;
-    };
+    boolean isRead = letterStatusRepository.existsReadStatus(user.getUserSeq(), user.getRole().getRoleName());
 
     return UserProfileDTO.of(user, isRead, letterHistory);
   }

@@ -34,31 +34,26 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
 
   @Modifying
   @Transactional
-  @Query("UPDATE letter_status ls "
-      + "SET ls.isMenteeSaved = CASE WHEN ls.isMenteeSaved = true THEN false ELSE true END "
+  @Query("UPDATE letter_status ls SET "
+      + "ls.isMenteeSaved = CASE "
+      + "WHEN :roleName = 'MENTEE' THEN CASE WHEN ls.isMenteeSaved = true THEN false ELSE true END "
+      + "ELSE ls.isMenteeSaved END, "
+      + "ls.isMentorSaved = CASE "
+      + "WHEN :roleName = 'MENTOR' THEN  CASE WHEN ls.isMentorSaved = true THEN false ELSE true END "
+      + "ELSE ls.isMentorSaved END "
       + "WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void archiveLetterForMentee(@Param("letterStatusSeq") Long letterStatusSeq);
+  void archiveLetterForUser(@Param("letterStatusSeq") Long letterStatusSeq, @Param("roleName") String roleName);
 
-  @Modifying
-  @Transactional
-  @Query("UPDATE letter_status ls "
-      + "SET ls.isMentorSaved = CASE WHEN ls.isMentorSaved = true THEN false ELSE true END "
-      + "WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void archiveLetterForMentor(@Param("letterStatusSeq") Long letterStatusSeq);
 
   Optional<LetterStatusEntity> findLetterStatusByLetterStatusSeq(Long letterStatusSeq);
 
   @Modifying
   @Transactional
-  @Query("UPDATE letter_status ls "
-      + "SET ls.isMenteeRead = true WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void updateIsMenteeRead(@Param("letterStatusSeq") Long letterStatusSeq);
-
-  @Modifying
-  @Transactional
-  @Query("UPDATE letter_status ls "
-      + "SET ls.isMentorRead = true WHERE ls.letterStatusSeq = :letterStatusSeq")
-  void updateIsMentorRead(@Param("letterStatusSeq") Long letterStatusSeq);
+  @Query("UPDATE letter_status ls " +
+      "SET ls.isMenteeRead = CASE WHEN :roleName = 'MENTEE' THEN true ELSE ls.isMenteeRead END, " +
+      "    ls.isMentorRead = CASE WHEN :roleName = 'MENTOR' THEN true ELSE ls.isMentorRead END " +
+      "WHERE ls.letterStatusSeq = :letterStatusSeq")
+  void updateLetterReadStatus(@Param("letterStatusSeq") Long letterStatusSeq, @Param("roleName") String roleName);
 
   @Modifying
   @Transactional
@@ -76,44 +71,44 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   void thankToMentor(Long letterStatusSeq, ThanksType thanksType);
 
   LetterStatusEntity getLetterStatusByMentorLetterLetterSeq(Long letterSeq);
-  
+
   // 멘티가 보낸 편지 조회 쿼리 - LEFT JOIN으로 변경하여 null 값 처리
-    @Query("SELECT ls FROM letter_status ls " +
-            "JOIN ls.mentee m " +
-            "JOIN m.role r " +
-            "JOIN ls.menteeLetter ml " +  // INNER JOIN으로 사용하여 menteeLetter가 null이 아닌 경우만 조회
-            "LEFT JOIN ls.mentorLetter mtl " +  // LEFT JOIN으로 변경하여 답장이 없는 경우도 조회
-            "WHERE r.roleSeq = 4 " +  // MENTEE 역할 (roleSeq = 4)
-            "ORDER BY ml.createAt DESC")
-    Page<LetterStatusEntity> findAllMenteeLetters(Pageable pageable);
-
-    List<LetterStatusEntity> findByMenteeUserSeq(Long userSeq);
+  @Query("SELECT ls FROM letter_status ls " +
+          "JOIN ls.mentee m " +
+          "JOIN m.role r " +
+          "JOIN ls.menteeLetter ml " +  // INNER JOIN으로 사용하여 menteeLetter가 null이 아닌 경우만 조회
+          "LEFT JOIN ls.mentorLetter mtl " +  // LEFT JOIN으로 변경하여 답장이 없는 경우도 조회
+          "WHERE r.roleSeq = 4 " +  // MENTEE 역할 (roleSeq = 4)
+          "ORDER BY ml.createAt DESC")
+  Page<LetterStatusEntity> findAllMenteeLetters(Pageable pageable);
 
 
-    /**
-     * 특정 멘티가 특정 기간 내에 작성한 편지가 존재하는지 확인
-     * @param mentee 멘티 사용자
-     * @param startDateTime 조회 시작 일시
-     * @param endDateTime 조회 종료 일시
-     * @return 편지 존재 여부
-     */
-    boolean existsByMenteeAndMenteeLetterIsNotNullAndCreateAtBetween(
-            UserEntity mentee, LocalDateTime startDateTime, LocalDateTime endDateTime);
+  /**
+   * 특정 멘티가 특정 기간 내에 작성한 편지가 존재하는지 확인
+   * @param mentee 멘티 사용자
+   * @param startDateTime 조회 시작 일시
+   * @param endDateTime 조회 종료 일시
+   * @return 편지 존재 여부
+   */
+  boolean existsByMenteeAndMenteeLetterIsNotNullAndCreateAtBetween(
+          UserEntity mentee, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 
-    LetterStatusEntity findByLetterStatusSeq(Long letterStatusSeq);
+  LetterStatusEntity findByLetterStatusSeq(Long letterStatusSeq);
 
-  @Query("SELECT CASE WHEN COUNT(lst) > 0 THEN true ELSE false END " +
-      "FROM letter_status lst " +
-      "WHERE lst.mentee.userSeq = :userSeq AND lst.isMenteeRead = false")
-  Boolean existsMenteeRead(@Param("userSeq") Long userSeq);
+  @Query("SELECT EXISTS (SELECT 1 FROM letter_status lst " +
+      "WHERE (:roleName = 'MENTEE' AND lst.mentee.userSeq = :userSeq AND lst.isMenteeRead = false) OR " +
+      "      (:roleName = 'MENTOR' AND lst.mentor.userSeq = :userSeq AND lst.isMentorRead = false))")
+  Boolean existsReadStatus(@Param("userSeq") Long userSeq, @Param("roleName") String roleName);
 
-  @Query("SELECT CASE WHEN COUNT(lst) > 0 THEN true ELSE false END " +
-      "FROM letter_status lst " +
-      "WHERE lst.mentor.userSeq = :userSeq AND lst.isMentorRead = false")
-  Boolean existsMentorRead(@Param("userSeq") Long userSeq);
 
-  List<LetterStatusEntity> findAllByMentee(UserEntity user);
+  @Query("SELECT COUNT(lst) FROM letter_status lst WHERE " +
+      "(:roleName = 'MENTEE' AND lst.mentee = :user AND lst.menteeLetter IS NOT NULL) OR " +
+      "(:roleName = 'MENTOR' AND lst.mentor = :user AND lst.mentorLetter IS NOT NULL)")
+  int countSendLettersByUser(@Param("user") UserEntity user, @Param("roleName") String roleName);
 
-  List<LetterStatusEntity> findAllByMentor(UserEntity user);
+  @Query("SELECT COUNT(lst) FROM letter_status lst WHERE " +
+      "(:roleName = 'MENTEE' AND lst.mentee = :user AND lst.mentorLetter IS NOT NULL) OR " +
+      "(:roleName = 'MENTOR' AND lst.mentor = :user AND lst.menteeLetter IS NOT NULL)")
+  int countReplyLettersByUser(@Param("user") UserEntity user, @Param("roleName") String roleName);
 }
