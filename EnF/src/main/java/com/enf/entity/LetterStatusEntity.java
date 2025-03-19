@@ -46,7 +46,7 @@ public class LetterStatusEntity {
     private LetterEntity mentorLetter;
 
     @Column(name = "is_mentee_read")
-    private boolean isMenteeRead = false;  // 기본값 설정
+    private boolean isMenteeRead = true;  // 기본값 설정
 
     @Column(name = "is_mentor_read")
     private boolean isMentorRead = false;  // 기본값 설정
@@ -69,10 +69,6 @@ public class LetterStatusEntity {
           .mentee(mentee)
           .mentor(mentor)
           .menteeLetter(menteeLetter)
-          .isMenteeRead(false)
-          .isMentorRead(false)
-          .isMenteeSaved(false)
-          .isMentorSaved(false)
           .thanksType(null)
           .createAt(LocalDateTime.now())
           .build();
