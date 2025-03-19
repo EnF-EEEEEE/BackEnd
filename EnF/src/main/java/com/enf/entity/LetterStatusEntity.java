@@ -30,15 +30,15 @@ public class LetterStatusEntity {
     private Long letterStatusSeq;
 
     @ManyToOne
-    @JoinColumn(name = "mentee_seq")
+    @JoinColumn(name = "mentee_seq", nullable = false)
     private UserEntity mentee;
 
     @ManyToOne
-    @JoinColumn(name = "mentor_seq")
+    @JoinColumn(name = "mentor_seq", nullable = false)
     private UserEntity mentor;
 
     @ManyToOne
-    @JoinColumn(name = "mentee_letter_seq")
+    @JoinColumn(name = "mentee_letter_seq", nullable = false)
     private LetterEntity menteeLetter;
 
     @ManyToOne
@@ -61,7 +61,7 @@ public class LetterStatusEntity {
     @Column(name = "thanks_type")
     private ThanksType thanksType;
 
-
+    @Column(nullable = false)
     private LocalDateTime createAt;
 
     public static LetterStatusEntity of(LetterEntity menteeLetter, UserEntity mentee, UserEntity mentor) {

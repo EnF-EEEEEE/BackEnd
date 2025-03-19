@@ -82,6 +82,18 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   // UT 테스트를 위한 메서드(삭제 예정)
   UserEntity findByNickname(String nickname);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE user u "
+      + "SET u.quota = CASE WHEN u.quota > 0 THEN u.quota - 1 ELSE u.quota END "
+      + "WHERE u.userSeq = :userSeq")
+  void reduceQuota(@Param("userSeq") Long userSeq);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE user u SET u.quota = :quota WHERE u.userSeq = :userSeq")
+  void updateQuota(@Param("userSeq") Long userSeq, @Param("quota") int quota);
 }
 
 

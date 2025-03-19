@@ -2,7 +2,6 @@ package com.enf.repository.querydsl;
 
 import static java.util.Optional.ofNullable;
 
-import com.enf.entity.QQuotaEntity;
 import com.enf.entity.QThrowLetterEntity;
 import com.enf.entity.QUserEntity;
 import com.enf.entity.UserEntity;
@@ -31,7 +30,6 @@ public class UserQueryRepository {
   private final JPAQueryFactory jpaQueryFactory;
 
   QUserEntity user = QUserEntity.userEntity;
-  QQuotaEntity quota = QQuotaEntity.quotaEntity;
   QThrowLetterEntity throwLetter = QThrowLetterEntity.throwLetterEntity;
 
   /**
@@ -69,9 +67,8 @@ public class UserQueryRepository {
     log.info(builder.toString());
     return ofNullable(jpaQueryFactory
         .selectFrom(user)
-        .join(quota).on(user.userSeq.eq(quota.user.userSeq))
         .where(builder)
-        .orderBy(quota.quota.desc())
+        .orderBy(user.quota.desc())
         .fetchFirst());
   }
 
@@ -84,9 +81,8 @@ public class UserQueryRepository {
   private Optional<UserEntity> randomUser(BooleanBuilder builder) {
     return ofNullable(jpaQueryFactory
         .selectFrom(user)
-        .join(quota).on(user.userSeq.eq(quota.user.userSeq))
         .where(builder)
-        .orderBy(quota.quota.desc())
+        .orderBy(user.quota.desc())
         .fetchFirst());
   }
 
@@ -180,7 +176,7 @@ public class UserQueryRepository {
     BooleanBuilder builder = new BooleanBuilder();
 
     builder.and(user.role.roleName.eq("MENTOR"));
-    builder.and(quota.quota.goe(1));
+    builder.and(user.quota.goe(1));
 
     if (birdName != null) {
       builder.and(user.bird.birdName.eq(birdName));
@@ -215,6 +211,6 @@ public class UserQueryRepository {
     return jpaQueryFactory
         .selectFrom(user)
         .where(user.nickname.eq("지미니짱짱"))
-        .fetchOne();
+        .fetchFirst();
   }
 }

@@ -1,5 +1,6 @@
 package com.enf.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,14 +36,22 @@ public class UserEntity {
   @JoinColumn(name = "category_seq")
   private CategoryEntity category;
 
+  @Column(nullable = false)
   private String email;
 
+  @Column(nullable = false)
   private String nickname;
 
+  @Column(nullable = false)
   private String provider;
 
+  @Column(nullable = false)
   private String providerId;
 
+  @Column(nullable = false)
+  private int quota;
+
+  @Column(nullable = false)
   private LocalDateTime createAt;
 
   private LocalDateTime lastLoginAt;

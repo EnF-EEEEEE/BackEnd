@@ -119,11 +119,7 @@ public class LetterFacade {
    * @param letterStatusSeq 저장할 편지의 고유 식별자 (ID)
    */
   public void archiveLetter(UserEntity user, Long letterStatusSeq) {
-    if (user.getRole().getRoleName().equals("MENTEE")) {
-      letterStatusRepository.archiveLetterForMentee(letterStatusSeq);
-    } else {
-      letterStatusRepository.archiveLetterForMentor(letterStatusSeq);
-    }
+    letterStatusRepository.archiveLetterForUser(letterStatusSeq, user.getRole().getRoleName());
   }
 
   /**
@@ -145,17 +141,13 @@ public class LetterFacade {
    * @return 편지 상세 정보를 포함하는 LetterDetailsDTO
    */
   public LetterDetailsDTO getLetterDetails(UserEntity user, LetterStatusEntity letterStatus) {
-    if (user.getRole().getRoleName().equals("MENTEE")) {
-      if (!letterStatus.isMenteeRead()) {
-        letterStatusRepository.updateIsMenteeRead(letterStatus.getLetterStatusSeq());
-      }
-      return LetterDetailsDTO.ofMentee(letterStatus);
-    } else {
-      if (!letterStatus.isMentorRead()) {
-        letterStatusRepository.updateIsMentorRead(letterStatus.getLetterStatusSeq());
-      }
-      return LetterDetailsDTO.ofMentor(letterStatus);
-    }
+
+    String roleName = user.getRole().getRoleName();
+    letterStatusRepository.updateLetterReadStatus(letterStatus.getLetterStatusSeq(), roleName);
+
+    return roleName.equals("MENTEE")
+        ? LetterDetailsDTO.ofMentee(letterStatus)
+        : LetterDetailsDTO.ofMentor(letterStatus);
   }
 
   /**
@@ -217,23 +209,11 @@ public class LetterFacade {
   }
 
   public LetterHistoryDTO getLetterHistory(UserEntity user) {
-    boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
-    List<LetterStatusEntity> letterStatus = isMentee
-        ? letterStatusRepository.findAllByMentee(user)
-        : letterStatusRepository.findAllByMentor(user);
+    String roleName = user.getRole().getRoleName();
 
-    int sendletter = 0;
-    int replyletter = 0;
+    int sendLetter = letterStatusRepository.countSendLettersByUser(user, roleName);
+    int replyLetter = letterStatusRepository.countReplyLettersByUser(user, roleName);
 
-    for (LetterStatusEntity status : letterStatus) {
-      if (isMentee) {
-        if (status.getMenteeLetter() != null) sendletter++;
-        if (status.getMentorLetter() != null) replyletter++;
-      } else {
-        if (status.getMentorLetter() != null) sendletter++;
-        if (status.getMenteeLetter() != null) replyletter++;
-      }
-    }
-    return new LetterHistoryDTO(sendletter, replyletter);
+    return new LetterHistoryDTO(sendLetter, replyLetter);
   }
 }

@@ -5,7 +5,6 @@ import com.enf.component.token.TokenProvider;
 import com.enf.entity.BirdEntity;
 import com.enf.entity.CategoryEntity;
 import com.enf.entity.LetterStatusEntity;
-import com.enf.entity.QuotaEntity;
 import com.enf.entity.RoleEntity;
 import com.enf.entity.UserEntity;
 import com.enf.exception.GlobalException;
@@ -21,13 +20,11 @@ import com.enf.model.type.TokenType;
 import com.enf.repository.BirdRepository;
 import com.enf.repository.CategoryRepository;
 import com.enf.repository.LetterStatusRepository;
-import com.enf.repository.QuotaRepository;
 import com.enf.repository.RoleRepository;
 import com.enf.repository.UserRepository;
 import com.enf.repository.querydsl.UserQueryRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +41,6 @@ public class UserFacade {
   private final BirdRepository birdRepository;
   private final CategoryRepository categoryRepository;
   private final TokenProvider tokenProvider;
-  private final QuotaRepository quotaRepository;
   private final UserQueryRepository userQueryRepository;
   private final LetterStatusRepository letterStatusRepository;
 
@@ -120,7 +116,6 @@ public class UserFacade {
 
     UserEntity saveUser = AdditionalInfoDTO.of(user, bird, role, category, additionalInfoDTO);
     saveUser(saveUser);
-    saveQuota(saveUser);
 
     return saveUser;
   }
@@ -299,32 +294,14 @@ public class UserFacade {
 
   // ============================= Quota 관련 메서드 =============================
 
-  /**
-   * 사용자 할당량 저장
-   *
-   * @param user 사용자 정보
-   */
-  public void saveQuota(UserEntity user) {
-    quotaRepository.save(
-        QuotaEntity.builder()
-            .user(user)
-            .quota(user.getRole().getRoleName().equals("MENTEE") ? 4 : 7)
-            .build()
-    );
-  }
 
   /**
    * 사용자의 할당량 감소
    *
    * @param user 사용자 정보
    */
-  public int reduceQuota(UserEntity user) {
-    QuotaEntity quota = quotaRepository.findByUser(user);
-    if (quota.getQuota() == 0) {
-      throw new GlobalException(FailedResultType.QUOTA_IS_EMPTY);
-    }
-    quotaRepository.reduceQuota(quota.getQuotaSeq());
-    return quota.getQuota() - 1;
+  public void reduceQuota(UserEntity user) {
+    userRepository.reduceQuota(user.getUserSeq());
   }
 
   /**
@@ -332,8 +309,8 @@ public class UserFacade {
    *
    * @return 모든 사용자 할당량 리스트
    */
-  public List<QuotaEntity> getQuotas() {
-    return quotaRepository.findAll();
+  public List<UserEntity> getAllUsers() {
+    return userRepository.findAll();
   }
 
 
@@ -344,20 +321,13 @@ public class UserFacade {
    * @param quota 초기화할 할당량 값
    */
   public void resetQuota(UserEntity user, int quota) {
-    quotaRepository.updateQuota(user, quota);
+    userRepository.updateQuota(user.getUserSeq(), quota);
   }
 
   public UserProfileDTO getUserInfo(UserEntity user, LetterHistoryDTO letterHistory) {
-    QuotaEntity quota = quotaRepository.findByUser(user);
 
-    boolean isRead = switch (user.getRole().getRoleName()) {
-      case "MENTEE" -> letterStatusRepository
-          .existsMenteeRead(user.getUserSeq());
-      case "MENTOR" -> letterStatusRepository
-          .existsMentorRead(user.getUserSeq());
-      default -> false;
-    };
+    boolean isRead = letterStatusRepository.existsReadStatus(user.getUserSeq(), user.getRole().getRoleName());
 
-    return UserProfileDTO.of(user, quota.getQuota(), isRead, letterHistory);
+    return UserProfileDTO.of(user, isRead, letterHistory);
   }
 }
