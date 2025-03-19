@@ -50,6 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
     SseEmitter oldEmitter = emitters.get(user.getUserSeq());
     if (oldEmitter != null) {
       oldEmitter.complete();
+      emitters.remove(user.getUserSeq());
       log.info("사용자 {} 기존 SSE 연결 종료", user.getNickname());
     }
 
@@ -58,6 +59,10 @@ public class NotificationServiceImpl implements NotificationService {
     emitters.put(user.getUserSeq(), emitter);
     emitter.onCompletion(() -> emitters.remove(user.getUserSeq()));
     emitter.onTimeout(() -> emitters.remove(user.getUserSeq()));
+    emitter.onError((e) -> {
+      emitters.remove(user.getUserSeq());
+      log.error("사용자 {} SSE 오류 발생: {}", user.getNickname(), e.getMessage());
+    });
 
     log.info("사용자 {} SSE 구독 시작", user.getNickname());
 
