@@ -22,7 +22,10 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
   @Modifying
   @Transactional
   @Query("UPDATE letter_status ls "
-      + "SET ls.mentorLetter = :mentorLetter, ls.createAt = CURRENT_TIMESTAMP "
+      + "SET ls.mentorLetter = :mentorLetter, "
+      + "ls.createAt = CURRENT_TIMESTAMP, "
+      + "ls.isMentorRead = true, "
+      + "ls.isMenteeRead = false "
       + "WHERE ls.letterStatusSeq = :letterStatusSeq")
   void saveMentorLetter(
       @Param("letterStatusSeq") Long letterStatusSeq,
@@ -66,7 +69,10 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
 
   @Modifying
   @Transactional
-  @Query("UPDATE letter_status ls SET ls.thanksType = :thanksType WHERE ls.letterStatusSeq =:letterStatusSeq")
+  @Query("UPDATE letter_status ls "
+      + "SET ls.thanksType = :thanksType, "
+      + "ls.isMentorRead = false "
+      + "WHERE ls.letterStatusSeq =:letterStatusSeq")
   void thankToMentor(Long letterStatusSeq, ThanksType thanksType);
 
   LetterStatusEntity getLetterStatusByMentorLetterLetterSeq(Long letterSeq);
