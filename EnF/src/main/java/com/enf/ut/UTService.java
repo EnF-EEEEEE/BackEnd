@@ -40,7 +40,7 @@ public class UTService {
             .mentor(mentor)
             .menteeLetter(letter)
             .mentorLetter(null)
-            .isMenteeRead(false)
+            .isMenteeRead(true)
             .isMentorRead(false)
             .isMenteeSaved(false)
             .isMentorSaved(false)
