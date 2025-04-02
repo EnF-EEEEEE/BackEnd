@@ -21,7 +21,9 @@ services:
     build:
       context: EnF
       dockerfile: Dockerfile
-    container_name: api
+      args:
+        MODULE_NAME: module-api
+    container_name: module-api
     depends_on:
       mysql:
         condition: service_healthy
@@ -30,6 +32,24 @@ services:
       ACTIVE_PROFILE: prod
     ports:
       - "8080:8080"
+    networks:
+      - enf-network
+
+  batch:
+    build:
+      context: EnF
+      dockerfile: Dockerfile
+      args:
+        MODULE_NAME: module-batch
+    container_name: module-batch
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+    environment:
+      ACTIVE_PROFILE: prod
+    ports:
+      - "8081:8081"
     networks:
       - enf-network
 

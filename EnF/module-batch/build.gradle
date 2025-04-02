@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+bootJar.enabled = true
+jar.enabled = true
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}

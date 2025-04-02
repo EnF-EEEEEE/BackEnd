@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+bootJar.enabled = true
+jar.enabled = true
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // 모듈 의존성 주입
+    implementation project(':module-domain')
+
+    // Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    // Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+}
+

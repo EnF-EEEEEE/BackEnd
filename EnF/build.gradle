@@ -4,79 +4,76 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com'
-version = '0.0.1-SNAPSHOT'
+bootJar.enabled = false
+jar.enabled = true
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+subprojects {           //모듈들에 대해서 공통으로 필요한 의존성을 적용시키겠다.
+    group = 'com.enf'
+    version = '0.0.1-SNAPSHOT'
+
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
-}
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    apply plugin : 'java'
+    apply plugin : 'java-library'
+    apply plugin : 'org.springframework.boot'
+    apply plugin : 'io.spring.dependency-management'
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
-}
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-dependencies {
-    // Web
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    dependencies {
+        // Web
+        implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Mysql
-    runtimeOnly 'com.mysql:mysql-connector-j'
+        // Mysql
+        runtimeOnly 'com.mysql:mysql-connector-j'
 
-    // JPA
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        // JPA
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+        // Lombok
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
 
-    // Thymeleaf
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+        // Spring Security
+        implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // Validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+        // JWT
+        implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+        runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+        runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-    // Spring Security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // JWT
-    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-    
-    // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+        // Redis
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+        // QueryDSL
+        implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+        annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+        annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+        annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    // QueryDSL
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+        // Test
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // Actuator
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        // logstash
+        implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
+    }
 
-    // prometheus
-    implementation 'io.micrometer:micrometer-registry-prometheus'
-
-    // Test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // logstash
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
 }
