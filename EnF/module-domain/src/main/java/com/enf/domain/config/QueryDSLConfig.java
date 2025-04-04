@@ -1,4 +1,4 @@
-package com.enf.api.config;
+package com.enf.domain.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
