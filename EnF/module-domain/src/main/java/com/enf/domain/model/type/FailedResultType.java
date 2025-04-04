@@ -22,6 +22,7 @@ public enum FailedResultType {
   UNLINK_FAILED(HttpStatus.BAD_REQUEST, "회원탈퇴 실패 했습니다"),
   ALREADY_PENALTY(HttpStatus.BAD_REQUEST, "이미 영구 정지된 회원입니다."),
   QUOTA_IS_EMPTY(HttpStatus.BAD_REQUEST, "남은 편지 개수가 0개 입니다."),
+  BIRD_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않은 새 타입 입니다."),
   ;
 
   private final HttpStatus status;

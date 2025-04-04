@@ -1,6 +1,7 @@
 package com.enf.api.service.impl;
 
 import com.enf.api.component.facade.UserFacade;
+import com.enf.api.exception.GlobalException;
 import com.enf.domain.entity.BirdEntity;
 import com.enf.domain.entity.TipsEntity;
 import com.enf.domain.entity.UserEntity;
@@ -8,6 +9,7 @@ import com.enf.domain.model.dto.response.ResultResponse;
 import com.enf.domain.model.dto.response.bird.BirdExplanationDTO;
 import com.enf.domain.model.dto.response.bird.BirdyListDTO;
 import com.enf.domain.model.dto.response.bird.BirdyTipsDTO;
+import com.enf.domain.model.type.FailedResultType;
 import com.enf.domain.model.type.SuccessResultType;
 import com.enf.domain.model.type.TokenType;
 import com.enf.domain.repository.BirdRepository;
@@ -28,7 +30,8 @@ public class BirdyServiceImpl implements BirdyService {
 
   @Override
   public ResultResponse getTestBirdy(String birdName) {
-    BirdEntity bird = birdRepository.findByBirdName(birdName);
+    BirdEntity bird = birdRepository.findByBirdName(birdName)
+        .orElseThrow(() -> new GlobalException(FailedResultType.BIRD_NOT_FOUND));
 
     BirdExplanationDTO birdExplanation = BirdExplanationDTO.toTestBirdy(bird);
     return new ResultResponse(SuccessResultType.SUCCESS_GET_TEST_RESULT_BIRDY, birdExplanation);

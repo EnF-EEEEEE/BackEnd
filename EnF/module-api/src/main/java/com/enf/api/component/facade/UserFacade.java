@@ -214,6 +214,10 @@ public class UserFacade {
   }
 
 
+  public void updateBirdType(UserEntity user, BirdEntity bird) {
+    userRepository.updateBirdByUserSeq(user.getUserSeq(), bird);
+  }
+
   // ============================= Role 관련 메서드 =============================
 
   /**
@@ -235,7 +239,8 @@ public class UserFacade {
    * @return 조회된 BirdEntity
    */
   public BirdEntity findBirdByBirdName(String birdName) {
-    return birdRepository.findByBirdName(birdName);
+    return birdRepository.findByBirdName(birdName)
+        .orElseThrow(() -> new GlobalException(FailedResultType.BIRD_NOT_FOUND));
   }
 
   // ============================= Category 관련 메서드 =============================

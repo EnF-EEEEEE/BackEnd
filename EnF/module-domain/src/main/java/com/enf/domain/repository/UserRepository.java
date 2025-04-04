@@ -1,5 +1,6 @@
 package com.enf.domain.repository;
 
+import com.enf.domain.entity.BirdEntity;
 import com.enf.domain.entity.CategoryEntity;
 import com.enf.domain.entity.RoleEntity;
 import com.enf.domain.entity.UserEntity;
@@ -94,6 +95,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Transactional
   @Query("UPDATE user u SET u.quota = :quota WHERE u.userSeq = :userSeq")
   void updateQuota(@Param("userSeq") Long userSeq, @Param("quota") int quota);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE user u SET u.bird = :bird WHERE u.userSeq = :userSeq")
+  void updateBirdByUserSeq(Long userSeq, BirdEntity bird);
 }
 
 

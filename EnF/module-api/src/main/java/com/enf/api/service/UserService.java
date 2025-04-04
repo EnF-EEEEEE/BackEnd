@@ -19,4 +19,6 @@ public interface UserService {
   ResultResponse updateNickname(HttpServletRequest request, UpdateNicknameDTO nickname);
 
   ResultResponse updateCategory(HttpServletRequest request, UserCategoryDTO userCategory);
+
+  ResultResponse updateBirdType(HttpServletRequest request, String birdName);
 }
