@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
   public ResultResponse updateCategory(HttpServletRequest request, UserCategoryDTO userCategory) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
 
-    userFacade.updateCategory(user.getUserSeq(), UserCategoryDTO.of(userCategory));
+    userFacade.updateCategory(user, UserCategoryDTO.of(user, userCategory));
     return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_CATEGORY);
   }
 

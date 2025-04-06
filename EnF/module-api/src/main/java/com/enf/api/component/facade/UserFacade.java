@@ -136,8 +136,9 @@ public class UserFacade {
    * @param userSeq 사용자 일련번호
    * @param category 변경할 카테고리
    */
-  public void updateCategory(Long userSeq, CategoryEntity category) {
-    userRepository.updateCategoryByUserSeq(userSeq, category);
+  public void updateCategory(UserEntity user, CategoryEntity category) {
+    categoryRepository.save(category);
+    userRepository.updateCategoryByUserSeq(user.getUserSeq(), category);
   }
 
   /**

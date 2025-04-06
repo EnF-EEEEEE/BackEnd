@@ -1,6 +1,7 @@
 package com.enf.domain.model.dto.request.user;
 
 import com.enf.domain.entity.CategoryEntity;
+import com.enf.domain.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -48,6 +49,20 @@ public class UserCategoryDTO {
 
   public static CategoryEntity of(UserCategoryDTO userCategoryDTO) {
     return CategoryEntity.builder()
+        .career(userCategoryDTO.isCareer())
+        .mental(userCategoryDTO.isMental())
+        .relationship(userCategoryDTO.isRelationship())
+        .love(userCategoryDTO.isLove())
+        .life(userCategoryDTO.isLife())
+        .finance(userCategoryDTO.isFinance())
+        .housing(userCategoryDTO.isHousing())
+        .other(userCategoryDTO.isOther())
+        .build();
+  }
+
+  public static CategoryEntity of(UserEntity user, UserCategoryDTO userCategoryDTO) {
+    return CategoryEntity.builder()
+        .categorySeq(user.getCategory().getCategorySeq())
         .career(userCategoryDTO.isCareer())
         .mental(userCategoryDTO.isMental())
         .relationship(userCategoryDTO.isRelationship())
