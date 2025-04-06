@@ -2,6 +2,7 @@ package com.enf.api.service.impl;
 
 import com.enf.api.component.facade.LetterFacade;
 import com.enf.api.component.facade.UserFacade;
+import com.enf.domain.entity.BirdEntity;
 import com.enf.domain.entity.UserEntity;
 import com.enf.domain.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.domain.model.dto.request.user.UpdateNicknameDTO;
@@ -100,5 +101,14 @@ public class UserServiceImpl implements UserService {
 
     userFacade.updateCategory(user.getUserSeq(), UserCategoryDTO.of(userCategory));
     return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_CATEGORY);
+  }
+
+  @Override
+  public ResultResponse updateBirdType(HttpServletRequest request, String birdName) {
+    UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
+    BirdEntity bird = userFacade.findBirdByBirdName(birdName);
+
+    userFacade.updateBirdType(user, bird);
+    return ResultResponse.of(SuccessResultType.SUCCESS_UPDATE_BIRD_TYPE);
   }
 }

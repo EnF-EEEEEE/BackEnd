@@ -51,7 +51,8 @@ public class UserController {
       HttpServletRequest request, HttpServletResponse response,
       @RequestBody AdditionalInfoDTO additionalInfoDTO) {
 
-    ResultResponse resultResponse = userService.additionalInfo(request, response, additionalInfoDTO);
+    ResultResponse resultResponse = userService.additionalInfo(request, response,
+        additionalInfoDTO);
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 
@@ -97,6 +98,13 @@ public class UserController {
       @RequestBody UserCategoryDTO userCategory) {
 
     ResultResponse response = userService.updateCategory(request, userCategory);
+    return new ResponseEntity<>(response, response.getStatus());
+  }
+
+  @PostMapping("/update/bird")
+  public ResponseEntity<ResultResponse> updateBird(HttpServletRequest request, String birdName) {
+
+    ResultResponse response = userService.updateBirdType(request, birdName);
     return new ResponseEntity<>(response, response.getStatus());
   }
 }
