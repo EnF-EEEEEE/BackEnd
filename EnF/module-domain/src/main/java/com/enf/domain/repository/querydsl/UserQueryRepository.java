@@ -50,10 +50,20 @@ public class UserQueryRepository {
    */
   public UserEntity getMentor(String birdName, String categoryName, Long letterStatusSeq) {
     log.info("birdName: {} categoryName: {}", birdName, categoryName);
+
+    // 우선순위 1순위
     return fetchUser(buildConditions(birdName, categoryName, letterStatusSeq))
+
+        // 우선순위 2순위
         .orElseGet(() -> fetchUser(buildConditions(null, categoryName, letterStatusSeq))
+
+            // 우선순위 3순위
             .orElseGet(() -> fetchUser(buildConditions(birdName, null, letterStatusSeq))
+
+                // 우선순위 4순위
                 .orElseGet(() -> randomUser(buildConditions(null, null, letterStatusSeq))
+
+                    // 우선순위 5순위
                     .orElseGet(this::getAdminUser))));
   }
 
@@ -86,6 +96,36 @@ public class UserQueryRepository {
         .fetchFirst());
   }
 
+  /*
+   * 멘토 조회 조건을 생성하는 메서드
+   *
+   * @param birdName 새 유형
+   * @param categoryName 카테고리명
+   * @param letterStatusSeq 편지를 넘긴 이력을 조회하기 위한 식별자
+   * @return BooleanBuilder (QueryDSL 검색 조건)
+   */
+  private BooleanBuilder buildConditions(String birdName, String categoryName, Long letterStatusSeq) {
+    BooleanBuilder builder = new BooleanBuilder();
+
+    builder.and(user.role.roleName.eq("MENTOR"));
+    builder.and(user.quota.goe(1));
+    builder.and(lastLoginBetween(LocalDateTime.now(), LocalDateTime.now().minusDays(7)));
+
+    if (birdName != null) {
+      builder.and(user.bird.birdName.eq(birdName));
+    }
+
+    if (categoryName != null) {
+      builder.and(getCategoryPredicate(user, categoryName));
+    }
+
+    if (letterStatusSeq != null) {
+      builder.and(getThrowUserPredicate(letterStatusSeq));
+    }
+
+    return builder;
+  }
+
   /**
    * 카테고리명에 따른 검색 조건을 반환하는 메서드
    *
@@ -106,6 +146,29 @@ public class UserQueryRepository {
       case "그 외 기타" -> user.category.other.eq(true);
       default -> null;
     };
+  }
+
+  /**
+   * 특정 편지를 넘긴 사용자 목록을 조회하는 메서드
+   *
+   * @param letterStatusSeq 편지 ID
+   * @return 해당 편지를 넘긴 사용자 리스트
+   */
+  public BooleanExpression getThrowUserPredicate(Long letterStatusSeq) {
+    List<UserEntity> userList = jpaQueryFactory
+        .select(throwLetter.throwUser)
+        .from(throwLetter)
+        .where(throwLetter.letterStatus.letterStatusSeq.eq(letterStatusSeq))
+        .fetch();
+
+    return userList.isEmpty() ? null : user.notIn(userList);
+  }
+
+  public UserEntity getAdminUser() {
+    return jpaQueryFactory
+        .selectFrom(user)
+        .where(user.nickname.eq("지미니짱짱"))
+        .fetchFirst();
   }
 
   /**
@@ -163,54 +226,5 @@ public class UserQueryRepository {
   private BooleanExpression lastLoginBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
     return startDateTime != null && endDateTime != null ?
             user.lastLoginAt.between(startDateTime, endDateTime) : null;
-  }
-  /*
-   * 멘토 조회 조건을 생성하는 메서드
-   *
-   * @param birdName 새 유형
-   * @param categoryName 카테고리명
-   * @param letterStatusSeq 편지를 넘긴 이력을 조회하기 위한 식별자
-   * @return BooleanBuilder (QueryDSL 검색 조건)
-   */
-  private BooleanBuilder buildConditions(String birdName, String categoryName, Long letterStatusSeq) {
-    BooleanBuilder builder = new BooleanBuilder();
-
-    builder.and(user.role.roleName.eq("MENTOR"));
-    builder.and(user.quota.goe(1));
-
-    if (birdName != null) {
-      builder.and(user.bird.birdName.eq(birdName));
-    }
-    if (categoryName != null) {
-      builder.and(getCategoryPredicate(user, categoryName));
-    }
-
-    if (letterStatusSeq != null) {
-      List<UserEntity> userList = getUsersWhoThrownLetter(letterStatusSeq);
-      builder.and(user.notIn(userList));
-    }
-
-    return builder;
-  }
-
-  /**
-   * 특정 편지를 넘긴 사용자 목록을 조회하는 메서드
-   *
-   * @param letterId 편지 ID
-   * @return 해당 편지를 넘긴 사용자 리스트
-   */
-  public List<UserEntity> getUsersWhoThrownLetter(Long letterId) {
-    return jpaQueryFactory
-        .select(throwLetter.throwUser)
-        .from(throwLetter)
-        .where(throwLetter.letterStatus.letterStatusSeq.eq(letterId))
-        .fetch();
-  }
-
-  public UserEntity getAdminUser() {
-    return jpaQueryFactory
-        .selectFrom(user)
-        .where(user.nickname.eq("지미니짱짱"))
-        .fetchFirst();
   }
 }
