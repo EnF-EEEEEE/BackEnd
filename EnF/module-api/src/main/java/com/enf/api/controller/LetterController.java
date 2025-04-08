@@ -1,5 +1,6 @@
 package com.enf.api.controller;
 
+import com.enf.api.component.badword.annotation.BadWordCheck;
 import com.enf.domain.model.dto.request.letter.ReplyLetterDTO;
 import com.enf.domain.model.dto.request.letter.SendLetterDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
@@ -32,7 +33,7 @@ public class LetterController {
   @PostMapping("/send")
   public ResponseEntity<ResultResponse> sendLetter(
       HttpServletRequest request,
-      @RequestBody SendLetterDTO sendLetter) {
+      @RequestBody @BadWordCheck SendLetterDTO sendLetter) {
 
     ResultResponse response = letterService.sendLetter(request, sendLetter);
     return new ResponseEntity<>(response, response.getStatus());
@@ -48,7 +49,7 @@ public class LetterController {
   @PostMapping("/reply")
   public ResponseEntity<ResultResponse> replyLetter(
       HttpServletRequest request,
-      @RequestBody ReplyLetterDTO reply) {
+      @RequestBody @BadWordCheck ReplyLetterDTO reply) {
 
     ResultResponse response = letterService.replyLetter(request, reply);
     return new ResponseEntity<>(response, response.getStatus());
