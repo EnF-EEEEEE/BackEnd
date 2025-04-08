@@ -1,10 +1,15 @@
 package com.enf.api.controller;
 
+import com.enf.api.component.badword.BadWordException;
+import com.enf.api.component.badword.BadWordExceptionDTO;
+import com.enf.api.component.badword.BadWordFiltering;
+import com.enf.api.component.badword.annotation.BadWordCheck;
 import com.enf.domain.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.domain.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.domain.model.dto.request.user.UserCategoryDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
 import com.enf.api.service.UserService;
+import com.enf.domain.model.type.FailedResultType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +37,10 @@ public class UserController {
    * @return 닉네임 중복 여부 결과
    */
   @GetMapping("/check-nickname")
-  public ResponseEntity<ResultResponse> checkNickname(@RequestParam("nickname") String nickname) {
+  public ResponseEntity<ResultResponse> checkNickname(
+    @RequestParam("nickname") 
+    @BadWordCheck
+    String nickname) {
 
     ResultResponse response = userService.checkNickname(nickname);
     return new ResponseEntity<>(response, response.getStatus());
@@ -49,7 +57,9 @@ public class UserController {
   @PostMapping("/additional-info")
   public ResponseEntity<ResultResponse> additionalInfo(
       HttpServletRequest request, HttpServletResponse response,
-      @RequestBody AdditionalInfoDTO additionalInfoDTO) {
+      @RequestBody
+      @BadWordCheck
+      AdditionalInfoDTO additionalInfoDTO) {
 
     ResultResponse resultResponse = userService.additionalInfo(request, response,
         additionalInfoDTO);
@@ -79,7 +89,9 @@ public class UserController {
   @PostMapping("/update/nickname")
   public ResponseEntity<ResultResponse> updateNickname(
       HttpServletRequest request,
-      @RequestBody UpdateNicknameDTO nickname) {
+      @RequestBody
+      @BadWordCheck
+      UpdateNicknameDTO nickname) {
 
     ResultResponse response = userService.updateNickname(request, nickname);
     return new ResponseEntity<>(response, response.getStatus());
