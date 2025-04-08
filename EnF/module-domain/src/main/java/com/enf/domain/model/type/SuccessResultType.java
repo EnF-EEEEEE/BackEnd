@@ -32,6 +32,9 @@ public enum SuccessResultType {
   SUCCESS_GET_BIRDY_TIPS(HttpStatus.OK, "버디 팁 조회 성공"),
   SUCCESS_GET_NOTIFICATION(HttpStatus.OK, "알림 조회 성공"),
   SUCCESS_UPDATE_BIRD_TYPE(HttpStatus.OK, "버디 타입 수정 성공"),
+  SUCCESS_CREATE_INQUIRY(HttpStatus.CREATED, "문의가 성공적으로 등록되었습니다."),
+  SUCCESS_GET_INQUIRY(HttpStatus.OK, "문의 조회 성공"),
+  SUCCESS_CREATE_INQUIRY_RESPONSE(HttpStatus.CREATED, "문의 답변이 성공적으로 등록되었습니다.");
   ;
 
   private final HttpStatus status;

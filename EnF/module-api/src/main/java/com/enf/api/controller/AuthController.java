@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-//Test URL : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=962b24a09f42380d01cc640c02a3b71d&redirect_uri=http://localhost:8080/api/v1/auth/callback
+//Local Test URL : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=3d37d53cb427928f2a93ea16263d08de&redirect_uri=http://localhost:8080/api/v1/auth/callback
+//DevServer Test URL : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=3d37d53cb427928f2a93ea16263d08de&redirect_uri=https://api.dearbirdy.xyz/api/v1/auth/callback
+//DevServer Test URL : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=3d37d53cb427928f2a93ea16263d08de&redirect_uri=http://localhost:3000/callback
 @Slf4j
 @RestController
 @RequiredArgsConstructor

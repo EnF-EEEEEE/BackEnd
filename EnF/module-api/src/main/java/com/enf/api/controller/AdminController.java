@@ -1,5 +1,7 @@
 package com.enf.api.controller;
 
+import com.enf.domain.model.dto.request.inquiry.InquiryDTO;
+import com.enf.domain.model.dto.response.ResultResponse;
 import com.enf.domain.model.dto.response.letter.LetterDetailResponseDto;
 import com.enf.api.service.AdminService;
 import com.enf.api.service.AuthService;
@@ -72,20 +74,10 @@ public class AdminController {
      * @param page 페이지 번호 (기본값: 0)
      * @param size 페이지 크기 (기본값: 10)
      * @param status 문의 상태 (선택적: PENDING, ANSWERED)
-     * @return
-     * inquiries{
-     *     id, : 문의 아이디
-     *     title, : 문의 제목
-     *     author, : 작성자
-     *     createdAt, : 문의 날짜
-     *     status : 문의 상태
-     * },
-     * currentPage : 현재 페이지
-     * totalItems : 문의 전체 갯수
-     * totalPages : 전체 페이지 수
+     * @return 문의 목록 정보
      */
     @GetMapping("/inquiries")
-    public ResponseEntity<Map<String, Object>> getInquiries(
+    public ResponseEntity<ResultResponse> getInquiries(
             HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -93,8 +85,9 @@ public class AdminController {
 
         // 페이지 정보 구성 (최신순 정렬)
         Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
-        // 응답 변환 및 반환
-        return inquiryService.getInquiries(request, pageable, status);
+        // 응답 반환
+        ResultResponse response =  inquiryService.getInquiries(request, pageable, status);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     /**
@@ -104,32 +97,33 @@ public class AdminController {
      * @return 문의 상세 정보
      */
     @GetMapping("/inquiries/{id}")
-    public ResponseEntity<Map<String, Object>> getInquiryDetail(
+    public ResponseEntity<ResultResponse> getInquiryDetail(
             HttpServletRequest request,
             @PathVariable Long id) {
-        return inquiryService.getInquiryDetail(request, id);
+        ResultResponse response =  inquiryService.getInquiryDetail(request, id);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     /**
      * 문의 답변 등록 API
      *
      * @param id 문의 시퀀스
-     * @param responseRequest 답변 내용
+     * @param inquiryDTO 답변 내용
      * @param request 요청 객체 (헤더에서 관리자 정보 추출)
      * @return 등록 결과
      */
     @PostMapping("/inquiries/{id}/responses")
-    public ResponseEntity<Map<String, Object>> createResponse(
+    public ResponseEntity<ResultResponse> createResponse(
             @PathVariable Long id,
-            @RequestBody Map<String, String> responseRequest,
+            @RequestBody InquiryDTO inquiryDTO,
             HttpServletRequest request) {
 
-        // 답변 내용 추출
-        String content = responseRequest.get("content");
+        String content = inquiryDTO.getContent();
         if (content == null || content.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        return inquiryService.createResponse(request, id, content);
+        ResultResponse response =  inquiryService.createResponse(request, id, content);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     //-----------편지관련 api-----------
