@@ -23,6 +23,9 @@ public enum FailedResultType {
   ALREADY_PENALTY(HttpStatus.BAD_REQUEST, "이미 영구 정지된 회원입니다."),
   QUOTA_IS_EMPTY(HttpStatus.BAD_REQUEST, "남은 편지 개수가 0개 입니다."),
   BIRD_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않은 새 타입 입니다."),
+  ADMIN_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다."),
+  INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 문의입니다."),
+  INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "이미 답변이 등록된 문의입니다."),
   ;
 
   private final HttpStatus status;
