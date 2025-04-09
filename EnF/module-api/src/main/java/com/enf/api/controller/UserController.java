@@ -1,15 +1,11 @@
 package com.enf.api.controller;
 
-import com.enf.api.component.badword.BadWordException;
-import com.enf.api.component.badword.BadWordExceptionDTO;
-import com.enf.api.component.badword.BadWordFiltering;
 import com.enf.api.component.badword.annotation.BadWordCheck;
 import com.enf.domain.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.domain.model.dto.request.user.UpdateNicknameDTO;
 import com.enf.domain.model.dto.request.user.UserCategoryDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
 import com.enf.api.service.UserService;
-import com.enf.domain.model.type.FailedResultType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

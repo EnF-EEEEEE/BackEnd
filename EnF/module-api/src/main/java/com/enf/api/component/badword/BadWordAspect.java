@@ -1,6 +1,9 @@
 package com.enf.api.component.badword;
 
 import com.enf.api.component.badword.annotation.BadWordCheck;
+import com.enf.api.exception.GlobalException;
+import com.enf.domain.model.dto.response.ResultResponse;
+import com.enf.domain.model.type.FailedResultType;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -69,7 +72,6 @@ public class BadWordAspect {
                 if (value instanceof String) {
                     // String 필드만 검사
                     String text = (String) value;
-
                     // 필드에 @BadWordCheck 어노테이션이 있는 경우
                     BadWordCheck annotation = field.getAnnotation(BadWordCheck.class);
                     if (annotation != null) {
@@ -77,7 +79,9 @@ public class BadWordAspect {
                     } else {
                         // 어노테이션이 없는 경우에도 검사하려면 (선택적)
                         if (badWordFiltering.check(text)) {
-                            throw new BadWordException(field.getName(), "부적절한 표현이 포함되어 있습니다.");
+                            BadWordExceptionDTO dto = new BadWordExceptionDTO(field.getName(),text);
+                            ResultResponse resultResponse = new ResultResponse(FailedResultType.BAD_WORD_DENIED, dto);
+                            throw new GlobalException(resultResponse);
                         }
                     }
                 } else if (value != null && !value.getClass().isPrimitive()) {
@@ -100,7 +104,9 @@ public class BadWordAspect {
         }
 
         if (hasBadWord) {
-            throw new BadWordException(name, text, annotation.message());
+            BadWordExceptionDTO dto = new BadWordExceptionDTO(name,text);
+            ResultResponse resultResponse = new ResultResponse(FailedResultType.BAD_WORD_DENIED, dto);
+            throw new GlobalException(resultResponse);
         }
     }
 }
