@@ -1,5 +1,6 @@
 package com.enf.api.controller;
 
+import com.enf.api.component.badword.annotation.BadWordCheck;
 import com.enf.api.service.InquiryService;
 import com.enf.domain.model.dto.request.inquiry.InquiryDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
@@ -29,7 +30,9 @@ public class InquiryController {
     @PostMapping
     public ResponseEntity<ResultResponse> createInquiry(
             HttpServletRequest request,
-            @RequestBody InquiryDTO inquiryDTO) {
+            @RequestBody
+            @BadWordCheck
+            InquiryDTO inquiryDTO) {
 
         // 문의 내용 검증
         if (inquiryDTO.getContent() == null || inquiryDTO.getContent().trim().isEmpty()) {

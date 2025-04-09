@@ -26,6 +26,7 @@ public enum FailedResultType {
   ADMIN_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다."),
   INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 문의입니다."),
   INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "이미 답변이 등록된 문의입니다."),
+  BAD_WORD_DENIED(HttpStatus.BAD_REQUEST, "부적절한 표현이 포함되었습니다."),
   ;
 
   private final HttpStatus status;

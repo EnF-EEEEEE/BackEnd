@@ -14,4 +14,9 @@ public class GlobalException extends RuntimeException {
     this.resultResponse = ResultResponse.of(failedResultCode);
   }
 
+  public GlobalException(ResultResponse resultResponse) {
+    super("");
+    this.resultResponse = resultResponse;
+  }
+
 }
