@@ -1,4 +1,4 @@
-package com.enf.domain.model.dto.request.notification;
+package com.enf.domain.model.dto.request.announcements;
 
 import com.enf.domain.entity.AnnouncementsEntity;
 import com.enf.domain.model.type.AnnouncementsType;
