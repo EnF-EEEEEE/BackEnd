@@ -21,8 +21,6 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // 특정 IP만 허용하는 설정 (선택 사항)
-                        // .requestMatchers("/api/v1/email/**").hasIpAddress("127.0.0.1")
                         // 또는 모든 이메일 API 엔드포인트 허용
                         .requestMatchers("/api/v1/email/**").permitAll()
                         .anyRequest().authenticated()
