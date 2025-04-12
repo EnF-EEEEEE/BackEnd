@@ -37,7 +37,19 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
 
 # 서버 포트 설정 (module-api와 충돌 방지)
 server:
   port: 8082
+
+# API 키 설정
+api:
+  key:
+    name: X-API-KEY
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGVhckJpcmR5RW1haWxLZXkiLCJpYXQiOjE1MTYyMzkwMjJ9.OqFgvPMzMXsDq643tnUu3ovnKeLXRFxaHCHENYElKzY

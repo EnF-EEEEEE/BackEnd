@@ -2,25 +2,24 @@ spring:
   config:
     import: classpath:secret.yml
 
-  jpa:
-    hibernate:
-      # 필요에 따라서 수정 필요
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        check_nullability: true
-        format_sql: true
-        highlight_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-        default_batch_fetch_size: 1000
-    open-in-view: false
-
+  # 데이터베이스 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DEV.DATABASE.URL}
     username: ${DEV.DATABASE.USERNAME}
     password: ${DEV.DATABASE.PASSWORD}
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        check_nullability: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 1000
+    open-in-view: false
 
   # 이메일 설정
   mail:
@@ -38,7 +37,19 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
 
 # 서버 포트 설정 module-api와 충돌 방지
 server:
   port: 8082
+
+# API 키 설정
+api:
+  key:
+    name: X-API-KEY
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGVhckJpcmR5RW1haWxLZXkiLCJpYXQiOjE1MTYyMzkwMjJ9.OqFgvPMzMXsDq643tnUu3ovnKeLXRFxaHCHENYElKzY
