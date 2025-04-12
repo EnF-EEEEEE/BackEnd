@@ -34,7 +34,10 @@ public enum SuccessResultType {
   SUCCESS_UPDATE_BIRD_TYPE(HttpStatus.OK, "버디 타입 수정 성공"),
   SUCCESS_CREATE_INQUIRY(HttpStatus.CREATED, "문의가 성공적으로 등록되었습니다."),
   SUCCESS_GET_INQUIRY(HttpStatus.OK, "문의 조회 성공"),
-  SUCCESS_CREATE_INQUIRY_RESPONSE(HttpStatus.CREATED, "문의 답변이 성공적으로 등록되었습니다.");
+  SUCCESS_CREATE_INQUIRY_RESPONSE(HttpStatus.CREATED, "문의 답변이 성공적으로 등록되었습니다."),
+  SUCCESS_CREATE_ANNOUNCEMENT(HttpStatus.CREATED, "공지사항이 성공적으로 등록되었습니다."),
+  SUCCESS_GET_ANNOUNCEMENT(HttpStatus.OK, "이번주 공지사항 조회 성공."),
+  SUCCESS_GET_ANNOUNCEMENT_DETAILS(HttpStatus.OK, "공지사항 상세 조회 성공"),
   ;
 
   private final HttpStatus status;

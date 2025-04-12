@@ -82,7 +82,8 @@ public class SecurityConfig {
                         "/api/v1/admin/letters",
                         "/api/v1/admin/letters/**",
                         "/api/v1/admin/reports",
-                        "/api/v1/admin/reports/**"
+                        "/api/v1/admin/reports/**",
+                        "/api/v1/announcements/"
                         ).hasAnyAuthority("ADMIN", "DEVELOPER")
 
                     .requestMatchers(

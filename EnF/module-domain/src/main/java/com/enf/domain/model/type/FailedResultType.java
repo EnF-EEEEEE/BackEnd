@@ -27,6 +27,7 @@ public enum FailedResultType {
   INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 문의입니다."),
   INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "이미 답변이 등록된 문의입니다."),
   BAD_WORD_DENIED(HttpStatus.BAD_REQUEST, "부적절한 표현이 포함되었습니다."),
+ ANNOUNCEMENT_NOT_FOUND(HttpStatus.OK, "존재하지 않은 공지사항 일련번호 입니다."),
   ;
 
   private final HttpStatus status;
