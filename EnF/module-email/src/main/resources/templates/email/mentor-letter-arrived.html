@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>디어버디 알림</title>
+    <style type="text/css">
+        /* 이메일 클라이언트 호환성을 위한 기본 설정 */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* 웹 안전 폰트 적용 - 한글 지원 폰트 우선 */
+        body {
+            font-size: 14px;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 원래 스타일 유지하면서 호환성 개선 */
+        .container {
+            width: 375px;
+            margin: 10px auto;
+            background: #ffffff;
+            position: relative;
+        }
+
+        .header {
+            width: 100%;
+            padding: 16px;
+            background: #f9f8f3;
+            text-align: left; /* 로고 왼쪽 정렬 */
+            height: 53px; /* 원래 높이 유지 */
+        }
+
+        .content {
+            padding: 20px 16px;
+        }
+
+        .title {
+            color: #292d32;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .message {
+            color: #292d32;
+            font-size: 18px;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 20px 0 15px 0;
+        }
+
+        .footer {
+            padding: 16px;
+            margin-top: 15px;
+            color: #8e8e93;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .horizontal-line {
+            border-top: 1px solid rgba(142,142,147,0.3);
+            margin: 0 16px;
+        }
+
+        /* 로고 스타일 */
+        .logo {
+            width: 96.58px;
+            height: 21.39px;
+            display: block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://i.postimg.cc/L5Xfjtny/dearbirdy-logo.png" alt="디어버디 로고" class="logo" width="96.58" height="21.39">
+    </div>
+    <div class="content">
+        <div class="title">똑똑💌<br>디어버디에서 편지가 도착했어요!</div>
+
+        <div class="image-container">
+            <img src="https://i.postimg.cc/d0wYW4wV/email-letter.png" alt="디어버디 이미지" width="300">
+        </div>
+
+        <div class="message">안녕하세요! {{nickname}}님, <br>후배 버디로부터 고민 편지가 도착했어요</div>
+
+        <div class="message">디어버디에 방문해서 편지 내용을 살펴보고 <br>답장을 작성해주는 건 어떠신가요?</div>
+
+        <div class="button-container">
+            <a href="https://www.dearbirdy.xyz" style="text-decoration: none; border: none; display: block;">
+                <img src="https://i.postimg.cc/ryrqwdnc/button-l.png" alt="디어버디 방문하기" style="width: 343px; height: 50px; display: block; margin: 0 auto; border: none;">
+            </a>
+        </div>
+    </div>
+
+    <div class="horizontal-line"></div>
+
+    <div class="footer">
+        본 메일은 발신 전용입니다.<br>
+        편지 도착 알림, 주요 공지사항 안내 등은 수신 동의 여부에 관계없이 발송됩니다.<br>
+        <br>
+        www.dearbirdy.xyz | All Rights Reserved.
+    </div>
+</div>
+</body>
+</html>
