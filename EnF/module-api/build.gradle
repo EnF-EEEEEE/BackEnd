@@ -28,5 +28,17 @@ dependencies {
     // prometheus
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
+    // Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
 }
 
+// Feign 의존성 관리
+ext {
+    set('springCloudVersion', "2023.0.4")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}

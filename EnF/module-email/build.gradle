@@ -9,6 +9,12 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 dependencies {
     // 모듈 의존성 주입
     implementation project(':module-domain')
