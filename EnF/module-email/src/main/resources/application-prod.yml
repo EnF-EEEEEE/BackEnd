@@ -51,5 +51,5 @@ server:
 # API 키 설정
 api:
   key:
-    name: X-API-KEY
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGVhckJpcmR5RW1haWxLZXkiLCJpYXQiOjE1MTYyMzkwMjJ9.OqFgvPMzMXsDq643tnUu3ovnKeLXRFxaHCHENYElKzY
+    name: ${api.key.name}
+    value: ${api.key.value}
