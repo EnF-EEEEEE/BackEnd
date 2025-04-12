@@ -18,7 +18,7 @@ public class EmailLogEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long emailLogId;
+    private Long emailLogSeq;
 
     @Column(nullable = false)
     private String email;
