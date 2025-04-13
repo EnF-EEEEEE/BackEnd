@@ -19,7 +19,7 @@ public class EmailController {
             @RequestParam String nickname) {
         log.info("멘티 편지 도착 이메일 요청: {}", email);
         emailService.sendMenteeLetterArrivedEmail(email, nickname);
-        return ResponseEntity.ok("멘토에게 편지 도착 알림 이메일이 성공적으로 전송되었습니다");
+        return ResponseEntity.ok("멘토에게 편지 도착 알림 이메일을 전송합니다.");
     }
 
     @PostMapping("/mentor-letter-arrived")

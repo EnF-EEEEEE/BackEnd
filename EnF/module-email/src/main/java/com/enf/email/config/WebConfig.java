@@ -15,6 +15,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(apiKeyInterceptor)
-                .addPathPatterns("/api/email/**"); // 이메일 API 경로에만 인터셉터 적용
+                .addPathPatterns("/api/v1/email/send/**"); // 이메일 API 경로에만 인터셉터 적용
     }
 }

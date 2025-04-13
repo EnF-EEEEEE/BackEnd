@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.io.IOException;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,17 +20,14 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
     private String apiKeyValue;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        String requestApiKey = request.getHeader(apiKeyHeaderName);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String apiKey = request.getHeader(apiKeyHeaderName);
 
-        // API 키 검증
-        if (requestApiKey == null || !requestApiKey.equals(apiKeyValue)) {
-            log.warn("유효하지 않은 API 키: {}", requestApiKey);
-
-             // 또는 아래와 같이 직접 응답을 작성할 수도 있습니다
-             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-             response.getWriter().write("인증되지 않은 요청입니다");
-             return false;
+        // API 키가 없거나 일치하지 않으면 403 응답
+        if (apiKey == null || !apiKey.equals(apiKeyValue)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Invalid or missing API key");
+            return false;
         }
 
         return true;
