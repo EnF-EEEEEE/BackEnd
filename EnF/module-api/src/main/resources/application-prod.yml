@@ -83,3 +83,9 @@ logging:
   level:
     org.springframework.security: INFO
     com.enf: INFO
+
+# API 키 설정
+api:
+  key:
+    name: ${api.key.name}
+    value: ${api.key.value}
