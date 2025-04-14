@@ -2,6 +2,8 @@ package com.enf.api.service.impl;
 
 import com.enf.api.component.facade.LetterFacade;
 import com.enf.api.component.facade.UserFacade;
+import com.enf.api.service.EmailService;
+import com.enf.api.service.LetterService;
 import com.enf.domain.entity.LetterEntity;
 import com.enf.domain.entity.LetterStatusEntity;
 import com.enf.domain.entity.UserEntity;
@@ -10,22 +12,13 @@ import com.enf.domain.model.dto.request.letter.SendLetterDTO;
 import com.enf.domain.model.dto.request.notification.NotificationDTO;
 import com.enf.domain.model.dto.response.PageResponse;
 import com.enf.domain.model.dto.response.ResultResponse;
-import com.enf.domain.model.dto.response.letter.LetterDetailResponseDto;
-import com.enf.domain.model.dto.response.letter.LetterDetailsDTO;
-import com.enf.domain.model.dto.response.letter.LetterResponseDto;
-import com.enf.domain.model.dto.response.letter.ReceiveLetterDTO;
-import com.enf.domain.model.dto.response.letter.ThrowLetterCategoryDTO;
+import com.enf.domain.model.dto.response.letter.*;
 import com.enf.domain.model.type.LetterListType;
 import com.enf.domain.model.type.SuccessResultType;
 import com.enf.domain.model.type.TokenType;
 import com.enf.domain.repository.LetterStatusRepository;
-import com.enf.api.service.LetterService;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,6 +28,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,6 +44,8 @@ public class LetterServiceImpl implements LetterService {
   private final RedisTemplate<String, Object> redisTemplate;
   private final LetterStatusRepository letterStatusRepository;
   private final MeterRegistry meterRegistry;
+  private final EmailService emailService;
+
 
   /**
    * 사용자가 새로운 편지를 작성하여 상대방에게 전송하는 기능
@@ -64,6 +64,9 @@ public class LetterServiceImpl implements LetterService {
 
     // 메트릭 추가
     meterRegistry.counter("letter.sent").increment();
+    // 이메일 전송 기능 - 멘토에게 고민 편지가 도착했음을 전달
+    emailService.sendMentorLetterArrivedEmail(mentor.getEmail(), mentor.getNickname());
+
     return ResultResponse.of(SuccessResultType.SUCCESS_SEND_LETTER);
   }
 
@@ -76,6 +79,8 @@ public class LetterServiceImpl implements LetterService {
 
     userFacade.reduceQuota(letterStatus.getMentor());
     redisTemplate.convertAndSend("notifications", NotificationDTO.replyLetter(letterStatus));
+    // 이메일 전송 기능 - 멘티에게 답장이 도착했음을 전달
+    emailService.sendMenteeLetterArrivedEmail(letterStatus.getMentee().getEmail(), letterStatus.getMentee().getNickname());
 
     return ResultResponse.of(SuccessResultType.SUCCESS_RECEIVE_LETTER);
   }

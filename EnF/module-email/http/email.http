@@ -1,0 +1,17 @@
+### 멘티 편지 도착 이메일 발송
+POST http://localhost:8082/api/v1/email/send/mentee-letter-arrived?email=aslanhobae@gmail.com&nickname=호배
+X-API-KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGVhckJpcmR5RW1haWxLZXkiLCJpYXQiOjE1MTYyMzkwMjJ9.OqFgvPMzMXsDq643tnUu3ovnKeLXRFxaHCHENYElKzY
+Content-Type: application/json
+
+### 멘토 편지 도착 이메일 발송
+POST http://localhost:8082/api/v1/email/send/mentor-letter-arrived?email=aslanhobae@gmail.com&nickname=호배
+X-API-KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGVhckJpcmR5RW1haWxLZXkiLCJpYXQiOjE1MTYyMzkwMjJ9.OqFgvPMzMXsDq643tnUu3ovnKeLXRFxaHCHENYElKzY
+Content-Type: application/json
+
+### 하루 전 알림 이메일 발송
+POST http://localhost:8082/api/v1/email/send/one-day-notice?email=aslanhobae@gmail.com&nickname=호배
+X-API-KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGVhckJpcmR5RW1haWxLZXkiLCJpYXQiOjE1MTYyMzkwMjJ9.OqFgvPMzMXsDq643tnUu3ovnKeLXRFxaHCHENYElKzY
+Content-Type: application/json
+
+
+

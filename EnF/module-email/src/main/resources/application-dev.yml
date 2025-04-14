@@ -1,0 +1,55 @@
+spring:
+  config:
+    import: classpath:secret.yml
+
+  # 데이터베이스 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DEV.DATABASE.URL}
+    username: ${DEV.DATABASE.USERNAME}
+    password: ${DEV.DATABASE.PASSWORD}
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        check_nullability: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 1000
+    open-in-view: false
+
+  # 이메일 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${DEV.MAIL.USERNAME}
+    password: ${DEV.MAIL.PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
+
+# 서버 포트 설정 module-api와 충돌 방지
+server:
+  port: 8082
+
+# API 키 설정
+api:
+  key:
+    name: ${api.key.name}
+    value: ${api.key.value}

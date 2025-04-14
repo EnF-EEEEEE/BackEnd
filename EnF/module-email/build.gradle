@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+bootJar.enabled = true
+jar.enabled = true
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    // 모듈 의존성 주입
+    implementation project(':module-domain')
+
+    // 이메일 관련 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // 공통 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // 개발 도구
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+

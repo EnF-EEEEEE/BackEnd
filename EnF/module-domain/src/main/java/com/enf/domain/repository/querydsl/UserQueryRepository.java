@@ -1,22 +1,23 @@
 package com.enf.domain.repository.querydsl;
 
-import static java.util.Optional.ofNullable;
-
 import com.enf.domain.entity.QThrowLetterEntity;
 import com.enf.domain.entity.QUserEntity;
 import com.enf.domain.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * QueryDSL을 활용한 사용자 조회 Repository
@@ -109,7 +110,7 @@ public class UserQueryRepository {
 
     builder.and(user.role.roleName.eq("MENTOR"));
     builder.and(user.quota.goe(1));
-    builder.and(lastLoginBetween(LocalDateTime.now(), LocalDateTime.now().minusDays(7)));
+    builder.and(lastLoginBetween(LocalDateTime.now().minusDays(7),LocalDateTime.now()));
 
     if (birdName != null) {
       builder.and(user.bird.birdName.eq(birdName));

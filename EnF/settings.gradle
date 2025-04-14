@@ -5,4 +5,5 @@ rootProject.name = 'EnF'
 include 'module-api'
 include 'module-batch'
 include 'module-domain'
+include 'module-email'
 
