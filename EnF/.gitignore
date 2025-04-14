@@ -36,3 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 module-api/src/main/resources/secret.yml
+module-email/src/main/resources/secret.yml
