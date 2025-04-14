@@ -15,6 +15,8 @@ public class Announcements {
 
   private Long announcementSeq;
 
+  private String announcementsType;
+
   private String title;
 
   private LocalDateTime createAt;
@@ -29,6 +31,7 @@ public class Announcements {
     for (AnnouncementsEntity announcement : list) {
       announcementsList.add(new Announcements(
           announcement.getAnnouncementsSeq(),
+          announcement.getAnnouncementsType().toString(),
           announcement.getTitle(),
           announcement.getCreatedAt()
       ));
