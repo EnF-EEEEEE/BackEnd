@@ -8,8 +8,10 @@ import com.enf.domain.entity.LetterStatusEntity;
 import com.enf.domain.entity.RoleEntity;
 import com.enf.domain.entity.UserEntity;
 import com.enf.api.exception.GlobalException;
+import com.enf.domain.entity.WithdrawalEntity;
 import com.enf.domain.model.dto.auth.AuthTokenDTO;
 import com.enf.domain.model.dto.request.auth.KakaoUserDetailsDTO;
+import com.enf.domain.model.dto.request.auth.WithdrawalDTO;
 import com.enf.domain.model.dto.request.letter.SendLetterDTO;
 import com.enf.domain.model.dto.request.user.AdditionalInfoDTO;
 import com.enf.domain.model.dto.request.user.UserCategoryDTO;
@@ -17,11 +19,13 @@ import com.enf.domain.model.dto.response.letter.LetterHistoryDTO;
 import com.enf.domain.model.dto.response.user.UserProfileDTO;
 import com.enf.domain.model.type.FailedResultType;
 import com.enf.domain.model.type.TokenType;
+import com.enf.domain.model.type.WithdrawalType;
 import com.enf.domain.repository.BirdRepository;
 import com.enf.domain.repository.CategoryRepository;
 import com.enf.domain.repository.LetterStatusRepository;
 import com.enf.domain.repository.RoleRepository;
 import com.enf.domain.repository.UserRepository;
+import com.enf.domain.repository.WithdrawalRepository;
 import com.enf.domain.repository.querydsl.UserQueryRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -43,6 +47,7 @@ public class UserFacade {
   private final TokenProvider tokenProvider;
   private final UserQueryRepository userQueryRepository;
   private final LetterStatusRepository letterStatusRepository;
+  private final WithdrawalRepository withdrawalRepository;
 
   // ============================= User 관련 메서드 =============================
 
@@ -177,10 +182,17 @@ public class UserFacade {
   /**
    * 회원 탈퇴 보류 처리
    *
-   * @param user UserEntity
+   * @param user          UserEntity
+   * @param withdrawalDTO
    */
-  public void pendingWithdrawal(UserEntity user) {
+  public void pendingWithdrawal(UserEntity user, WithdrawalDTO withdrawalDTO) {
+    WithdrawalEntity withdrawal = WithdrawalEntity.builder()
+        .withdrawalUser(user.getNickname())
+        .withdrawalType(WithdrawalType.valueOf(withdrawalDTO.getWithdrawalType()))
+        .build();
+
     userRepository.pendingWithdrawal(user.getUserSeq());
+    withdrawalRepository.save(withdrawal);
   }
 
 
@@ -212,6 +224,7 @@ public class UserFacade {
    */
   public void cancelWithdrawal(UserEntity user) {
     userRepository.cancelWithdrawal(user.getUserSeq());
+    withdrawalRepository.deleteByWithdrawalUser(user.getNickname());
   }
 
 

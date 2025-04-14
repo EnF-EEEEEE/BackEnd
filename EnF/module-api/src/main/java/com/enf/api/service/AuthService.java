@@ -1,6 +1,7 @@
 package com.enf.api.service;
 
 
+import com.enf.domain.model.dto.request.auth.WithdrawalDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,5 +16,5 @@ public interface AuthService {
 
   ResultResponse reissueToken(HttpServletRequest request, HttpServletResponse response);
 
-  ResultResponse withdrawal(HttpServletRequest request);
+  ResultResponse withdrawal(HttpServletRequest request, WithdrawalDTO withdrawalDTO);
 }

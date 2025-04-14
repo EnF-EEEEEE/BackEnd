@@ -1,5 +1,6 @@
 package com.enf.api.controller;
 
+import com.enf.domain.model.dto.request.auth.WithdrawalDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
 import com.enf.api.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,10 +71,11 @@ public class AuthController {
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 
-  @GetMapping("/withdrawal")
-  public ResponseEntity<ResultResponse> withdrawal(HttpServletRequest request) {
+  @PostMapping("/withdrawal")
+  public ResponseEntity<ResultResponse> withdrawal(HttpServletRequest request,
+      WithdrawalDTO withdrawalDTO) {
 
-    ResultResponse resultResponse = authService.withdrawal(request);
+    ResultResponse resultResponse = authService.withdrawal(request, withdrawalDTO);
     return new ResponseEntity<>(resultResponse, resultResponse.getStatus());
   }
 }

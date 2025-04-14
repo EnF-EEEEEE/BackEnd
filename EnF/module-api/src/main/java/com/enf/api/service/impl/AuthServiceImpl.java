@@ -5,8 +5,10 @@ import com.enf.api.component.facade.UserFacade;
 import com.enf.domain.entity.RoleEntity;
 import com.enf.domain.entity.UserEntity;
 import com.enf.api.exception.GlobalException;
+import com.enf.domain.entity.WithdrawalEntity;
 import com.enf.domain.model.dto.auth.UserDetailsDTO;
 import com.enf.domain.model.dto.request.auth.KakaoUserDetailsDTO;
+import com.enf.domain.model.dto.request.auth.WithdrawalDTO;
 import com.enf.domain.model.dto.response.ResultResponse;
 import com.enf.domain.model.type.FailedResultType;
 import com.enf.domain.model.type.SuccessResultType;
@@ -114,9 +116,9 @@ public class AuthServiceImpl implements AuthService {
    * @return 회원탈퇴 결과 응답 객체
    */
   @Override
-  public ResultResponse withdrawal(HttpServletRequest request) {
+  public ResultResponse withdrawal(HttpServletRequest request, WithdrawalDTO withdrawalDTO) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    userFacade.pendingWithdrawal(user);
+    userFacade.pendingWithdrawal(user, withdrawalDTO);
 
     return ResultResponse.of(SuccessResultType.SUCCESS_KAKAO_WITHDRAWAL);
   }
