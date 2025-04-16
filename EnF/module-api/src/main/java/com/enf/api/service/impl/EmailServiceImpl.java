@@ -42,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendMentorLetterArrivedEmail(String email,String nickname) {
         try {
             log.info("Sending email to {}", email);
-            emailFeignClient.sendMenteeLetterArrivedEmail(email,nickname);
+            emailFeignClient.sendMentorLetterArrivedEmail(email,nickname);
         } catch (Exception e) {
             log.error("Failed to send email: {}", e.getMessage(), e);
             throw e;
@@ -60,7 +60,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendOneDayNoticeEmail(String email,String nickname) {
         try {
             log.info("Sending email to {}", email);
-            emailFeignClient.sendMenteeLetterArrivedEmail(email,nickname);
+            emailFeignClient.sendOneDayNoticeEmail(email,nickname);
         } catch (Exception e) {
             log.error("Failed to send email: {}", e.getMessage(), e);
             throw e;
