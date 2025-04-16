@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AnnouncementsDetails {
 
+  private String announcementsType;
+
   private String title;
 
   private String content;
@@ -19,6 +21,7 @@ public class AnnouncementsDetails {
 
   public static AnnouncementsDetails of(AnnouncementsEntity announcements) {
     return new AnnouncementsDetails(
+        announcements.getAnnouncementsType().toString(),
         announcements.getTitle(),
         announcements.getContent(),
         announcements.getCreatedAt()
