@@ -53,6 +53,24 @@ services:
     networks:
       - enf-network
 
+  email:
+    build:
+      context: EnF
+      dockerfile: Dockerfile
+      args:
+        MODULE_NAME: module-email
+    container_name: module-email
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+    environment:
+      ACTIVE_PROFILE: prod
+    ports:
+      - "8082:8082"
+    networks:
+      - enf-network
+
   npm:
     image: 'jc21/nginx-proxy-manager:2.11.3'
     container_name: npm

@@ -63,12 +63,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u SET u.deleteAt = CURRENT_TIMESTAMP WHERE u.userSeq = :userSeq")
   void pendingWithdrawal(@Param("userSeq")Long userSeq);
 
-  @Modifying
   @Transactional
   @Query("SELECT u FROM user u "
       + "WHERE u.deleteAt IS NOT NULL "
-      + "AND DATEDIFF(CURRENT_DATE, u.deleteAt) >= 30 "
-      + "AND u.role.roleName = 'WITHDRAWAL_PENDING'")
+      + "AND DATEDIFF(CURRENT_DATE, u.deleteAt) >= 30")
   List<UserEntity> getWithdrawalPendingUsers();
 
   @Modifying
