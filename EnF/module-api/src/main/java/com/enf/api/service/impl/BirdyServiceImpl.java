@@ -56,9 +56,15 @@ public class BirdyServiceImpl implements BirdyService {
   @Override
   public ResultResponse getBirdyTip(HttpServletRequest request) {
     UserEntity user = userFacade.getUserByToken(request.getHeader(TokenType.ACCESS.getValue()));
-    List<String> types = List.of(user.getRole().getRoleName(), "ALL");
 
-    String type = types.get((int) (Math.random() * 2));
+    String type;
+
+    if (user.getRole().getRoleName().equals("ADMIN")) {
+      type = "ALL";
+    } else {
+      List<String> types = List.of(user.getRole().getRoleName(), "ALL");
+      type = types.get((int) (Math.random() * 2));
+    }
     long birdSeq = (long) (Math.random() * 6) + 1;
 
     BirdEntity bird = birdRepository.findByBirdSeq(birdSeq);
