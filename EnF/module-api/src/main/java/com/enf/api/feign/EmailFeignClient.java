@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
         name = "emailClient",
-        url = "http://localhost:8082",
+        url = "http://module-email:8082", //"http://localhost:8082",
         configuration = FeignClientConfig.class
 )
 public interface EmailFeignClient {
