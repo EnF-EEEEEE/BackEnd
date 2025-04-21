@@ -1,0 +1,25 @@
+spring:
+  config:
+    import: classpath:secret.yml
+
+  # 데이터베이스 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DEV.DATABASE.URL}
+    username: ${DEV.DATABASE.USERNAME}
+    password: ${DEV.DATABASE.PASSWORD}
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        check_nullability: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 1000
+    open-in-view: false
+
+  kakao:
+    admin-key: ${KAKAO.KEY.ADMIN}
