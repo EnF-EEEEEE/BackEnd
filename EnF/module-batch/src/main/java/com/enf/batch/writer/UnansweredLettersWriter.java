@@ -1,26 +1,31 @@
 package com.enf.batch.writer;
 
 import com.enf.domain.entity.LetterStatusEntity;
-import com.enf.domain.entity.UserEntity;
-import com.enf.domain.repository.LetterStatusRepository;
-import com.enf.domain.repository.UserRepository;
-import com.enf.domain.repository.querydsl.UserQueryRepository;
+import com.enf.domain.model.dto.response.ResultResponse;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UnansweredLettersWriter implements ItemWriter<LetterStatusEntity> {
 
-  private final LetterStatusRepository letterStatusRepository;
-  private final UserQueryRepository userQueryRepository;
-  private final UserRepository userRepository;
+  private final RestTemplate restTemplate;
+
+  @Value("${spring.module-api.notification-url}")
+  private String notificationUrl;
+
+  @Value("${spring.module-api.transfer-letter-url}")
+  private String transferLetterUrl;
 
   @Override
   public void write(Chunk<? extends LetterStatusEntity> chunk) throws Exception {
@@ -41,38 +46,47 @@ public class UnansweredLettersWriter implements ItemWriter<LetterStatusEntity> {
       // 현재 날짜와의 차이 계산
       int difference = (int) ChronoUnit.DAYS.between(letterDate, currentDate);
 
-      switch (difference) {
-        // 편지를 처음 받은 멘토의 답장 기간이 1일 남았을 경우
-        case 3:
-          break;
-        // 편지를 처음 받은 멘토의 답장 기간이 지났을 경우
-        case 4:
-          sendLetterToNewMentor(letterStatus, difference);
-          break;
-        // 편지를 두 번째로 받은 멘토의 답장 기간이 1일 남았을 경우
-        case 6:
-          break;
-        // 편지를 두 번째로 받은 멘토의 답장 기간이 1일 남았을 경우
-        case 7:
-          sendLetterToNewMentor(letterStatus, difference);
-          break;
+      if (difference == 3 || difference == 6) {
+        sendNotification(letterStatus);
+      } else if (difference == 4) {
+        transferLetter(letterStatus, 1L);
+      } else if (difference == 7) {
+        transferLetter(letterStatus, 2L);
       }
+
     }
   }
 
-  private void sendLetterToNewMentor(LetterStatusEntity letterStatus, int difference) {
-    if (difference == 4) {
-      String birdName = letterStatus.getMenteeLetter().getBirdName();
-      String categoryName = letterStatus.getMenteeLetter().getCategoryName();
-      Long letterStatusSeq = letterStatus.getLetterStatusSeq();
+  private void transferLetter(LetterStatusEntity letterStatus, Long transferSeq) {
+    String url = transferLetterUrl
+        + "?letterStatusSeq=" + letterStatus.getLetterStatusSeq()
+        + "&transferSeq=" + transferSeq;
 
-      UserEntity newMentor = userQueryRepository.getMentor(birdName, categoryName, letterStatusSeq);
-      letterStatusRepository.changeMentor(letterStatus.getLetterStatusSeq(), newMentor);
-      return;
+    try {
+      ResponseEntity<ResultResponse> response = restTemplate.getForEntity(url, ResultResponse.class);
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        log.info("상태 코드: {}, 편지 넘기기 성공: {}", response.getStatusCode(), response.getBody().getMessage());
+      } else {
+        log.error("편지 넘기기 실패: {}", response.getStatusCode());
+      }
+    } catch (Exception e) {
+      log.error("편지 넘기기 중 오류 발생: {}", e.getMessage(), e);
     }
+  }
 
-    UserEntity admin = userRepository.findByNickname("지미니짱짱");
-    letterStatusRepository.changeMentor(letterStatus.getLetterStatusSeq(), admin);
+  private void sendNotification(LetterStatusEntity letterStatus) {
+    String url = notificationUrl + "?letterStatusSeq=" + letterStatus.getLetterStatusSeq();
+
+    try {
+      ResponseEntity<ResultResponse> response = restTemplate.getForEntity(url, ResultResponse.class);
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        log.info("상태 코드: {}, 알림 전송 성공 {}", response.getStatusCode(), response.getBody().getMessage());
+      } else {
+        log.error("알림 전송 실패: {}", response.getStatusCode());
+      }
+    } catch (Exception e) {
+      log.error("알림 전송 중 오류 발생: {}", e.getMessage(), e);
+    }
   }
 
 

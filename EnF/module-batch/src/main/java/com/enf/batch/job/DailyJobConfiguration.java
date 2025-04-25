@@ -20,9 +20,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 
 @Configuration
 @RequiredArgsConstructor
-public class JobConfiguration {
+public class DailyJobConfiguration {
 
-  private final JobRepository jobRepository;
   private final EntityManagerFactory entityManagerFactory;
 
   private final WithdrawalUserReader withdrawalUserReader;

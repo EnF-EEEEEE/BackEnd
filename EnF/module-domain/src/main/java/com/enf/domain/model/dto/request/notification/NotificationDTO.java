@@ -70,6 +70,18 @@ public class NotificationDTO {
     );
   }
 
+  public static NotificationDTO deadline(LetterStatusEntity letterStatus) {
+    return new NotificationDTO(
+        letterStatus.getMentor().getUserSeq(),
+        letterStatus.getLetterStatusSeq(),
+        letterStatus.getMentee().getBird().getBirdName(),
+        letterStatus.getMentee().getNickname(),
+        "님으로부터 날아온 편지의 답장 기간이 하루 남았어요",
+        false
+
+    );
+  }
+
   /**
    * NotificationEntity → NotificationDTO 변환
    */

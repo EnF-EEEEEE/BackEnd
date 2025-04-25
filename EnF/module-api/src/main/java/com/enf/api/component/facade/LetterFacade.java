@@ -173,6 +173,8 @@ public class LetterFacade {
    * @param newMentor 새로운 멘토 정보
    */
   public void changeMentor(LetterStatusEntity letterStatus, UserEntity newMentor) {
+
+    notificationRepository.changeMentor(letterStatus.getLetterStatusSeq(), newMentor.getUserSeq());
     letterStatusRepository.changeMentor(letterStatus.getLetterStatusSeq(), newMentor);
   }
 
