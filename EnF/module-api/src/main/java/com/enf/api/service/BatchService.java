@@ -1,10 +1,10 @@
 package com.enf.api.service;
 
-import com.enf.domain.model.dto.response.ResultResponse;
-
 public interface BatchService {
 
-  ResultResponse sendNotificationToMentor(Long letterStatusSeq);
+  void sendNotificationToMentor(Long letterStatusSeq);
 
-  ResultResponse transferLetter(Long letterStatusSeq, Long transferSeq);
+  void transferLetter(Long letterStatusSeq, Long transferSeq);
+
+  void unlinkUser(Long userSeq);
 }

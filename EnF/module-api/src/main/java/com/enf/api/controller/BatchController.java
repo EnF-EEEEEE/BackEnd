@@ -17,20 +17,27 @@ public class BatchController {
   private final BatchService batchService;
 
   @GetMapping("/deadline/notification")
-  public ResponseEntity<ResultResponse> sendNotification(
+  public ResponseEntity<?> sendNotification(
       @RequestParam(name = "letterStatusSeq") Long letterStatusSeq) {
 
-    ResultResponse response = batchService.sendNotificationToMentor(letterStatusSeq);
-    return new ResponseEntity<>(response, response.getStatus());
+    batchService.sendNotificationToMentor(letterStatusSeq);
+    return ResponseEntity.ok("Batch 작업 : 알림 전송 성공");
   }
 
   @GetMapping("/transfer/letter")
-  public ResponseEntity<ResultResponse> transferLetter(
+  public ResponseEntity<?> transferLetter(
       @RequestParam(name = "letterStatusSeq") Long letterStatusSeq,
       @RequestParam(name = "transferSeq") Long transferSeq) {
 
-    ResultResponse response = batchService.transferLetter(letterStatusSeq, transferSeq);
-    return new ResponseEntity<>(response, response.getStatus());
+    batchService.transferLetter(letterStatusSeq, transferSeq);
+    return ResponseEntity.ok("Batch 작업 : 편지 넘기기 성공");
+  }
+
+  @GetMapping("/unlink/user")
+  public ResponseEntity<?> unlinkUser(@RequestParam(name = "userSeq") Long userSeq) {
+
+    batchService.unlinkUser(userSeq);
+    return ResponseEntity.ok("Batch 작업 : 회원 탈퇴 성공 전송 성공");
   }
 
 }

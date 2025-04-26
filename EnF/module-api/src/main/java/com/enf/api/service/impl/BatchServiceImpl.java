@@ -6,8 +6,6 @@ import com.enf.api.service.BatchService;
 import com.enf.domain.entity.LetterStatusEntity;
 import com.enf.domain.entity.UserEntity;
 import com.enf.domain.model.dto.request.notification.NotificationDTO;
-import com.enf.domain.model.dto.response.ResultResponse;
-import com.enf.domain.model.type.SuccessResultType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,15 +21,14 @@ public class BatchServiceImpl implements BatchService {
   private final RedisTemplate<String, Object> redisTemplate;
 
   @Override
-  public ResultResponse sendNotificationToMentor(Long letterStatusSeq) {
+  public void sendNotificationToMentor(Long letterStatusSeq) {
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
 
     redisTemplate.convertAndSend("notifications", NotificationDTO.deadline(letterStatus));
-    return ResultResponse.of(SuccessResultType.SUCCESS_BATCH_NOTIFICATION_JOB);
   }
 
   @Override
-  public ResultResponse transferLetter(Long letterStatusSeq, Long transferSeq) {
+  public void transferLetter(Long letterStatusSeq, Long transferSeq) {
     LetterStatusEntity letterStatus = letterFacade.getLetterStatus(letterStatusSeq);
     letterFacade.throwLetter(letterStatus);
 
@@ -45,7 +42,12 @@ public class BatchServiceImpl implements BatchService {
     letterFacade.changeMentor(letterStatus, newMentor);
 
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, newMentor));
-    return ResultResponse.of(SuccessResultType.SUCCESS_TRANSFER_LETTER);
+  }
+
+  @Override
+  public void unlinkUser(Long userSeq) {
+    UserEntity user = userFacade.findByUserSeq(userSeq);
+    userFacade.withdrawal(user);
   }
 
 
