@@ -21,5 +21,7 @@ spring:
         default_batch_fetch_size: 1000
     open-in-view: false
 
-  kakao:
-    admin-key: ${KAKAO.KEY.ADMIN}
+  module-api:
+    notification-url: ${PROD.API.NOTIFICATION}
+    transfer-letter-url: ${PROD.API.TRANSFER_LETTER}
+    unlink-url: ${PROD.API.UNLINK_USER}

@@ -34,7 +34,7 @@ public class DailyJobConfiguration {
   public Job dailyUpdateJob(JobRepository jobRepository){
     return new JobBuilder("dailyUpdateJob", jobRepository)
         .start(withdrawalUserStep(jobRepository))
-        .start(letterStep(jobRepository))
+        .next(letterStep(jobRepository))
         .build();
   }
 

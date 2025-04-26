@@ -1,7 +1,6 @@
 package com.enf.batch.writer;
 
 import com.enf.domain.entity.LetterStatusEntity;
-import com.enf.domain.model.dto.response.ResultResponse;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
@@ -63,9 +62,10 @@ public class UnansweredLettersWriter implements ItemWriter<LetterStatusEntity> {
         + "&transferSeq=" + transferSeq;
 
     try {
-      ResponseEntity<ResultResponse> response = restTemplate.getForEntity(url, ResultResponse.class);
+      ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+      System.out.println(response.getStatusCode());
       if (response.getStatusCode().equals(HttpStatus.OK)) {
-        log.info("상태 코드: {}, 편지 넘기기 성공: {}", response.getStatusCode(), response.getBody().getMessage());
+        log.info("상태 코드: {}, 편지 넘기기 성공: {}", response.getStatusCode(), response.getBody());
       } else {
         log.error("편지 넘기기 실패: {}", response.getStatusCode());
       }
@@ -78,9 +78,9 @@ public class UnansweredLettersWriter implements ItemWriter<LetterStatusEntity> {
     String url = notificationUrl + "?letterStatusSeq=" + letterStatus.getLetterStatusSeq();
 
     try {
-      ResponseEntity<ResultResponse> response = restTemplate.getForEntity(url, ResultResponse.class);
+      ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
       if (response.getStatusCode().equals(HttpStatus.OK)) {
-        log.info("상태 코드: {}, 알림 전송 성공 {}", response.getStatusCode(), response.getBody().getMessage());
+        log.info("상태 코드: {}, 알림 전송 성공 {}", response.getStatusCode(), response.getBody());
       } else {
         log.error("알림 전송 실패: {}", response.getStatusCode());
       }
