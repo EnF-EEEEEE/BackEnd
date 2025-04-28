@@ -23,17 +23,8 @@ public class UserQuotaWriter implements ItemWriter<UserEntity> {
     }
 
     for (UserEntity user : chunk.getItems()) {
-      String userRole = user.getRole().getRoleName();
-
-      switch (userRole) {
-        case "MENTOR" :
-          userRepository.updateQuota(user.getUserSeq(), 7);
-          break;
-        case "MENTEE" :
-          userRepository.updateQuota(user.getUserSeq(), 4);
-          break;
-        default: break;
-      }
+      boolean isMentee = user.getRole().getRoleName().equals("MENTEE");
+      userRepository.updateQuota(user.getUserSeq(), isMentee ? 4 : 7);
     }
   }
 }
