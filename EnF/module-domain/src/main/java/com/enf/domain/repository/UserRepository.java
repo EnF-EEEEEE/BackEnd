@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-  boolean existsByProviderId(String providerId);
 
   Optional<UserEntity> findByProviderId(String providerId);
 
@@ -47,7 +46,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u SET u.category = :category WHERE u.userSeq = :userSeq")
   void updateCategoryByUserSeq(@Param("userSeq")Long userSeq, @Param("category")CategoryEntity category);
 
-  List<UserEntity> findAllByRole_RoleSeq(Long roleSeq);
 
   /**
    * 특정 역할을 가진 사용자 중 특정 기간에 가입한 사용자 목록 조회
@@ -79,8 +77,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE user u SET u.deleteAt = NULL WHERE u.userSeq = :userSeq")
   void cancelWithdrawal(Long userSeq);
 
-  // UT 테스트를 위한 메서드(삭제 예정)
-  UserEntity findByNickname(String nickname);
 
   @Modifying
   @Transactional

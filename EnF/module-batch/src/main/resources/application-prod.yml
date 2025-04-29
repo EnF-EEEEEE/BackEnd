@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: classpath:secret.yml
+
+  # 데이터베이스 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${PROD.DATABASE.URL}
+    username: ${PROD.DATABASE.USERNAME}
+    password: ${PROD.DATABASE.PASSWORD}
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        check_nullability: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 1000
+    open-in-view: false
+
+  module-api:
+    notification-url: ${PROD.API.NOTIFICATION}
+    transfer-letter-url: ${PROD.API.TRANSFER_LETTER}
+    unlink-url: ${PROD.API.UNLINK_USER}

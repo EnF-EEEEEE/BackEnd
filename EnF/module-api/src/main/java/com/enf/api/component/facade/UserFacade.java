@@ -138,7 +138,7 @@ public class UserFacade {
   /**
    * 사용자의 카테고리를 변경
    *
-   * @param userSeq 사용자 일련번호
+   * @param user 사용자
    * @param category 변경할 카테고리
    */
   public void updateCategory(UserEntity user, CategoryEntity category) {
@@ -195,15 +195,6 @@ public class UserFacade {
     withdrawalRepository.save(withdrawal);
   }
 
-
-  /**
-   * 회원 탈퇴 보류 중인 사용자 목록 조회
-   *
-   * @return 탈퇴 보류 중인 사용자 리스트
-   */
-  public List<UserEntity> getWithdrawalPendingUsers() {
-    return userRepository.getWithdrawalPendingUsers();
-  }
 
   /**
    * 회원 탈퇴 처리
@@ -323,25 +314,6 @@ public class UserFacade {
     userRepository.reduceQuota(user.getUserSeq());
   }
 
-  /**
-   * 전체 사용자 할당량 조회
-   *
-   * @return 모든 사용자 할당량 리스트
-   */
-  public List<UserEntity> getAllUsers() {
-    return userRepository.findAll();
-  }
-
-
-  /**
-   * 사용자의 할당량을 지정된 값으로 초기화
-   *
-   * @param user 사용자 정보
-   * @param quota 초기화할 할당량 값
-   */
-  public void resetQuota(UserEntity user, int quota) {
-    userRepository.updateQuota(user.getUserSeq(), quota);
-  }
 
   public UserProfileDTO getUserInfo(UserEntity user, LetterHistoryDTO letterHistory) {
 

@@ -67,7 +67,10 @@ public class SecurityConfig {
                         "/admin/login",
                         "/favicon.ico",
                         "/ut/test/send",
-                        "/api/v1/notification/subscribe"
+                        "/api/v1/notification/subscribe",
+                        "/api/v1/batch/deadline/notification",
+                        "/api/v1/batch/transfer/letter",
+                        "/api/v1/batch/unlink/user"
                     ).permitAll()
 
                     .requestMatchers(

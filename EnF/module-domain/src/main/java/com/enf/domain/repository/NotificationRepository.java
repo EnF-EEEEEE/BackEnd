@@ -17,4 +17,9 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
   @Transactional
   @Query("UPDATE notification n SET n.isRead = true where n.letterStatusSeq = :letterStatusSeq")
   void updateNotificationIsRead(Long letterStatusSeq);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE notification n SET n.userSeq = :userSeq where n.letterStatusSeq = :letterStatusSeq")
+  void changeMentor(Long letterStatusSeq, Long userSeq);
 }
