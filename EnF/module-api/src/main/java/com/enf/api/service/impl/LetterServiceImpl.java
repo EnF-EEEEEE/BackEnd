@@ -17,7 +17,6 @@ import com.enf.domain.model.type.LetterListType;
 import com.enf.domain.model.type.SuccessResultType;
 import com.enf.domain.model.type.TokenType;
 import com.enf.domain.repository.LetterStatusRepository;
-import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,7 @@ public class LetterServiceImpl implements LetterService {
   private final LetterFacade letterFacade;
   private final RedisTemplate<String, Object> redisTemplate;
   private final LetterStatusRepository letterStatusRepository;
-  private final MeterRegistry meterRegistry;
+//  private final MeterRegistry meterRegistry;
   private final EmailService emailService;
 
 
@@ -63,7 +62,7 @@ public class LetterServiceImpl implements LetterService {
     redisTemplate.convertAndSend("notifications", NotificationDTO.sendLetter(letterStatus, mentor));
 
     // 메트릭 추가
-    meterRegistry.counter("letter.sent").increment();
+//    meterRegistry.counter("letter.sent").increment();
     // 이메일 전송 기능 - 멘토에게 고민 편지가 도착했음을 전달
     emailService.sendMentorLetterArrivedEmail(mentor.getEmail(), mentor.getNickname());
 
