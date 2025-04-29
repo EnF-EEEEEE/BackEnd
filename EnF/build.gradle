@@ -70,7 +70,7 @@ subprojects {           //모듈들에 대해서 공통으로 필요한 의존�
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
         // logstash
-        implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
+//        implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
     }
 
     tasks.named('test') {
