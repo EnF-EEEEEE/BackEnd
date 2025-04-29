@@ -26,7 +26,7 @@ public class WeeklyJobConfiguration {
 
   @Bean
   public Job weeklyUpdateJob(JobRepository jobRepository){
-    return new JobBuilder("dailyUpdateJob", jobRepository)
+    return new JobBuilder("weeklyUpdateJob", jobRepository)
         .start(weeklyUpdateStep(jobRepository))
         .build();
   }
