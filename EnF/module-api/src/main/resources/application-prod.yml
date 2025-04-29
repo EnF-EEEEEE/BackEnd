@@ -60,25 +60,6 @@ spring:
     access-token-validity: ${PROD.jwt.access-token-validity}
     refresh-token-validity: ${PROD.jwt.refresh-token-validity}
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus,metrics
-  endpoint:
-    health:
-      show-details: always
-    prometheus:
-      enabled: true
-  metrics:
-    tags:
-      application: ${spring.application.name:EnF}
-    distribution:
-      percentiles-histogram:
-        http.server.requests: true
-      percentiles:
-        http.server.requests: 0.5, 0.9, 0.95, 0.99
-
 logging:
   level:
     org.springframework.security: INFO
