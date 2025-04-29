@@ -6,6 +6,7 @@ import com.enf.domain.entity.UserEntity;
 import com.enf.domain.model.type.ThanksType;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -110,4 +111,9 @@ public interface LetterStatusRepository extends JpaRepository<LetterStatusEntity
       "(:roleName = 'MENTEE' AND lst.mentee = :user AND lst.mentorLetter IS NOT NULL) OR " +
       "(:roleName = 'MENTOR' AND lst.mentor = :user AND lst.menteeLetter IS NOT NULL)")
   int countReplyLettersByUser(@Param("user") UserEntity user, @Param("roleName") String roleName);
+
+
+  @Transactional
+  @Query("SELECT lst FROM letter_status lst WHERE lst.mentorLetter IS NULL")
+  List<LetterStatusEntity> findUnansweredLetters();
 }

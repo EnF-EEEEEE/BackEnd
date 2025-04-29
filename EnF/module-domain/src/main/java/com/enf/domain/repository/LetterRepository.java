@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LetterRepository extends JpaRepository<LetterEntity, Long> {
 
-  Optional<LetterEntity> findByLetterSeq(Long letterSeq);
-
 }
