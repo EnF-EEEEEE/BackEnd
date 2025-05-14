@@ -6,18 +6,14 @@ import com.enf.domain.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
 /**
  * QueryDSL을 활용한 사용자 조회 Repository
@@ -52,20 +48,19 @@ public class UserQueryRepository {
   public UserEntity getMentor(String birdName, String categoryName, Long letterStatusSeq) {
     log.info("birdName: {} categoryName: {}", birdName, categoryName);
 
-    // 우선순위 1순위
-    return fetchUser(buildConditions(birdName, categoryName, letterStatusSeq))
+    UserEntity mentor = fetchUser(buildConditions(birdName, categoryName, letterStatusSeq));
+    if (mentor != null) return mentor;
 
-        // 우선순위 2순위
-        .orElseGet(() -> fetchUser(buildConditions(null, categoryName, letterStatusSeq))
+    mentor = fetchUser(buildConditions(null, categoryName, letterStatusSeq));
+    if (mentor != null) return mentor;
 
-            // 우선순위 3순위
-            .orElseGet(() -> fetchUser(buildConditions(birdName, null, letterStatusSeq))
+    mentor = fetchUser(buildConditions(birdName, null, letterStatusSeq));
+    if (mentor != null) return mentor;
 
-                // 우선순위 4순위
-                .orElseGet(() -> randomUser(buildConditions(null, null, letterStatusSeq))
+    mentor = randomUser(buildConditions(null, null, letterStatusSeq));
+    if (mentor != null) return mentor;
 
-                    // 우선순위 5순위
-                    .orElseGet(this::getAdminUser))));
+    return getAdminUser();
   }
 
   /**
@@ -74,13 +69,13 @@ public class UserQueryRepository {
    * @param builder QueryDSL의 BooleanBuilder (검색 조건)
    * @return 조건에 맞는 첫 번째 사용자 엔티티 (Optional)
    */
-  private Optional<UserEntity> fetchUser(BooleanBuilder builder) {
+  private UserEntity fetchUser(BooleanBuilder builder) {
     log.info(builder.toString());
-    return ofNullable(jpaQueryFactory
+    return jpaQueryFactory
         .selectFrom(user)
         .where(builder)
         .orderBy(user.quota.desc())
-        .fetchFirst());
+        .fetchFirst();
   }
 
   /**
@@ -89,15 +84,22 @@ public class UserQueryRepository {
    * @param builder QueryDSL의 BooleanBuilder (검색 조건)
    * @return 조건에 맞는 랜덤 멘토 (첫 번째 결과 반환)
    */
-  private Optional<UserEntity> randomUser(BooleanBuilder builder) {
-    return ofNullable(jpaQueryFactory
+  private UserEntity randomUser(BooleanBuilder builder) {
+    return jpaQueryFactory
         .selectFrom(user)
         .where(builder)
         .orderBy(user.quota.desc())
-        .fetchFirst());
+        .fetchFirst();
   }
 
-  /*
+  public UserEntity getAdminUser() {
+    return jpaQueryFactory
+        .selectFrom(user)
+        .where(user.nickname.eq("지미니짱짱"))
+        .fetchFirst();
+  }
+
+  /**
    * 멘토 조회 조건을 생성하는 메서드
    *
    * @param birdName 새 유형
@@ -165,12 +167,19 @@ public class UserQueryRepository {
     return userList.isEmpty() ? null : user.notIn(userList);
   }
 
-  public UserEntity getAdminUser() {
-    return jpaQueryFactory
-        .selectFrom(user)
-        .where(user.nickname.eq("지미니짱짱"))
-        .fetchFirst();
+
+  /**
+   * 특정 기간 내 로그인한 사용자 필터링 조건
+   *
+   * @param startDateTime 시작 시간
+   * @param endDateTime 종료 시간
+   * @return BooleanExpression
+   */
+  private BooleanExpression lastLoginBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    return startDateTime != null && endDateTime != null ?
+        user.lastLoginAt.between(startDateTime, endDateTime) : null;
   }
+
 
   /**
    * 이번 주(월요일부터 현재까지) 로그인한 회원 수 조회
@@ -184,10 +193,10 @@ public class UserQueryRepository {
     LocalDateTime startOfWeek = monday.atStartOfDay();
 
     return jpaQueryFactory
-            .select(user.count())
-            .from(user)
-            .where(lastLoginAfter(startOfWeek))
-            .fetchOne();
+        .select(user.count())
+        .from(user)
+        .where(lastLoginAfter(startOfWeek))
+        .fetchOne();
   }
 
   /**
@@ -201,10 +210,10 @@ public class UserQueryRepository {
     LocalDateTime endOfDay = date.plusDays(1).atStartOfDay().minusNanos(1);
 
     return jpaQueryFactory
-            .select(user.count())
-            .from(user)
-            .where(lastLoginBetween(startOfDay, endOfDay))
-            .fetchOne();
+        .select(user.count())
+        .from(user)
+        .where(lastLoginBetween(startOfDay, endOfDay))
+        .fetchOne();
   }
 
   /**
@@ -216,16 +225,5 @@ public class UserQueryRepository {
   private BooleanExpression lastLoginAfter(LocalDateTime dateTime) {
     return dateTime != null ? user.lastLoginAt.goe(dateTime) : null;
   }
-
-  /**
-   * 특정 기간 내 로그인한 사용자 필터링 조건
-   *
-   * @param startDateTime 시작 시간
-   * @param endDateTime 종료 시간
-   * @return BooleanExpression
-   */
-  private BooleanExpression lastLoginBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-    return startDateTime != null && endDateTime != null ?
-            user.lastLoginAt.between(startDateTime, endDateTime) : null;
-  }
 }
+
